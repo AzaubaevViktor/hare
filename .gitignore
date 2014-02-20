@@ -16,3 +16,6 @@
 *.exe
 *.out
 *.app
+
+#Qt
+src/hare.pro.user.*

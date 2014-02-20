@@ -7,5 +7,6 @@ SOURCES += main.c \
     hare.c
 
 HEADERS += \
-    hare.h
+    hare.h \
+    fileinfo.h
 
