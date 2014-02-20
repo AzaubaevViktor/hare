@@ -2,10 +2,17 @@
 
 int getFilesInfo(Context *cnt)
 {
-    struct _FileNode *tmpFileNode = (*cnt)->filesTree;
+    int i;
+    struct _FileNode *tmpFileNode = cnt->filesTree;
 
-    while(NULL != tmpFileNode)
+    for(i = 0; !(cnt->workFiles)[i]; i++)
     {
-
+        if(0 != getFileInfo(cnt->workFiles[i], tmpFileNode->fileInfo))
+        {
+            /* ERROR! */
+        }
+        tmpFileNode = tmpFileNode->next;
     }
+
+    return 0;
 }

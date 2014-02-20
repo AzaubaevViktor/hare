@@ -18,4 +18,4 @@
 *.app
 
 #Qt
-src/hare.pro.user.*
+src/hare.pro.user*
