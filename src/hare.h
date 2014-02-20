@@ -2,6 +2,8 @@
 #define HARE_H
 #include <inttypes.h>
 #include <stdint.h>
+#include <stdio.h>
+
 
 typedef struct _FileNode {
   int64_t nameLen;
@@ -12,11 +14,11 @@ typedef struct _FileNode {
 
 typedef struct {
   int argc;
-  char *argv[];
-  char *env[];
+  char **argv;
+  char **env;
   int8_t keys; /* 0x80,0x40, ... , 0x2, 0x1: Ø, Ø, Ø, Add, eXtract, Delete, List, inTegrity check */
   char *archName;
-  char *workFiles[]; /* Передали через аргументы */
+  char **workFiles; /* Передали через аргументы */
   FileNode *filesTree;
 } Context;
 
@@ -25,9 +27,9 @@ typedef struct {
 int parseArgs(Context *cnt);
 
 int getFilesInfo(Context *cnt);
-int getArchFileInfo(Context *cnt, int64_t offset, FileInfo *info);
+//int getArchFileInfo(Context *cnt, int64_t offset, FileInfo *info);
 
-int addFiles2Arch(Context *cnt, FileInfo *files);
+//int addFiles2Arch(Context *cnt, FileInfo *files);
 
 int findArchFile(Context *cnt, char *fileName);
 
@@ -36,9 +38,9 @@ int checkIntegrity(Context *cnt);
 int getArchFiles(Context *cnt);
 int printArchFiles(Context *cnt);
 
-int extractFiles(Context *cnt, FileInfo *files);
+//int extractFiles(Context *cnt, FileInfo *files);
 
 int deleteFileBlock(Context *cnt, int64_t offset, int64_t length);
-int deleteArchFiles(Context *cnt, FileInfo *files);
+//int deleteArchFiles(Context *cnt, FileInfo *files);
 
 #endif // HARE_H

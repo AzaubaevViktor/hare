@@ -4,7 +4,8 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.c \
-    hare.c
+    hare.c \
+    fileinfo.c
 
 HEADERS += \
     hare.h \
