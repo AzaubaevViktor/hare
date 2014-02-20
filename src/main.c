@@ -31,7 +31,7 @@ int main(int argc, char *argv[], char *env[])
   					iter->file     = f;
   					iter->fileName = argv[i];
   					iter->next     = NULL;
-  					iter->nameLen  = 0;
+  					iter->nameLen  = 0;//Сделаю позже
   				}
   			}
   			break;
