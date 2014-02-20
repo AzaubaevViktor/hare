@@ -1,7 +1,11 @@
 #ifndef HARE_H
 #define HARE_H
+
 #include <inttypes.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 
 typedef struct {
   ;
