@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "hare.h"
 
 struct FileInfo
 {

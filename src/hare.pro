@@ -5,7 +5,8 @@ CONFIG -= qt
 
 SOURCES += main.c \
     hare.c \
-    fileinfo.c
+    fileinfo.c \
+    getFilesInfo.c
 
 HEADERS += \
     hare.h \

@@ -3,13 +3,14 @@
 #include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>
+
 #include "fileinfo.h"
 
 typedef struct _FileNode {
   char *fileName;
   FILE *file;
-  struct _FileNode *next;
   struct FileInfo *fileInfo;
+  struct _FileNode *next;
 } FileNode;
 
 typedef struct {
