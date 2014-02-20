@@ -11,9 +11,7 @@ int getFileInfo(const char * fileName, struct FileInfo * fileInfo)
 
         fileInfo->name = (char*)realloc(fileInfo->name, fileInfo->sizeName + 1);
         if(NULL == fileInfo->name)
-        {
             return -1;
-        }
         else
             strcpy(fileInfo->name, fileName);
 
