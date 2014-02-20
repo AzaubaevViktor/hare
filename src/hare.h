@@ -7,8 +7,11 @@ typedef struct {
   ;
 } FileInfo;
 
-typedef struct {
-  ;
+typedef struct _FileNode {
+  int64_t nameLen;
+  char *fileName;
+  FILE *file;
+  struct _FileNode *next;
 } FileNode;
 
 typedef struct {
