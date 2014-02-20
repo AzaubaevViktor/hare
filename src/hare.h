@@ -7,10 +7,6 @@
 #include <stdlib.h>
 
 
-typedef struct {
-  ;
-} FileInfo;
-
 typedef struct _FileNode {
   int64_t nameLen;
   char *fileName;
