@@ -6,6 +6,9 @@
 
 GLOBAL_LOGGING
 
+#define TEST(str, ...) \
+  printf(str, ##__VA_ARGS__);
+
 int test_func(const char *lol);
 
 int main(int argc, char *argv[], char *env[])
@@ -24,19 +27,20 @@ int main(int argc, char *argv[], char *env[])
   test_func("Blah Blah Blah, Mr. Freeman");
 
   DEINIT_LOGGING;
+
+  TEST("%s", "blah");
+
   printf("Op\n");
   return 0;
 }
 
 
 int test_func(const char * lol) {
-  char str[1000] = "";
-  sprintf(str, "I fucked the bitch: '%s'",lol);
-  INFO(str);
-  MEMORY(str);
-  IO("IO-shechki bibib");
-  ERROR(str);
-  WARNING(str);
+  INFO("Opana %s", "__Ne ponyal na");
+  MEMORY("Lol is: %s", lol);
+  IO("IO-shechki bibib %d %d",12, 13);
+  ERROR("A ya eby gusei");
+  WARNING("op %s %s %s","musorok","!","Ne shei mne srok");
 
   return 0;
 }
