@@ -6,6 +6,7 @@
  * INFO/MEMORY/IO/ERROR/WARNING(format (не переменная, именно строка в кавычках), ...), при этом string -- уже готовая строка (форматирование как в printf нет)
  * В конце программы перед самым return писать DEINIT_LOGGING
  * Файл будет называться [дата слитно]_[время слитно].log
+ * Примеры использования в файле https://github.com/ktulhy-kun/hare/blob/logging/src/main.c
  */
 #ifndef LOGGING_H
 #define LOGGING_H
