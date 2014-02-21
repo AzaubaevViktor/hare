@@ -5,10 +5,12 @@ int main(int argc, char *argv[], char *env[])
 {
   char *str;
   char id;
-  int i;
+  int i; int numFiles=0;
   FileNode *head = NULL;
   FileNode *iter;
   FILE *f = NULL;
+  Context *cnt = (Context *)malloc(sizeof(Context));
+  cnt->workFiles = (char **)malloc(sizeof(char *));
   if (argc == 1) {
   	return -1;
   }
@@ -27,11 +29,14 @@ int main(int argc, char *argv[], char *env[])
   					} else {
   						iter->next = (FileNode*)malloc(sizeof(FileNode));
   						iter       = iter->next;
-  					}
-  					iter->file     = f;
-  					iter->fileName = argv[i];
-  					iter->next     = NULL;
-  					iter->nameLen  = 0;//Сделаю позже
+                    }
+                    char *nameFile = argv[i];
+                    *(cnt->workFiles+numFiles) = nameFile;
+                    numFiles++;
+                    cnt->workFiles = realloc(cnt->workFiles, (numFiles+1)*sizeof(char *));
+                    iter->file     = f;
+                    iter->next     = NULL;
+                    iter->info     = (FileInfo *)malloc(sizeof(FileInfo));
   				}
   			}
   			break;
@@ -39,10 +44,10 @@ int main(int argc, char *argv[], char *env[])
   			break;
   		}
   	}
-  	if (head != NULL){
+    if (head != NULL){
   		iter = head;
-  		printf("%s\n", iter->fileName);
-  	}
+        printf("%s\n", *(cnt->workFiles + 1));
+    }
   	return 0;
 }
 
