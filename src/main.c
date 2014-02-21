@@ -18,9 +18,9 @@ int main(int argc, char *argv[], char *env[])
   if (*(str) == '-') {
   	id = *(str+1);
   	switch (id) {
-  		case 'a':
-  			i = 2;
-  			for (i=2;i<argc;i++){
+        case 'a':
+        if (argc < 4) break;
+            for (i=3;i<argc;i++){
   				f = fopen(argv[i], "r");
   				if (f != NULL){
   					if (head == NULL){
@@ -30,10 +30,9 @@ int main(int argc, char *argv[], char *env[])
   						iter->next = (FileNode*)malloc(sizeof(FileNode));
   						iter       = iter->next;
                     }
-                    char *nameFile = argv[i];
-                    *(cnt->workFiles+numFiles) = nameFile;
+                    *(cnt->workFiles + numFiles) = argv[i];
                     numFiles++;
-                    cnt->workFiles = realloc(cnt->workFiles, (numFiles+1)*sizeof(char *));
+                    cnt->workFiles = (char **)realloc(cnt->workFiles, (numFiles + 1)*sizeof(char *));
                     iter->file     = f;
                     iter->next     = NULL;
                     iter->info     = (FileInfo *)malloc(sizeof(FileInfo));
@@ -43,11 +42,13 @@ int main(int argc, char *argv[], char *env[])
   		default:
   			break;
   		}
+    *(cnt->workFiles + numFiles) = (char *)calloc(1, sizeof(char));//Как бы нулевой символ
   	}
-    if (head != NULL){
+  printf("%s\n%s\n", *(cnt->workFiles), *(cnt->workFiles + 1));
+    /*if (head != NULL){
   		iter = head;
-        printf("%s\n", *(cnt->workFiles + 1));
-    }
+
+    }*/
   	return 0;
 }
 

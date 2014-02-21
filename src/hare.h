@@ -22,7 +22,9 @@ typedef struct {
   
   FileNode *filesTree;
   
-  char **env, **argv, **workFiles; /* Передали через аргументы */
+  char **env;
+  char **argv;
+  char **workFiles; /* Передали через аргументы */
 } Context;
 
 
