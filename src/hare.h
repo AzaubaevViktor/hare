@@ -7,7 +7,6 @@
 #include "fileinfo.h"
 
 typedef struct _FileNode {
-  char *fileName;
   FILE *file;
   struct FileInfo *fileInfo;
   struct _FileNode *next;
