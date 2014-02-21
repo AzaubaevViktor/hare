@@ -9,7 +9,7 @@ int getFileInfo(const char * fileName, struct FileInfo * fileInfo)
     {
         fileInfo->sizeName = strlen(fileName);
 
-        fileInfo->name = (char*)realloc(fileInfo->name, fileInfo->sizeName + 1);
+        fileInfo->name = (char*)calloc(fileInfo->name, fileInfo->sizeName + 1);
         if(NULL == fileInfo->name)
             return -1;
         else
