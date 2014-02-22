@@ -13,7 +13,7 @@
 #include <string.h>
 #include <stdio.h>
 
-//#define DEBUG
+#define DEBUG
 
 #ifdef DEBUG
 #define DEBUG_INFO
