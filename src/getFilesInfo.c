@@ -3,10 +3,11 @@
 int getFilesInfo(Context *cnt)
 {
     int i;
-    struct _FileNode *tmpFileNode = cnt->filesTree;
+    FileNode *tmpFileNode = cnt->filesTree;
 
     for(i = 0; !(cnt->workFiles)[i]; i++)
     {
+        /* TODO: в объявлении функции FileInfo, передаёшь FileNode */
         if(0 != getFileInfo(cnt->workFiles[i], tmpFileNode->fileInfo))
         {
             /* ERROR! */
