@@ -1,7 +1,6 @@
 #include "fileinfo.h"
 
-
-int getFileInfo(const char * fileName, struct FileInfo * fileInfo)
+int getFileInfo(const char *fileName, FileInfo *fileInfo)
 {
     struct stat bufferFileInfo;
 
@@ -9,13 +8,13 @@ int getFileInfo(const char * fileName, struct FileInfo * fileInfo)
     {
         fileInfo->sizeName = strlen(fileName);
 
-        fileInfo->name = (char*)realloc(fileInfo->name, fileInfo->sizeName + 1);
+        fileInfo->name = (char *) realloc(fileInfo->name, fileInfo->sizeName + 1);
         if(NULL == fileInfo->name)
             return -1;
         else
             strcpy(fileInfo->name, fileName);
 
-        fileInfo->size                  = (int64_t)bufferFileInfo.st_size;
+        fileInfo->size                  = (int64_t) bufferFileInfo.st_size;
 
         fileInfo->timeLastAccess        = bufferFileInfo.st_atime;
         fileInfo->timeLastChange        = bufferFileInfo.st_ctime;
@@ -28,7 +27,7 @@ int getFileInfo(const char * fileName, struct FileInfo * fileInfo)
 }
 
 
-void printFileInfo(struct FileInfo fileInfo)
+void printFileInfo(FileInfo fileInfo)
 {
     printf("================ File Info ==================\n"
            "Name:                   %s\n"

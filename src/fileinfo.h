@@ -5,21 +5,21 @@
 #include <sys/types.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <time.h>
 
 
-struct FileInfo
-{
+typedef struct {
     int64_t sizeName;
     char * name;
     int64_t size;
     time_t timeLastAccess;
     time_t timeLastModification;
     time_t timeLastChange;
-};
+} FileInfo;
 
 
-int getFileInfo(const char * fileName, struct FileInfo * fileInfo);
-void printFileInfo(struct FileInfo fileInfo);
+int getFileInfo(const char * fileName, FileInfo * fileInfo);
+void printFileInfo(FileInfo fileInfo);
 
 #endif // FILEINFO_H
