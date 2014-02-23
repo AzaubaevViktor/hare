@@ -9,14 +9,16 @@ int main(int argc, char *argv[], char *env[])
 {
   INIT_LOGGING;
   FILE *f = fopen("test", "wb");
-  int i = 0;
-  writeBytes(f, "A я ебал гусяток\n", 0);
-  writeBytes(f, "В рот\n", 0);
-  writeBytes(f, "МНооооооооооооооооооооого разззззззззззззззззззз азазаз", 1);
+  FileInfo info;
+  info.name = "info.txt";
+  info.sizeName = 8;
+  info.timeLastModification = 10007463880;
+  info.size = 1025;
+  writeFileHeader(f, &info, 1025, 0, 0, 2, "12", 0, 1);
 
   fclose(f);
   DEINIT_LOGGING;
-  printf("Programm exit!\n");
+  printf("Programm exit!\x43\n");
   return 0;
 }
 

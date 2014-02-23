@@ -11,7 +11,7 @@
 
 typedef struct {
     int64_t sizeName;
-    char * name;
+    char *name;
     int64_t size;
     time_t timeLastAccess;
     time_t timeLastModification;
@@ -19,7 +19,7 @@ typedef struct {
 } FileInfo;
 
 
-int getFileInfo(const char * fileName, FileInfo * fileInfo);
+int getFileInfo(const char *fileName, FileInfo *fileInfo);
 void printFileInfo(FileInfo fileInfo);
 
 #endif // FILEINFO_H
