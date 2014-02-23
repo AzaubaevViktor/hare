@@ -14,4 +14,5 @@ int writeBytes(FILE *f, unsigned char *buf, size_t k_bytes) {
 
 int generateFileHeader() {
   ;
+  return 0;
 }
