@@ -9,9 +9,10 @@ int main(int argc, char *argv[], char *env[])
 {
   INIT_LOGGING;
   FILE *f = fopen("test", "wb");
-  unsigned char buf[BUF_LEN+1] = "12345678";
-  writeBytes(f, buf, BUF_LEN);
-  writeBytes(f, buf, 4);
+  int i = 0;
+  writeBytes(f, "A я ебал гусяток\n", 0);
+  writeBytes(f, "В рот\n", 0);
+  writeBytes(f, "МНооооооооооооооооооооого разззззззззззззззззззз азазаз", 1);
 
   fclose(f);
   DEINIT_LOGGING;

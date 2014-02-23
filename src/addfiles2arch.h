@@ -10,6 +10,6 @@
 
 #define IO_WRITE_ERROR (2451)
 
-int writeBytes(FILE *f, unsigned char *buf, size_t k_bytes);
+int writeBytes(FILE *f, unsigned char *buf, int drop);
 
 #endif // ADDFILES2ARCH_H
