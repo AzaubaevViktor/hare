@@ -14,6 +14,7 @@
 #define SIGNATURE "\x07\x1F\x0E\x58"
 #define SIGNATURE_LEN (4)
 
+int writeNBytes(FILE *f, int64_t N, char *str, int drop);
 int writeFileHeader(FILE *f,\
                     FileInfo *file,\
                     int64_t archSize,\

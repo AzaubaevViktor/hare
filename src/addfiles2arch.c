@@ -6,9 +6,8 @@
 
 int _writeBytes(FILE *f, char *buf, size_t k_bytes) {
   size_t wr_bytes = 0;
-  IO("Write bytes on file, bs=%d", BUF_LEN)
   wr_bytes = fwrite(buf, k_bytes, 1, f);
-  IO("Wrote %zdx%zd bytes", wr_bytes, k_bytes)
+  IO("Wrote %zdx%zd bytes, bs=%d", wr_bytes, k_bytes, BUF_LEN)
   if (k_bytes & (!wr_bytes)) {
     WARNING("Writing error")
     return IO_WRITE_ERROR;
@@ -23,7 +22,7 @@ int writeNBytes(FILE *f, int64_t N, char *str, int drop) {
   int64_t ext_pos = 0;
   int wr_result = 0;
 
-  IO("Add string to buffer")
+  IO("Add %"PRId64" bytes to buffer", N)
 
   while (ext_pos < N) {
     /* TODO: сделать нормульную копирование строк через strcpy */
@@ -47,17 +46,19 @@ int writeNBytes(FILE *f, int64_t N, char *str, int drop) {
 }
 
 int writeInt64(FILE *f, int64_t num, int drop) {
-  /* возможны проблемы с low big endian */
-  char tmp[sizeof(int64_t)];
-  size_t i = 0;
-  for (i=0; i < sizeof(int64_t); i += 1) {
-    tmp[i] = ((char *) &num)[i];
-    printf("%zu:%d\n",i,(unsigned char) tmp[i]);
+  int64_t _num = num;
+  char tmp[8] = "";
+  int i = 0;
+  IO("Write int64 num")
+  for (i=0; i<8; i++) {
+    tmp[i] = _num & 0xFF;
+    _num = _num >> 8;
   }
-  return writeNBytes(f, i, tmp, drop);
+  return writeNBytes(f, 8, tmp, drop);
 }
 
 int writeChar(FILE *f, char ch, int drop) {
+  IO("Write char")
   return writeNBytes(f, 1, &ch, drop);
 }
 
@@ -70,6 +71,7 @@ int writeFileHeader(FILE *f, \
                     char *haffTree, \
                     int64_t HeaderCheckSum,\
                     int drop) {
+  IO("Write file header")
   writeNBytes(f, SIGNATURE_LEN, SIGNATURE, 0);
   writeInt64(f, file->sizeName, 0);
   writeNBytes(f, file->sizeName, file->name, 0);
