@@ -4,10 +4,12 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.c \
-    hare.c
+    hare.c \
+    init.c
 
 HEADERS += \
     hare.h \
     fileinfo.h \
-    logging.h
+    logging.h \
+    init.h
 
