@@ -3,18 +3,13 @@
 
 #include "logging.h"
 #include "fileinfo.h"
+#include "lowfile.h"
 #include <inttypes.h>
 #include <stdio.h>
-
-#define BUF_LEN (8)
-#define BUF_LEN_BITS (BUF_LEN*8)
-
-#define IO_WRITE_ERROR (2451)
 
 #define SIGNATURE "\x07\x1F\x0E\x58"
 #define SIGNATURE_LEN (4)
 
-int writeNBytes(FILE *f, int64_t N, char *str, int drop);
 int writeFileHeader(FILE *f,\
                     FileInfo *file,\
                     int64_t archSize,\
