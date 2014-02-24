@@ -5,7 +5,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 
-#define BUF_LEN (8)
+#define BUF_LEN (64)
 #define BUF_LEN_BITS (BUF_LEN*8)
 
 #define IO_WRITE_ERROR (2451)

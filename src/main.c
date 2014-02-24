@@ -10,11 +10,15 @@ int main(int argc, char *argv[], char *env[])
   INIT_LOGGING;
   FILE *f = fopen("test", "wb");
   FileInfo info;
+  long int i;
+
   info.name = "info.txt";
   info.sizeName = 8;
   info.timeLastModification = 10007463880;
   info.size = 1025;
-  writeFileHeader(f, &info, 1025, 0, 0, 2, "12", 0, 1);
+  for(i=0; i<100000; i++)
+    writeFileHeader(f, &info, 1025, 0, 0, 10, "This is ha", 0, 0);
+  writeFileHeader(f, &info, 1025, 0, 0, 10, "This is ha", 0, 1);
 
   fclose(f);
   DEINIT_LOGGING;

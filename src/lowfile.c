@@ -18,15 +18,19 @@ int _writeBytes(FILE *f, char *buf, size_t k_bytes) {
   return 0;
 }
 
+#define OLD_WRITE
 
 int writeNBytes(FILE *f, int64_t N, char *str, int drop) {
   static char buf[BUF_LEN];
   static uint64_t pos;
-  int64_t ext_pos = 0;
-  int wr_result = 0;
+  uint64_t ext_pos = 0;
+  size_t wr_result = 0;
+#ifndef OLD_WRITE
+  size_t nBufBytes = 0;
+#endif
 
-  IO("Add %"PRId64" bytes to buffer", N)
-
+  IO("Add %"PRId64" bytes to buffer", N);
+#ifdef OLD_WRITE
   while (ext_pos < N) {
     /* TODO: сделать нормульную копирование строк через strcpy */
     buf[pos] = str[ext_pos];
@@ -39,6 +43,21 @@ int writeNBytes(FILE *f, int64_t N, char *str, int drop) {
     }
     ext_pos++;
   }
+#else
+  while (ext_pos < N) {
+    nBufBytes = (BUF_LEN - pos) < ((uint64_t) N - ext_pos) ? (BUF_LEN - pos) : (N - ext_pos);
+    memcpy(buf+pos, str+ext_pos, nBufBytes);
+    ext_pos += nBufBytes;
+    pos += nBufBytes;
+    if (pos == BUF_LEN) {
+      IO("Drop buffer")
+      pos = 0;
+      wr_result = _writeBytes(f, buf, BUF_LEN);
+      if (wr_result)
+        return wr_result;
+    }
+  }
+#endif
 
   if (drop) {
     IO("Forsed drop buffer")
