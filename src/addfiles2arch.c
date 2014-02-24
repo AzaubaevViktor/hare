@@ -46,7 +46,7 @@ int writeNBytes(FILE *f, int64_t N, char *str, int drop) {
   return wr_result;
 }
 
-int writeuInt64(FILE *f, int64_t num, int drop) {
+int writeInt64(FILE *f, int64_t num, int drop) {
   /* возможны проблемы с low big endian */
   char tmp[sizeof(int64_t)];
   size_t i = 0;
@@ -71,16 +71,16 @@ int writeFileHeader(FILE *f, \
                     int64_t HeaderCheckSum,\
                     int drop) {
   writeNBytes(f, SIGNATURE_LEN, SIGNATURE, 0);
-  writeuInt64(f, file->sizeName, 0);
+  writeInt64(f, file->sizeName, 0);
   writeNBytes(f, file->sizeName, file->name, 0);
-  writeuInt64(f, file->timeLastModification, 0);
-  writeuInt64(f, file->size, 0);
-  writeuInt64(f, archSize, 0);
+  writeInt64(f, file->timeLastModification, 0);
+  writeInt64(f, file->size, 0);
+  writeInt64(f, archSize, 0);
   writeChar(f, endUnusedBits, 0);
   writeChar(f, flags, 0);
-  writeuInt64(f, haffTreeSize, 0);
+  writeInt64(f, haffTreeSize, 0);
   writeNBytes(f, haffTreeSize, haffTree, 0);
-  writeuInt64(f, HeaderCheckSum, drop);
+  writeInt64(f, HeaderCheckSum, drop);
 
   return 0;
 }
