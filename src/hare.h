@@ -29,7 +29,7 @@ typedef struct {
 
 
 
-Context* parseArgs(int argc, char **argv, char **evn);
+int parseArgs(Context **);
 
 int getFilesInfo(Context *cnt);
 int getArchFileInfo(Context *cnt, int64_t offset, FileInfo *info);

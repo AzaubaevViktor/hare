@@ -1,6 +1,6 @@
 #include "init.h"
 
-Context* parseArgs(int argc, char **argv, char **evn){
+int parseArgs(Context **context){
 
     char *str;
     char id;
@@ -8,19 +8,19 @@ Context* parseArgs(int argc, char **argv, char **evn){
     FileNode *head = NULL;
     FileNode *iter;
     FILE *f = NULL;
-    Context *cnt = (Context *)malloc(sizeof(Context));
+    Context *cnt = *context;
     cnt->workFiles = (char **)malloc(sizeof(char *));
-    if (argc == 1) {
+    if (cnt->argc == 1) {
       return -1;
     }
-    str = argv[1];
+    str = cnt->argv[1];
     if (*(str) == '-') {
       id = *(str+1);
       switch (id) {
           case 'a':
-          if (argc < 4) break;
-              for (i=3;i<argc;i++){
-                  f = fopen(argv[i], "r");
+          if (cnt->argc < 4) break;
+              for (i=3;i<cnt->argc;i++){
+                  f = fopen(cnt->argv[i], "r");
                   if (f != NULL){
                       if (head == NULL){
                           head       = (FileNode*)malloc(sizeof(FileNode));
@@ -29,7 +29,7 @@ Context* parseArgs(int argc, char **argv, char **evn){
                           iter->next = (FileNode*)malloc(sizeof(FileNode));
                           iter       = iter->next;
                       }
-                      *(cnt->workFiles + numFiles) = argv[i];
+                      *(cnt->workFiles + numFiles) = cnt->argv[i];
                       numFiles++;
                       cnt->workFiles = (char **)realloc(cnt->workFiles, (numFiles + 1)*sizeof(char *));
                       iter->file     = f;
@@ -43,5 +43,6 @@ Context* parseArgs(int argc, char **argv, char **evn){
           }
       *(cnt->workFiles + numFiles) = (char *)calloc(1, sizeof(char));//Как бы нулевой символ
       }
-    return cnt;
+    *context = cnt;
+
 }
