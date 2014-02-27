@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[], char *env[])
 {
-    struct FileInfo fi;
+    FileInfo fi;
 
     getFileInfo("text.txt", &fi);
     printFileInfo(fi);
