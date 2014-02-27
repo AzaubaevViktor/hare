@@ -3,6 +3,7 @@
  */
 #include "lowfile.h"
 
+#define elif else if
 
 /* ======================== WRITE ===================== */
 
@@ -11,20 +12,20 @@ int _writeBytes(FILE *f, char *buf, size_t k_bytes) {
   size_t wr_bytes = 0;
   wr_bytes = fwrite(buf, k_bytes, 1, f);
   IO("Wrote %zdx%zd bytes, bs=%d", wr_bytes, k_bytes, BUF_LEN);
-  if (k_bytes & (!wr_bytes)) {
+  if (ferror(f)) {
     WARNING("Writing error");
     return IO_WRITE_ERROR;
   }
   return 0;
 }
 
-#define OLD_WRITE
+#define OLD_WRITE_
 
 int writeNBytes(FILE *f, int64_t N, char *str, int drop) {
   static char buf[BUF_LEN];
   static uint64_t pos;
   uint64_t ext_pos = 0;
-  size_t wr_result = 0;
+  int wr_result = 0;
 #ifndef OLD_WRITE
   size_t nBufBytes = 0;
 #endif
@@ -32,7 +33,6 @@ int writeNBytes(FILE *f, int64_t N, char *str, int drop) {
   IO("Add %"PRId64" bytes to buffer", N);
 #ifdef OLD_WRITE
   while (ext_pos < N) {
-    /* TODO: сделать нормульную копирование строк через strcpy */
     buf[pos] = str[ext_pos];
     if (++pos == BUF_LEN) {
       IO("Drop buffer")
@@ -91,11 +91,46 @@ int writeChar(FILE *f, char ch, int drop) {
 
 int _readBytes(FILE *f, char *buf, size_t k_bytes) {
   size_t rd_bytes = 0;
+  if (feof(f)) {
+    INFO("End of file");
+    return IO_EOF;
+  }
   rd_bytes = fread(buf, k_bytes, 1, f);
   IO("Read %zdx%zd bytes, bs=%d", rd_bytes, k_bytes, BUF_LEN);
-  if (k_bytes & (!rd_bytes)) {
+  if (ferror(f)) {
     WARNING("Read error!");
     return IO_READ_ERROR;
   }
   return 0;
+}
+
+int readNBytes(FILE *f, uint64_t N, char *str) {
+  /* TODO: разобраться с посылкой EOF */
+  static char buf[BUF_LEN];
+  static uint64_t pos = BUF_LEN;
+  uint64_t ext_pos = 0;
+  size_t nBufBytes = 0;
+  int r_result = 0;
+  int is_eof = 0;
+
+  while (ext_pos < N) {
+    nBufBytes = (BUF_LEN - pos) < ((uint64_t) N - ext_pos) ? (BUF_LEN - pos) : (N - ext_pos);
+    memcpy(str+ext_pos, buf+pos, nBufBytes);
+    ext_pos += nBufBytes;
+    pos += nBufBytes;
+    if (pos == BUF_LEN) {
+      IO("Read file to buffer")
+      pos = 0;
+      r_result = _readBytes(f, buf, BUF_LEN);
+      if (IO_EOF == r_result)
+        is_eof = 1;
+      elif (r_result)
+        return r_result;
+    }
+  }
+
+  if (is_eof) {
+    return IO_EOF;
+  } else
+    return r_result;
 }

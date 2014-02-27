@@ -8,18 +8,13 @@ GLOBAL_LOGGING
 int main(int argc, char *argv[], char *env[])
 {
   INIT_LOGGING;
-  FILE *f = fopen("test", "wb");
-  FileInfo info;
-  long int i;
-
-  info.name = "info.txt";
-  info.sizeName = 8;
-  info.timeLastModification = 10007463880;
-  info.size = 1025;
-  for(i=0; i<100000; i++)
-    writeFileHeader(f, &info, 1025, 0, 0, 10, "This is ha", 0, 0);
-  writeFileHeader(f, &info, 1025, 0, 0, 10, "This is ha", 0, 1);
-
+  FILE *f = fopen("test", "rb");
+  char str[5] = "";
+  int out = 0;
+  while (!out) {
+    out = readNBytes(f, 4, str);
+    printf("(%d) '%s'\n", out, str);
+  }
   fclose(f);
   DEINIT_LOGGING;
   printf("Programm exit!\x43\n");

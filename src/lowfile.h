@@ -10,9 +10,12 @@
 
 #define IO_WRITE_ERROR (2451)
 #define IO_READ_ERROR  (2452)
+#define IO_EOF         (2453)
 
 int writeNBytes(FILE *f, int64_t N, char *str, int drop);
 int writeInt64(FILE *f, int64_t num, int drop);
 int writeChar(FILE *f, char ch, int drop);
+
+int readNBytes(FILE *f, uint64_t N, char *str);
 
 #endif // LOWFILE_H
