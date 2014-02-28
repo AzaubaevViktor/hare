@@ -16,7 +16,7 @@
 
 #include <string.h>
 #include <stdio.h>
-
+#include <time.h>
 #define DEBUG
 
 #ifdef DEBUG

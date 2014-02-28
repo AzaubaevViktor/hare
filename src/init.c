@@ -21,7 +21,7 @@ int parseArgs(Context **context){
       switch (id) {
           case 'a':
           if (cnt->argc < 4) {
-              printHelper();
+              printHelp();
               ERROR("Мало аргументов(2 этап, case 'a'");
               break;
           }

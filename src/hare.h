@@ -1,6 +1,7 @@
 #ifndef HARE_H
 #define HARE_H
 #include "logging.h"
+#include "fileinfo.h"
 #include <inttypes.h>
 #include <stdint.h>
 

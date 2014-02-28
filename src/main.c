@@ -1,4 +1,6 @@
-#include <stdio.h>
+#include "hare.h"
+
+GLOBAL_LOGGING
 
 int main(int argc, char *argv[], char *env[])
 {
@@ -8,8 +10,6 @@ int main(int argc, char *argv[], char *env[])
     cnt->argc = argc;
     cnt->env  = env;
     parseArgs(&cnt);
-
-
     DEINIT_LOGGING
   	return 0;
 }
