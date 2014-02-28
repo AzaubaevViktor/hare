@@ -1,8 +1,5 @@
-#include "init.h"
-#include "logging.h"
-#include <time.h>
+#include <stdio.h>
 
-GLOBAL_LOGGING
 int main(int argc, char *argv[], char *env[])
 {
     Context *cnt = (Context *)malloc(sizeof(Context));
