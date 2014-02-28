@@ -11,14 +11,20 @@ int parseArgs(Context **context){
     Context *cnt = *context;
     cnt->workFiles = (char **)malloc(sizeof(char *));
     if (cnt->argc == 1) {
-      return -1;
+        ERROR("Мало аргументов(1 этап)");
+        printHelp();
+        return;
     }
     str = cnt->argv[1];
     if (*(str) == '-') {
       id = *(str+1);
       switch (id) {
           case 'a':
-          if (cnt->argc < 4) break;
+          if (cnt->argc < 4) {
+              printHelper();
+              ERROR("Мало аргументов(2 этап, case 'a'");
+              break;
+          }
               for (i=3;i<cnt->argc;i++){
                   f = fopen(cnt->argv[i], "r");
                   if (f != NULL){

@@ -5,7 +5,8 @@ CONFIG -= qt
 
 SOURCES += main.c \
     hare.c \
-    init.c
+    init.c \
+    helper.c
 
 HEADERS += \
     hare.h \
