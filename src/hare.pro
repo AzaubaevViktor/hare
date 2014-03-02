@@ -12,5 +12,6 @@ HEADERS += \
     hare.h \
     fileinfo.h \
     logging.h \
-    init.h
+    init.h \
+    helper.h
 

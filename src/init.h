@@ -3,7 +3,7 @@
 
 #include "logging.h"
 #include "hare.h"
+#include "helper.h"
 
-void printHelp();
 
 #endif // INIT_H
