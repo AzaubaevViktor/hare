@@ -15,3 +15,6 @@ HEADERS += \
     init.h \
     helper.h
 
+OTHER_FILES += \
+    help.txt
+
