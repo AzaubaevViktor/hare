@@ -9,11 +9,12 @@ int main(int argc, char *argv[], char *env[])
 {
   INIT_LOGGING;
   FILE *f = fopen("test", "rb");
-  char str[5] = "";
+  size_t read_b = 0;
+  char str[11] = "";
   int out = 0;
   while (!out) {
-    out = readNBytes(f, 4, str);
-    printf("(%d) '%s'\n", out, str);
+    out = readNBytes(f, 5, str, &read_b);
+    printf("[(%d:%zd) '%s']", out, read_b, str);
   }
   fclose(f);
   DEINIT_LOGGING;

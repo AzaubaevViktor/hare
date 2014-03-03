@@ -89,48 +89,60 @@ int writeChar(FILE *f, char ch, int drop) {
 
 /* ====================== READ ========================= */
 
-int _readBytes(FILE *f, char *buf, size_t k_bytes) {
-  size_t rd_bytes = 0;
+int _readBytes(FILE *f, char *buf, size_t k_bytes, size_t *rd_bytes) {
   if (feof(f)) {
+    *rd_bytes = 0;
     INFO("End of file");
     return IO_EOF;
   }
-  rd_bytes = fread(buf, k_bytes, 1, f);
-  IO("Read %zdx%zd bytes, bs=%d", rd_bytes, k_bytes, BUF_LEN);
+
+  *rd_bytes = fread(buf, 1, k_bytes, f);
+  IO("Read %zdx%d bytes, bs=%d", *rd_bytes, 1, BUF_LEN);
+
   if (ferror(f)) {
     WARNING("Read error!");
     return IO_READ_ERROR;
   }
+
   return 0;
 }
 
-int readNBytes(FILE *f, uint64_t N, char *str) {
+int readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes) {
   /* TODO: разобраться с посылкой EOF */
   static char buf[BUF_LEN];
-  static uint64_t pos = BUF_LEN;
+  static uint64_t pos = 0;
+  static size_t rd_bytes = 0;
+  static int is_eof = 0;
+  size_t i = 0;
   uint64_t ext_pos = 0;
   size_t nBufBytes = 0;
   int r_result = 0;
-  int is_eof = 0;
 
+  *read_bytes = 0;
+
+  IO("Read %"PRId64" bytes", N);
   while (ext_pos < N) {
-    nBufBytes = (BUF_LEN - pos) < ((uint64_t) N - ext_pos) ? (BUF_LEN - pos) : (N - ext_pos);
+    nBufBytes = (rd_bytes - pos) < (N - ext_pos) ? (rd_bytes - pos) : (N - ext_pos);
     memcpy(str+ext_pos, buf+pos, nBufBytes);
     ext_pos += nBufBytes;
     pos += nBufBytes;
-    if (pos == BUF_LEN) {
+    *read_bytes += nBufBytes;
+
+
+    if (pos >= rd_bytes) {
+      if (is_eof)
+        return IO_EOF;
+
       IO("Read file to buffer")
       pos = 0;
-      r_result = _readBytes(f, buf, BUF_LEN);
-      if (IO_EOF == r_result)
-        is_eof = 1;
-      elif (r_result)
+      r_result = _readBytes(f, buf, BUF_LEN, &rd_bytes);
+
+      is_eof = (r_result == IO_EOF) ? 1 : 0;
+
+      if ((r_result) && (IO_EOF != r_result))
         return r_result;
     }
   }
 
-  if (is_eof) {
-    return IO_EOF;
-  } else
     return r_result;
 }
