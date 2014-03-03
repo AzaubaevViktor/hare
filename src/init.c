@@ -44,8 +44,16 @@ int parseArgs(Context **context){
                   }
               }
               break;
-          default:
-              break;
+        case 'x'://Извлечение файлов
+            break;
+        case 'd'://Удаление файлов из архива
+            break;
+        case 'l'://Вывести всю поднаготную о файлах
+            break;
+        case 't'://Целостность архива
+            break;
+        default:
+            break;
           }
       *(cnt->workFiles + numFiles) = (char *)calloc(1, sizeof(char));//Как бы нулевой символ
       }
