@@ -1,3 +1,4 @@
+/* by Alex Mukhin */
 #include "init.h"
 
 void printHelp(){

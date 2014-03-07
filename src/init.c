@@ -1,16 +1,18 @@
+/* by Alex Mukhin*/
 #include "init.h"
 
 int parseArgs(Context **context){
 
     char *str;
     char id;
-    int i; int numFiles=0;
+    int i;
     FileNode *head = NULL;
     FileNode *iter;
     FILE *f = NULL;
     Context *cnt = *context;
     cnt->workFiles = (char **)malloc(sizeof(char *));
     if (cnt->argc == 1) {
+        cnt->keys = 0x0;
         ERROR("Мало аргументов(1 этап)");
         printHelp();
         return -1;
@@ -21,11 +23,12 @@ int parseArgs(Context **context){
       switch (id) {
           case 'a':
           if (cnt->argc < 4) {
+              cnt->keys = 0x0;
               printHelp();
               ERROR("Мало аргументов(2 этап, case 'a'");
               break;
           }
-              for (i=3;i<cnt->argc;i++){
+              /*for (i=3;i<cnt->argc;i++){
                   f = fopen(cnt->argv[i], "r");
                   if (f != NULL){
                       if (head == NULL){
@@ -43,19 +46,59 @@ int parseArgs(Context **context){
                       iter->info     = (FileInfo *)malloc(sizeof(FileInfo));
                   }
               }
-              break;
-        case 'x'://extract
-            break;
-        case 'd'://delete
-            break;
-        case 'l'://output info
-            break;
-        case 't'://integrity (Целостность)
-            break;
-        default:
-            break;
+              break;*/
+          cnt->keys = 0x5;
+          cnt->workFiles = (char **)malloc((cnt->argc - 3)*sizeof(char*) );
+          for (i = 3; i < cnt->argc; i++){
+              if (head == NULL){
+                  head       = (FileNode*)malloc(sizeof(FileNode));
+                  iter       = head;
+              } else {
+                  iter->next = (FileNode*)malloc(sizeof(FileNode));
+                  iter       = iter->next;
+              }
+              if ((f = fopen(cnt->argv[i], "r")) != NULL){
+                  *(cnt->workFiles + i - 3) = cnt->argv[i];
+                  iter->file     = f;
+                  iter->next     = NULL;
+                  iter->info     = (FileInfo *)malloc(sizeof(FileInfo));
+
+              } else {
+                  *(cnt->workFiles + i - 3) = NULL;
+              }
+              /*if (*(cnt->workFiles + i - 3) == NULL){
+                  printf("NULL\n");
+              } else {
+                  printf("%s\n", *(cnt->workFiles + i - 3));
+              }*/
+
           }
-      *(cnt->workFiles + numFiles) = (char *)calloc(1, sizeof(char));//Как бы нулевой символ
+       case 'x'://extract
+          cnt->keys = 0x4;
+          cnt->workFiles = (char **)malloc((cnt->argc - 3)*sizeof(char*) );
+          for (i = 3; i < cnt->argc; i++){
+              *(cnt->workFiles + i - 3) = cnt->argv[i];
+          }
+          break;
+       case 'd'://delete
+          cnt->keys = 0x3;
+          cnt->workFiles = (char **)malloc((cnt->argc - 3)*sizeof(char*) );
+          for (i = 3; i < cnt->argc; i++){
+              *(cnt->workFiles + i - 3) = cnt->argv[i];
+          }
+          break;
+        case 'l'://output info
+          cnt->keys = 0x2;
+          break;
+        case 't'://integrity (Целостность)
+          cnt->keys = 0x1;
+          break;
+        default:
+          cnt->keys = 0x0;//ошибка
+          ERROR("Неверный параметр -%c", id);
+          break;
+          }
+
       }
     *context = cnt;
     return 0;

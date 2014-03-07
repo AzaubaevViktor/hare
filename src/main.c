@@ -1,4 +1,6 @@
+/* by Alex Mukhin */
 #include "hare.h"
+#include <stdlib.h>
 
 GLOBAL_LOGGING
 
