@@ -130,8 +130,11 @@ int readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes) {
 
 
     if (pos >= rd_bytes) {
-      if (is_eof)
+      if (is_eof) {
+        for (i=ext_pos-1; i<N; i++)
+          str[i] = '\0';
         return IO_EOF;
+      }
 
       IO("Read file to buffer")
       pos = 0;

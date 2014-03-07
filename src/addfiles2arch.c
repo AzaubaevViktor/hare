@@ -28,3 +28,7 @@ int writeFileHeader(FILE *f, \
 
   return 0;
 }
+
+int writeData(FILE *f, int64_t size, void *data) {
+  return writeNBytes(f, size, data, 0);
+}
