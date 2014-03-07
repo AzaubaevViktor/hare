@@ -6,34 +6,14 @@
  * INFO/MEMORY/IO/ERROR/WARNING(format (не переменная, именно строка в кавычках), ...), при этом string -- уже готовая строка (форматирование как в printf нет)
  * В конце программы перед самым return писать DEINIT_LOGGING
  * Файл будет называться [дата слитно]_[время слитно].log
- * Можно определять уровень олологирования на уровне компиляции:
- * DEBUG включает все режимы логирования
- * DEBUG_[MODE] определяет, будет ли поступать в лог файл та или иная отладочная информация
- * Для undefine достаточно добавить после режима "_" без кавычек
+ * Примеры использования в файле https://github.com/ktulhy-kun/hare/blob/logging/src/main.c
  */
 #ifndef LOGGING_H
 #define LOGGING_H
 
 #include <string.h>
-#include <stdio.h>
-#include <time.h>
-#define DEBUG
+#include <stdlib.h>
 
-#ifdef DEBUG
-#define DEBUG_INFO
-#define DEBUG_MEMORY
-#define DEBUG_IO
-#define DEBUG_ERROR
-#define DEBUG_WARNING
-#endif
-
-#ifdef DEBUG
-extern char __logging_file_name[80];
-extern FILE *__logging_file;
-extern int __logging;
-#endif
-
-#ifdef DEBUG
 #define GLOBAL_LOGGING \
   char __logging_file_name[80] = ""; \
   FILE *__logging_file = NULL; \
@@ -116,6 +96,6 @@ extern int __logging;
   }
 #else
 #define DEINIT_LOGGING
-#endif
+
 
 #endif // LOGGING_H
