@@ -47,7 +47,7 @@ int parseArgs(Context **context){
                   }
               }
               break;*/
-          cnt->keys = 0x5;
+          cnt->keys = 0x10;
           cnt->workFiles = (char **)malloc((cnt->argc - 3)*sizeof(char*) );
           for (i = 3; i < cnt->argc; i++){
               if (head == NULL){
@@ -74,14 +74,14 @@ int parseArgs(Context **context){
 
           }
        case 'x'://extract
-          cnt->keys = 0x4;
+          cnt->keys = 0x8;
           cnt->workFiles = (char **)malloc((cnt->argc - 3)*sizeof(char*) );
           for (i = 3; i < cnt->argc; i++){
               *(cnt->workFiles + i - 3) = cnt->argv[i];
           }
           break;
        case 'd'://delete
-          cnt->keys = 0x3;
+          cnt->keys = 0x4;
           cnt->workFiles = (char **)malloc((cnt->argc - 3)*sizeof(char*) );
           for (i = 3; i < cnt->argc; i++){
               *(cnt->workFiles + i - 3) = cnt->argv[i];
