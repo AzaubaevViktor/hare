@@ -92,7 +92,7 @@ int writeChar(FILE *f, char ch, int drop) {
 int _readBytes(FILE *f, char *buf, size_t k_bytes, size_t *rd_bytes) {
   if (feof(f)) {
     *rd_bytes = 0;
-    INFO("End of file");
+    IO("End of file");
     return IO_EOF;
   }
 
