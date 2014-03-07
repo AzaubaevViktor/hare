@@ -13,7 +13,7 @@ int parseArgs(Context **context){
     if (cnt->argc == 1) {
         ERROR("Мало аргументов(1 этап)");
         printHelp();
-        return;
+        return -1;
     }
     str = cnt->argv[1];
     if (*(str) == '-') {
@@ -44,13 +44,13 @@ int parseArgs(Context **context){
                   }
               }
               break;
-        case 'x'://Извлечение файлов
+        case 'x'://extract
             break;
-        case 'd'://Удаление файлов из архива
+        case 'd'://delete
             break;
-        case 'l'://Вывести всю поднаготную о файлах
+        case 'l'://output info
             break;
-        case 't'://Целостность архива
+        case 't'://integrity (Целостность)
             break;
         default:
             break;
@@ -58,5 +58,5 @@ int parseArgs(Context **context){
       *(cnt->workFiles + numFiles) = (char *)calloc(1, sizeof(char));//Как бы нулевой символ
       }
     *context = cnt;
-
+    return 0;
 }
