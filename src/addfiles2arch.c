@@ -1,6 +1,4 @@
-/* 2014, Korovin Viktor <sarvash.inc@gmail.com> Потоковая запись файла
- * Будьте осторожны с writeBytes! Не пытайтесь одновременно писать в два файла, поведение будет не определено
- */
+/* 2014, Korovin Viktor <sarvash.inc@gmail.com> Потоковая запись файла */
 #include "addfiles2arch.h"
 
 
