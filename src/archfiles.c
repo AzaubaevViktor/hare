@@ -1,5 +1,5 @@
 /* 2014, Korovin Viktor <sarvash.inc@gmail.com> Потоковая запись файла */
-#include "addfiles2arch.h"
+#include "archfiles.h"
 
 
 int writeFileHeader(FILE *f, \
@@ -29,4 +29,8 @@ int writeFileHeader(FILE *f, \
 
 int writeData(FILE *f, int64_t size, void *data) {
   return writeNBytes(f, size, data, 0);
+}
+
+int readHeader(FILE *f, FileInfo *file) {
+
 }

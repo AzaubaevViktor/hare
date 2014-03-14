@@ -1,5 +1,5 @@
 #include "logging.h"
-#include "addfiles2arch.h"
+#include "archfiles.h"
 #include <stdio.h>
 #include <time.h>
 

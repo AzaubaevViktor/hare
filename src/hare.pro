@@ -7,13 +7,13 @@ SOURCES += main.c \
     hare.c \
     fileinfo.c \
     getFilesInfo.c \
-    addfiles2arch.c \
-    lowfile.c
+    lowfile.c \
+    archfiles.c
 
 HEADERS += \
     hare.h \
     fileinfo.h \
     logging.h \
-    addfiles2arch.h \
-    lowfile.h
+    lowfile.h \
+    archfiles.h
 
