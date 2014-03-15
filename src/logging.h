@@ -11,9 +11,8 @@
  * DEBUG_[MODE] определяет, будет ли поступать в лог файл та или иная отладочная информация
  * Для undefine достаточно добавить после режима "_" без кавычек
  */
- 
-#TODO: Изменить порядок чисел в имени файла (ГодМесяцДень_ЧасМинута)
- 
+
+
 #ifndef LOGGING_H
 #define LOGGING_H
 
@@ -49,7 +48,7 @@ extern int __logging;
 #define INIT_LOGGING \
   time_t __logging_seconds = time(NULL); \
   struct tm *__logging_timeinfo = localtime(&__logging_seconds); \
-  if (0 == strftime(__logging_file_name,80,"%d%m%Y_%H%M%S.log", __logging_timeinfo)) { \
+  if (0 == strftime(__logging_file_name,80,"%Y%m%d_%H%M%S.log", __logging_timeinfo)) { \
     strcpy(__logging_file_name,"hare.log"); \
   } \
   __logging_file = fopen(__logging_file_name,"wt"); \

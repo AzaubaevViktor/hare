@@ -21,8 +21,9 @@ int main(int argc, char *argv[], char *env[])
   strftime(s, 80, "%d%m%Y_%H%M%S", timeinfo);
 
   printf("%s \n", s);
-
+  INFO("Call test func");
   test_func("Blah Blah Blah, Mr. Freeman");
+  INFO("Test func stop");
 
   DEINIT_LOGGING;
 
