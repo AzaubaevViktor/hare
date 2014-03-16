@@ -4,6 +4,7 @@
 #include <inttypes.h>
 #include <stdint.h>
 
-int test_func(const char *lol);
+int test_func(const wchar_t *lol);
+int test_func2();
 
 #endif // HARE_H

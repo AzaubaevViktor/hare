@@ -8,37 +8,37 @@ GLOBAL_LOGGING
 
 int main(int argc, char *argv[], char *env[])
 {
-  FILE *f = NULL;
-  char s[80] = "";
+  wchar_t s[80] = L"\0";
   time_t seconds = time(NULL);
   struct tm *timeinfo = localtime(&seconds);
   INIT_LOGGING;
   LOGGING_FUNC_START;
 
-  printf("%d \n",timeinfo->tm_hour);
-  strftime(s, 80, "%d%m%Y_%H%M%S", timeinfo);
+  wprintf(L"%lli \n",timeinfo->tm_hour);
 
-  strcat(s,"_123");
-  printf("%s \n", s);
+  wcscat(s,L"s_cвв123ddвв\0");
 
-  INFO("Call test func");
-  test_func("Blah Blah Blah, Mr. Freeman");
-  INFO("Test func stop");
+//  s[wcslen(s)] = '\0';
+  wprintf(L"%ls'\n", s);
 
-  IO("LAL");
-  MEMORY("LAL");
+  INFO(L"Зовём, зовём");
+  test_func(L"Blah Blah Blah, Mr. Freeman");
+  INFO(L"Test func stop");
 
-  INFO("LAlKa");
+  IO(L"LAL");
+  MEMORY(L"LAL");
+
+  INFO(L"LAlKa");
   test_func2();
-  WARNING("WOW");
+  WARNING(L"WOW");
 
-  INFO("Call test func second");
-  test_func("Blah Blah Blah, Mr. Freeman");
-  INFO("Test func stop!");
+  INFO(L"Call test func second");
+  test_func(L"Blah Blah Blah, Mr. Freeman");
+  INFO(L"Test func stop!");
 
   LOGGING_FUNC_STOP;
   DEINIT_LOGGING;
 
-  printf("Op\n");
+  wprintf(L"Op\n");
   return 0;
 }

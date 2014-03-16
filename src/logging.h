@@ -17,7 +17,10 @@
 #define LOGGING_H
 
 #include <string.h>
-#include <stdio.h>
+#include <stdio.h> //Стандартный однобайтовый ввод-вывод
+#include <wchar.h> //"Широкие" многобайтовые символы и их ввод-вывод
+#include <wctype.h> //"Классификация" широких символов
+#include <locale.h> //Во избежание "крокозябр" на выводе
 
 #define DEBUG
 
@@ -36,7 +39,7 @@ extern char __logging_file_name[80];
 extern FILE *__logging_file;
 extern int __logging;
 extern int __logging_level;
-extern char __logging_pre_tree[1000];
+extern wchar_t __logging_pre_tree[1000];
 #endif
 
 
@@ -46,7 +49,7 @@ extern char __logging_pre_tree[1000];
   FILE *__logging_file = NULL; \
   int __logging = 1; \
   int __logging_level = 0; \
-  char __logging_pre_tree[1000] = "";
+  wchar_t __logging_pre_tree[1000] = L"";
 #else
 #define GLOBAL_LOGGING
 #endif
@@ -58,6 +61,11 @@ extern char __logging_pre_tree[1000];
   struct tm *__logging_timeinfo = localtime(&__logging_seconds); \
   __logging_level = 0; \
   int __logging_count = 0; \
+  \
+  if (! setlocale(LC_ALL, "ru_RU.utf8")) {\
+    printf("ERROR: console can't UTF8, lol"); \
+    return 1; \
+  }\
   for (__logging_count=0; __logging_count<1000; __logging_count++) { \
     __logging_pre_tree[__logging_count] = 0; \
   } \
@@ -66,9 +74,10 @@ extern char __logging_pre_tree[1000];
   } \
   __logging_file = fopen(__logging_file_name,"wt"); \
   if (NULL == __logging_file) { \
-    fprintf(stderr, "[  ERROR  ] Logging file can't be open!"); \
+    fwprintf(stderr, L"[  ERROR  ] Logging file can't be open!"); \
     __logging = 0; \
-  }
+  }\
+  __OUT(L"PROGRAMM\n");
 #else
 #define INIT_LOGGING
 #endif
@@ -77,7 +86,7 @@ extern char __logging_pre_tree[1000];
 #ifdef DEBUG
 #define __OUT(str, ...) \
   if (__logging) \
-    fprintf(__logging_file, str, ##__VA_ARGS__);
+    fwprintf(__logging_file, str, ##__VA_ARGS__);
 #else
 #define __OUT(...)
 #endif
@@ -85,14 +94,14 @@ extern char __logging_pre_tree[1000];
 
 #ifdef DEBUG
 #define LOGGING_FUNC_START \
-  __logging_level += 3; \
-  __OUT("%s\n%s-`"__FILE__"`:%d:\n", __logging_pre_tree, __logging_pre_tree, __LINE__); \
+  __logging_level += 1; \
+  if (__logging_level) {\
+    __logging_pre_tree[wcslen(__logging_pre_tree) - 1] = 0; \
+  } \
+  __OUT(L"%ls│\n%ls├─`"__FILE__ L"`:%d:\n", __logging_pre_tree, __logging_pre_tree, __LINE__); \
   if (__logging_level) { \
-    __logging_pre_tree[__logging_level - 1] = ' ';\
-    __logging_pre_tree[__logging_level - 2] = ' ';\
-    __logging_pre_tree[__logging_level - 3] = '|';\
-  }\
-  __logging_pre_tree[__logging_level] = '+';
+    wcscat(__logging_pre_tree, L"│  ├"); \
+  }
 #else
 #define LOGGING_FUNC_START
 #endif
@@ -100,15 +109,13 @@ extern char __logging_pre_tree[1000];
 
 #ifdef DEBUG
 #define LOGGING_FUNC_STOP \
-  __logging_pre_tree[__logging_level] = 0; \
-  __OUT("%s+-------\n%s\n", __logging_pre_tree, __logging_pre_tree); \
+  __logging_pre_tree[wcslen(__logging_pre_tree) - 1] = 0; \
+  __OUT(L"%ls└────────\n%ls\n", __logging_pre_tree, __logging_pre_tree); \
   if (__logging_level) { \
-    __logging_pre_tree[__logging_level] = 0; \
-    __logging_pre_tree[__logging_level - 1] = 0; \
-    __logging_pre_tree[__logging_level - 2] = 0; \
-    __logging_level -= 3; \
+    __logging_pre_tree[wcslen(__logging_pre_tree) - 3] = 0; \
+    __logging_level -= 1; \
   } \
-  __logging_pre_tree[__logging_level] = '+';
+  wcscat(__logging_pre_tree,L"├");
 #else
 #define LOGGING_FUNC_STOP
 #endif
@@ -116,7 +123,7 @@ extern char __logging_pre_tree[1000];
 
 #ifdef DEBUG
 #define WRITE(pre, str, ...) \
-    __OUT("%s "pre""str"\n", __logging_pre_tree, ##__VA_ARGS__);
+    __OUT(L"%ls "pre L""str L"\n", __logging_pre_tree, ##__VA_ARGS__);
 #else
 #define WRITE(...)
 #endif
@@ -124,7 +131,7 @@ extern char __logging_pre_tree[1000];
 
 #ifdef DEBUG_INFO
 #define INFO(str, ...) \
-  WRITE("INFO   :", str, ##__VA_ARGS__);
+  WRITE(L"INFO   :", str, ##__VA_ARGS__);
 #else
 #define INFO(...)
 #endif
@@ -132,7 +139,7 @@ extern char __logging_pre_tree[1000];
 
 #ifdef DEBUG_MEMORY
 #define MEMORY(str, ...) \
-  WRITE("MEMORY :", str, ##__VA_ARGS__);
+  WRITE(L"MEMORY :", str, ##__VA_ARGS__);
 #else
 #define MEMORY(...)
 #endif
@@ -148,7 +155,7 @@ extern char __logging_pre_tree[1000];
 
 #ifdef DEBUG_ERROR
 #define ERROR(str, ...) \
-  WRITE("ERROR  :", str, ##__VA_ARGS__);
+  WRITE(L"ERROR  :", str, ##__VA_ARGS__);
 #else
 #define ERROR(...)
 #endif
@@ -156,7 +163,7 @@ extern char __logging_pre_tree[1000];
 
 #ifdef DEBUG_WARNING
 #define WARNING(str, ...) \
-  WRITE("WARNING:", str, ##__VA_ARGS__);
+  WRITE(L"WARNING:", str, ##__VA_ARGS__);
 #else
 #define WARNING(...)
 #endif
