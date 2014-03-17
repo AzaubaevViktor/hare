@@ -19,31 +19,15 @@ int _writeBytes(FILE *f, char *buf, size_t k_bytes) {
   return 0;
 }
 
-#define OLD_WRITE_
 
 int writeNBytes(FILE *f, int64_t N, char *str, int drop) {
   static char buf[BUF_LEN];
   static uint64_t pos;
   uint64_t ext_pos = 0;
   int wr_result = 0;
-#ifndef OLD_WRITE
   size_t nBufBytes = 0;
-#endif
 
   IO("Add %"PRId64" bytes to buffer", N);
-#ifdef OLD_WRITE
-  while (ext_pos < N) {
-    buf[pos] = str[ext_pos];
-    if (++pos == BUF_LEN) {
-      IO("Drop buffer")
-      pos = 0;
-      wr_result = _writeBytes(f, buf, BUF_LEN);
-      if (wr_result)
-        return wr_result;
-    }
-    ext_pos++;
-  }
-#else
   while (ext_pos < N) {
     nBufBytes = (BUF_LEN - pos) < ((uint64_t) N - ext_pos) ? (BUF_LEN - pos) : (N - ext_pos);
     memcpy(buf+pos, str+ext_pos, nBufBytes);
@@ -57,7 +41,6 @@ int writeNBytes(FILE *f, int64_t N, char *str, int drop) {
         return wr_result;
     }
   }
-#endif
 
   if (drop) {
     IO("Forsed drop buffer")
@@ -70,14 +53,14 @@ int writeNBytes(FILE *f, int64_t N, char *str, int drop) {
 
 int writeInt64(FILE *f, int64_t num, int drop) {
   int64_t _num = num;
-  char tmp[8] = "";
-  int i = 0;
+  char tmp[INT64SIZE] = "";
+  size_t i = 0;
   IO("Write int64 num")
-  for (i=0; i<8; i++) {
+  for (i=0; i<INT64SIZE; i++) {
     tmp[i] = _num & 0xFF;
     _num = _num >> 8;
   }
-  return writeNBytes(f, 8, tmp, drop);
+  return writeNBytes(f, INT64SIZE, tmp, drop);
 }
 
 
@@ -130,8 +113,11 @@ int readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes) {
 
 
     if (pos >= rd_bytes) {
-      if (is_eof)
+      if (is_eof) {
+        for (i=ext_pos-1; i<N; i++)
+          str[i] = '\0';
         return IO_EOF;
+      }
 
       IO("Read file to buffer")
       pos = 0;
@@ -145,4 +131,28 @@ int readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes) {
   }
 
     return r_result;
+}
+
+
+int readInt64(FILE *f, int64_t *num, size_t *read_bytes) {
+  char tmp[INT64SIZE] = "";
+  size_t i = 0;
+  *read_bytes = 0;
+  readNBytes(f, INT64SIZE, tmp, read_bytes);
+  if (*read_bytes < INT64SIZE) {
+    WARNING("Read error!");
+    return IO_READ_ERROR;
+  }
+  for (i=0; i<INT64SIZE; i++) {
+    *num = *num << 8;
+    *num += tmp[INT64SIZE - i - 1];
+  }
+  return 0;
+}
+
+
+int readChar(FILE *f, char ch, size_t *read_bytes) {
+  IO("Read char");
+  readNBytes(f, 1, &ch, &read_bytes);
+  return 0;
 }

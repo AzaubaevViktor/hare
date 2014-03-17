@@ -18,6 +18,7 @@ int main(int argc, char *argv[], char *env[])
   INFO(L"Programm ended"); 
   LOGGING_FUNC_STOP;
   DEINIT_LOGGING;
+  printf("Programm exit!\n");
   return 0;
 }
 
