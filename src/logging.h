@@ -1,12 +1,17 @@
 /* 2014 (c), Ktulhy-kun, велосипед олологирование
- * Как пользоваться:
+ *
+ * КАК ПОЛЬЗОВАТЬСЯ:
  * Перед main вызываем GLOBAL_LOGGING
  * В main() нутри объявления переменных вызываем INIT_LOGGING
- * Для записи логов в файл использовать:
+ * В начале функции после объявления переменных написать LOGGING_FUNC_START
+ * Перед КАЖДЫМ return писать LOGGING_FUNC_STOP
+ *
+ * ДЛЯ ЗАПИСИ ЛОГОВ В ФАЙЛ ИСПОЛЬЗОВАТЬ:
  * INFO/MEMORY/IO/ERROR/WARNING(format (не переменная, именно строка в кавычках), ...), при этом string -- уже готовая строка (форматирование как в printf нет)
  * В конце программы перед самым return писать DEINIT_LOGGING
  * Файл будет называться [дата слитно]_[время слитно].log
- * Можно определять уровень олологирования на уровне компиляции:
+ *
+ * МОЖНО ОПРЕДЕЛЯТЬ УРОВЕНЬ ЛОГИРОВАНИЯ НА ЭТАПЕ КОМПИЛЯЦИЯ:
  * DEBUG включает все режимы логирования
  * DEBUG_[MODE] определяет, будет ли поступать в лог файл та или иная отладочная информация
  * Для undefine достаточно добавить после режима "_" без кавычек
@@ -78,6 +83,7 @@ extern wchar_t __logging_pre_tree[1000];
     __logging = 0; \
   }\
   __OUT(L"PROGRAMM\n");
+
 #else
 #define INIT_LOGGING
 #endif
@@ -131,7 +137,7 @@ extern wchar_t __logging_pre_tree[1000];
 
 #ifdef DEBUG_INFO
 #define INFO(str, ...) \
-  WRITE(L"INFO   :", str, ##__VA_ARGS__);
+  WRITE(L"INFO   : ", str, ##__VA_ARGS__);
 #else
 #define INFO(...)
 #endif
@@ -139,7 +145,7 @@ extern wchar_t __logging_pre_tree[1000];
 
 #ifdef DEBUG_MEMORY
 #define MEMORY(str, ...) \
-  WRITE(L"MEMORY :", str, ##__VA_ARGS__);
+  WRITE(L"MEMORY : ", str, ##__VA_ARGS__);
 #else
 #define MEMORY(...)
 #endif
@@ -147,7 +153,7 @@ extern wchar_t __logging_pre_tree[1000];
 
 #ifdef DEBUG_IO
 #define IO(str, ...) \
-  WRITE("IO     :", str, ##__VA_ARGS__);
+  WRITE("IO     : ", str, ##__VA_ARGS__);
 #else
 #define IO(...)
 #endif
@@ -155,7 +161,7 @@ extern wchar_t __logging_pre_tree[1000];
 
 #ifdef DEBUG_ERROR
 #define ERROR(str, ...) \
-  WRITE(L"ERROR  :", str, ##__VA_ARGS__);
+  WRITE(L"ERROR  : ", str, ##__VA_ARGS__);
 #else
 #define ERROR(...)
 #endif
@@ -163,9 +169,16 @@ extern wchar_t __logging_pre_tree[1000];
 
 #ifdef DEBUG_WARNING
 #define WARNING(str, ...) \
-  WRITE(L"WARNING:", str, ##__VA_ARGS__);
+  WRITE(L"WARNING: ", str, ##__VA_ARGS__);
 #else
 #define WARNING(...)
+#endif
+
+#ifdef DEBUG
+#define EMPTY \
+  WRITE(L"",L"",L"");
+#else
+#define EMPTY
 #endif
 
 
