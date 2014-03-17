@@ -15,12 +15,10 @@ typedef struct _FileNode {
 
 typedef struct {
   int argc;
-  char **argv;
-  char **env;
-  int8_t keys; /* 0x80,0x40, ... , 0x2, 0x1: Ø, Ø, Ø, Add, eXtract, Delete, List, inTegrity check */
+  int8_t keys;
+  /* 0x80,0x40, ... , 0x2, 0x1: Ø, Ø, Ø, Add, eXtract, Delete, List, inTegrity check */
   char *archName;
-  char **workFiles; /* Передали через аргументы */
-  FileNode *filesTree;
+  char *workFiles[];
 } Context;
 
 
