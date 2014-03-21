@@ -20,7 +20,7 @@ int parseArgs(Context **context){
     str = cnt->argv[1];
     char *nameArch = cnt->argv[2];
     f = fopen(nameArch, "br");
-    if (f != NULL) {
+    if (f != NULL || (f == NULL && *(str + 1) == 'a')) {
         cnt->archName = nameArch;
         fclose(f);
     }
