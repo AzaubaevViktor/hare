@@ -153,6 +153,6 @@ int readInt64(FILE *f, int64_t *num, size_t *read_bytes) {
 
 int readChar(FILE *f, char ch, size_t *read_bytes) {
   IO("Read char");
-  readNBytes(f, 1, &ch, &read_bytes);
+  readNBytes(f, 1, &ch, read_bytes);
   return 0;
 }
