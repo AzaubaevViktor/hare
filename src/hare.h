@@ -9,7 +9,6 @@
 #include "fileinfo.h"
 
 typedef struct _FileNode {
-  FileInfo *info;
   char *fileName;
   FILE *file;
   struct FileInfo *fileInfo;

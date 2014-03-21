@@ -15,6 +15,7 @@ int main(int argc, char *argv[], char *env[])
     cnt->argc = argc;
     cnt->env  = env;
     parseArgs(&cnt);
+    printf("%s\n", *(cnt->workFiles));
     DEINIT_LOGGING
     return 0;
 }

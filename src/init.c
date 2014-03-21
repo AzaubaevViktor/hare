@@ -18,14 +18,12 @@ int parseArgs(Context **context){
         return -1;
     }
     str = cnt->argv[1];
-    char *nameArch = cnt->argv[2];
-    f = fopen(nameArch, "br");
-    if (f != NULL || (f == NULL && *(str + 1) == 'a')) {
-        cnt->archName = nameArch;
-        fclose(f);
-    }
-    else {
-        ERROR("Архив не удалось открыть");
+    cnt->archName = cnt->argv[2];
+
+    if (*(str + 2) != '\0'){
+        cnt->keys = 0x0;
+        ERROR("Плохой аргумент");
+        printHelp();
         return -1;
     }
     if (*(str) == '-') {
@@ -38,25 +36,6 @@ int parseArgs(Context **context){
               ERROR("Мало аргументов(2 этап, case 'a'");
               break;
           }
-              /*for (i=3;i<cnt->argc;i++){
-                  f = fopen(cnt->argv[i], "r");
-                  if (f != NULL){
-                      if (head == NULL){
-                          head       = (FileNode*)malloc(sizeof(FileNode));
-                          iter       = head;
-                      } else {
-                          iter->next = (FileNode*)malloc(sizeof(FileNode));
-                          iter       = iter->next;
-                      }
-                      *(cnt->workFiles + numFiles) = cnt->argv[i];
-                      numFiles++;
-                      cnt->workFiles = (char **)realloc(cnt->workFiles, (numFiles + 1)*sizeof(char *));
-                      iter->file     = f;
-                      iter->next     = NULL;
-                      iter->info     = (FileInfo *)malloc(sizeof(FileInfo));
-                  }
-              }
-              break;*/
           cnt->keys = 0x10;
           cnt->workFiles = (char **)malloc((cnt->argc - 3)*sizeof(char*) );
           for (i = 3; i < cnt->argc; i++){
@@ -67,22 +46,20 @@ int parseArgs(Context **context){
                   iter->next = (FileNode*)malloc(sizeof(FileNode));
                   iter       = iter->next;
               }
-              if ((f = fopen(cnt->argv[i], "r")) != NULL){
+
+              if ((f = fopen(cnt->argv[i], "r")) != NULL)
+              {
                   *(cnt->workFiles + i - 3) = cnt->argv[i];
                   iter->file     = f;
                   iter->next     = NULL;
-                  iter->info     = (FileInfo *)malloc(sizeof(FileInfo));
-
-              } else {
+                  iter->fileInfo     = (FileInfo *)malloc(sizeof(FileInfo));
+              }
+              else {
                   *(cnt->workFiles + i - 3) = NULL;
               }
-              /*if (*(cnt->workFiles + i - 3) == NULL){
-                  printf("NULL\n");
-              } else {
-                  printf("%s\n", *(cnt->workFiles + i - 3));
-              }*/
 
           }
+          break;
        case 'x':
           cnt->keys = 0x8;
           cnt->workFiles = (char **)malloc((cnt->argc - 3)*sizeof(char*) );
