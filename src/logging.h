@@ -1,8 +1,4 @@
-
-/* 2014 (c), Ktulhy-kun, велосипед олологирование
-=======
 /* 2014, Korovin Viktor <sarvash.inc@gmail.com> велосипед олологирование
->>>>>>> Temporary merge branch 2
  * Как пользоваться:
  * Перед main вызываем GLOBAL_LOGGING
  * В main() нутри объявления переменных вызываем INIT_LOGGING
