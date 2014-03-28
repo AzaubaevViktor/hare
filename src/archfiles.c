@@ -29,26 +29,29 @@ int writeData(FILE *f, int64_t size, void *data) {
   return writeNBytes(f, size, data, 0);
 }
 
-int readHeader(FILE *f, ArchFileInfo *file) {
+int readHeader(FILE *f, ArchFileInfo *info) {
   char signature[SIGNATURE_LEN] = "";
   int64_t fileNameLen = 0;
   size_t read_bytes = 0;
   FileInfo *fInfo = NULL;
-  IO("Read signature");
+  LOGGING_FUNC_START;
+  IO(L"Read signature");
 
-  fInfo = file->fileInfo;
+  fInfo = info->fileInfo;
 
   readNBytes(f, SIGNATURE_LEN, signature, &read_bytes);
   if (memcmp(signature, SIGNATURE, SIGNATURE_LEN)) {
-    printf("%d\n", memcmp(signature, SIGNATURE, SIGNATURE_LEN));
-    WARNING("Signature does not match");
+    printf(":archfiles.c:44: %d\n", memcmp(signature, SIGNATURE, SIGNATURE_LEN));
+    WARNING(L"Signature does not match");
+    LOGGING_FUNC_STOP;
     return SIGNATURE_ERROR;
   }
 
   readInt64(f, &fileNameLen, &read_bytes);
-  fInfo->name = malloc(fileNameLen+1);
-  if (NULL == fInfo->name) {
-    MEMORY("Memory allocate error!");
+
+  if (NULL == (fInfo->name = malloc(fileNameLen+1))) {
+    MEMORY(L"Memory allocate error!");
+    LOGGING_FUNC_STOP;
     return MEMORY_ALLOCATE_ERROR;
   }
   readNBytes(f, fileNameLen, fInfo->name, &read_bytes);
@@ -58,11 +61,23 @@ int readHeader(FILE *f, ArchFileInfo *file) {
 
   readInt64(f, &(fInfo->size), &read_bytes);
 
-  readInt64(f, &(file->dataSize), &read_bytes);
+  readInt64(f, &(info->dataSize), &read_bytes);
 
-  readChar(f, file->endUnusedBits, &read_bytes);
+  readChar(f, info->endUnusedBits, &read_bytes);
 
-  readChar(f, file->flags, &read_bytes);
+  readChar(f, info->flags, &read_bytes);
 
+  readInt64(f, info->haffTreeSize, &read_bytes);
+
+  if (NULL == (info->haffTree = malloc(info->haffTreeSize + 1))) {
+    MEMORY(L"Memory allocate error!");
+    LOGGING_FUNC_STOP;
+    return MEMORY_ALLOCATE_ERROR;
+  }
+  readNBytes(f, info->haffTreeSize, info->haffTree, &read_bytes);
+
+  readInt64(f, info->HeaderCheckSum, &read_bytes);
+
+  LOGGING_FUNC_STOP;
   return 0;
 }

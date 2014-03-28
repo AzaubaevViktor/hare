@@ -11,19 +11,35 @@ GLOBAL_LOGGING
 
 int main(int argc, char *argv[], char *env[])
 {
-  Context *cnt = (Context *)malloc(sizeof(Context));	  INIT_LOGGING;
+  Context *cnt = (Context *)malloc(sizeof(Context));
+  int test = 0;
+  FILE *f = NULL;
+  size_t read_bytes = 0;
+  char str[100] = "";
+  int _error = 0;
+
+
+  INIT_LOGGING;
   LOGGING_FUNC_START;
   INFO(L"Programm started");
   INFO(L"Тест русского языка");
-  wprintf(L"Hello World!\n");
+  printf("Hello World!\n");
   INFO(L"Programm ended");
-  cnt->argv = argv;
-  cnt->argc = argc;
-  cnt->env  = env;
-  parseArgs(&cnt);
+
+  f = fopen("test_t","rt");
+  do {
+    _error = readNBytes(f, 10, str, &read_bytes);
+    printf("%zd:`%s`\n", read_bytes, str);
+    for (test=0; test<100; test++) {
+      *(str+test) = 0;
+    }
+  } while (IO_EOF != _error);
+
+  close(f);
+
   DEINIT_LOGGING;
-  wprintf(L"Programm exit!\n");
-  wprintf(L"%s\n", *(cnt->workFiles));
+  printf("Programm exit!\n");
+  printf("%s\n", *(cnt->workFiles));
   return 0;
 }
 

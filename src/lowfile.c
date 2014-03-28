@@ -91,7 +91,6 @@ int _readBytes(FILE *f, char *buf, size_t k_bytes, size_t *rd_bytes) {
 }
 
 int readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes) {
-  /* TODO: разобраться с посылкой EOF */
   static char buf[BUF_LEN];
   static uint64_t pos = 0;
   static size_t rd_bytes = 0;
@@ -101,9 +100,11 @@ int readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes) {
   size_t nBufBytes = 0;
   int r_result = 0;
 
+  LOGGING_FUNC_START;
+
   *read_bytes = 0;
 
-  IO("Read %"PRId64" bytes", N);
+  IO(L"Read %"PRId64 L" bytes", N);
   while (ext_pos < N) {
     nBufBytes = (rd_bytes - pos) < (N - ext_pos) ? (rd_bytes - pos) : (N - ext_pos);
     memcpy(str+ext_pos, buf+pos, nBufBytes);
@@ -116,21 +117,24 @@ int readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes) {
       if (is_eof) {
         for (i=ext_pos-1; i<N; i++)
           str[i] = '\0';
+        LOGGING_FUNC_STOP;
         return IO_EOF;
       }
 
-      IO("Read file to buffer")
+      IO(L"Read file to buffer")
       pos = 0;
       r_result = _readBytes(f, buf, BUF_LEN, &rd_bytes);
 
       is_eof = (r_result == IO_EOF) ? 1 : 0;
 
       if ((r_result) && (IO_EOF != r_result))
+        LOGGING_FUNC_STOP;
         return r_result;
     }
   }
 
-    return r_result;
+  LOGGING_FUNC_STOP;
+  return r_result;
 }
 
 
