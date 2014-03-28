@@ -20,13 +20,13 @@ int parseArgs(Context **context){
     str = cnt->argv[1];
     cnt->archName = cnt->argv[2];
 
-    if (*(str + 2) != '\0'){
+    if (*(str + 2) != '\0' || *(str) != '-'){
         cnt->keys = 0x0;
         ERROR("Плохой аргумент");
         printHelp();
         return -1;
     }
-    if (*(str) == '-') {
+
       id = *(str+1);
       switch (id) {
           case 'a':
@@ -59,6 +59,7 @@ int parseArgs(Context **context){
               }
 
           }
+          cnt->filesTree = head;
           break;
        case 'x':
           cnt->keys = 0x8;
@@ -86,7 +87,6 @@ int parseArgs(Context **context){
           break;
           }
 
-      }
     *context = cnt;
     return 0;
 }
