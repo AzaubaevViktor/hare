@@ -1,4 +1,5 @@
 #include "logging.h"
+#include "archfiles.h"
 #include "hare.h"
 #include <stdio.h>
 #include <stdio.h>
@@ -25,3 +26,4 @@ int main(int argc, char *argv[], char *env[])
   wprintf(L"%s\n", *(cnt->workFiles));
   return 0;
 }
+
