@@ -25,6 +25,8 @@ typedef struct {
 
 int writeFileHeader(FILE *f, ArchFileInfo *info, int drop);
 
+size_t getHeaderLen(ArchFileInfo *info);
+
 int readHeader(FILE *f, ArchFileInfo *file);
 
 #endif // ADDFILES2ARCH_H

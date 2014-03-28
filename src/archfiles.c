@@ -21,6 +21,10 @@ int writeFileHeader(FILE *f, ArchFileInfo *info, int drop) {
   return 0;
 }
 
+size_t getHeaderLen(ArchFileInfo *info) {
+  return SIGNATURE_LEN + info->fileInfo->sizeName + info->haffTreeSize + sizeof(char)*2 + INT64SIZE*(6);
+}
+
 int writeData(FILE *f, int64_t size, void *data) {
   return writeNBytes(f, size, data, 0);
 }
@@ -28,7 +32,6 @@ int writeData(FILE *f, int64_t size, void *data) {
 int readHeader(FILE *f, ArchFileInfo *file) {
   char signature[SIGNATURE_LEN] = "";
   int64_t fileNameLen = 0;
-  char *fileName = 0;
   size_t read_bytes = 0;
   FileInfo *fInfo = NULL;
   IO("Read signature");

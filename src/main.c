@@ -28,6 +28,7 @@ int main(int argc, char *argv[], char *env[])
   info.haffTree = "This is ha";
   info.HeaderCheckSum = 1;
 
+  printf("Header size: %zd\n", getHeaderLen(&info));
 
   writeFileHeader(f, &info, 1);
 
