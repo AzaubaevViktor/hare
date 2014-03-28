@@ -46,18 +46,9 @@ int parseArgs(Context **context){
                   iter->next = (FileNode*)malloc(sizeof(FileNode));
                   iter       = iter->next;
               }
-
-              if ((f = fopen(cnt->argv[i], "r")) != NULL)
-              {
-                  *(cnt->workFiles + i - 3) = cnt->argv[i];
-                  iter->file     = f;
-                  iter->next     = NULL;
-                  iter->fileInfo     = (FileInfo *)malloc(sizeof(FileInfo));
-              }
-              else {
-                  *(cnt->workFiles + i - 3) = NULL;
-              }
-
+              *(cnt->workFiles + i - 3) = cnt->argv[i];
+              iter->next     = NULL;
+              iter->fileInfo     = (FileInfo *)malloc(sizeof(FileInfo));
           }
           cnt->filesTree = head;
           break;
