@@ -21,6 +21,7 @@ int main(int argc, char *argv[], char *env[])
     cnt->env  = env;
     parseArgs(&cnt);
     DEINIT_LOGGING
-  printf("Programm exit!\n");
+  wprintf(L"Programm exit!\n");
+    wprintf(L"%s\n", *(cnt->workFiles));
   return 0;
 }

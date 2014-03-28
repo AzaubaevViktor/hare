@@ -1,4 +1,4 @@
-<<<<<<< Temporary merge branch 1
+
 /* 2014 (c), Ktulhy-kun, велосипед олологирование
 =======
 /* 2014, Korovin Viktor <sarvash.inc@gmail.com> велосипед олологирование

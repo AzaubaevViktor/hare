@@ -8,7 +8,6 @@ int parseArgs(Context **context){
     int i;
     FileNode *head = NULL;
     FileNode *iter;
-    FILE *f = NULL;
     Context *cnt = *context;
     cnt->workFiles = (char **)malloc(sizeof(char *));
     if (cnt->argc < 3) {
@@ -76,7 +75,7 @@ int parseArgs(Context **context){
           cnt->keys = 0x0;
           ERROR("Неверный параметр -%c", id);
           break;
-          }
+    }
 
     *context = cnt;
     return 0;
