@@ -10,15 +10,17 @@ GLOBAL_LOGGING
 
 int main(int argc, char *argv[], char *env[])
 {
-  INIT_LOGGING;
+    Context *cnt = (Context *)malloc(sizeof(Context));	  INIT_LOGGING;
   LOGGING_FUNC_START;
   INFO(L"Programm started");
   INFO(L"Тест русского языка");
   wprintf(L"Hello World!\n");
-  INFO(L"Programm ended"); 
-  LOGGING_FUNC_STOP;
-  DEINIT_LOGGING;
+  INFO(L"Programm ended");     
+	cnt->argv = argv;
+    cnt->argc = argc;
+    cnt->env  = env;
+    parseArgs(&cnt);
+    DEINIT_LOGGING
   printf("Programm exit!\n");
   return 0;
 }
-

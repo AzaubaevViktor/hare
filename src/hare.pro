@@ -5,6 +5,8 @@ CONFIG -= qt
 
 SOURCES += main.c \
     hare.c \
+    init.c \
+    helper.c \
     fileinfo.c \
     getFilesInfo.c \
     lowfile.c \
@@ -14,6 +16,7 @@ HEADERS += \
     hare.h \
     fileinfo.h \
     logging.h \
+    init.h \
     lowfile.h \
     archfiles.h
 

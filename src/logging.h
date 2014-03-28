@@ -1,6 +1,9 @@
+<<<<<<< Temporary merge branch 1
 /* 2014 (c), Ktulhy-kun, велосипед олологирование
- *
- * КАК ПОЛЬЗОВАТЬСЯ:
+=======
+/* 2014, Korovin Viktor <sarvash.inc@gmail.com> велосипед олологирование
+>>>>>>> Temporary merge branch 2
+ * Как пользоваться:
  * Перед main вызываем GLOBAL_LOGGING
  * В main() нутри объявления переменных вызываем INIT_LOGGING
  * В начале функции после объявления переменных написать LOGGING_FUNC_START
