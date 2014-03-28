@@ -22,9 +22,11 @@ int addFile2Arch(const char* archName, ArchFileInfo archFileInfo);
  * функция, которая кодирует байты
  *      huffTree        - дерево Хаффмана, согласно которому кодируются байты
  *      bytesForCoding  - байты, которые кодируются
+ *      codingBits      - закодированные биты
+ *      countCodingBits - количество закодированных бит
  *
- * возвращаются закодированные байты
+ * в countCodingBits записывается количество закодированных бит
  */
-char* coding(char* huffTree, char* bytesForCoding);
+void coding(char* huffTree, char* bytesForCoding, char* codingBits, int* countCodingBits);
 
 #endif // ADDFILE_H

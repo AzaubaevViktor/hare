@@ -5,9 +5,14 @@ int addFile2Arch(const char* archName, ArchFileInfo archFileInfo)
     FILE* archive;
     FILE* file;
 
-    const size_t sizeBlockBytes = 50;
-    size_t sizeReadBlockBytes;
-    char blockBytes[sizeBlockBytes];
+    const size_t sizeBlock = 50;
+    int countCodingBits = 0;
+    size_t sizeReadBlock;
+    char block[sizeBlock];
+    char byteForWrite;
+    char partialByte = 0;
+    int `countUsedBits = 0;
+    int i;
 
     archive = fopen(archName, "ab");
     file    = fopen(archFileInfo.fileInfo->name, "rb");
@@ -19,8 +24,31 @@ int addFile2Arch(const char* archName, ArchFileInfo archFileInfo)
 
     while(!feof(file))
     {
-        readNBytes(file, sizeBlockBytes, blockBytes, &sizeReadBlockBytes);
-        writeNBytes(archive, sizeReadBlockBytes, coding(archFileInfo.haffTree, blockBytes), 0);
+        readNBytes(file, sizeBlock, block, &sizeReadBlock);
+
+        coding(archFileInfo.haffTree, block, block, countCodingBits);
+
+        for (i = 0; i < countCodingBits / 8; i++)
+        {
+            byteForWrite = 0;
+            byteForWrite |= partialByte;
+            byteForWrite |= (block[i] >> countUsedBits);
+
+            partialByte = (block[i] << (8 - countUsedBits));
+
+            writeNBytes(archive, 1, byteForWrite, 0);
+        }
+
+        if (countCodingBits % 8)
+        {
+            partialByte = block[countCodingBits / 8];
+            countUsedBits = countCodingBits % 8;
+        }
+        else
+        {
+            partialByte = 0;
+            countUsedBits = 0;
+        }
     }
 
     fclose(archive);
@@ -28,7 +56,8 @@ int addFile2Arch(const char* archName, ArchFileInfo archFileInfo)
     return 0;
 }
 
-char* coding(char* huffTree, char* bytesForCoding)
+void coding(char* huffTree, char* bytesForCoding, char* codingBits, int* countCodingBits)
 {
-    return bytesForCoding;
+    codingBits = bytesForCoding;
+    *countCodingBits = strlen(bytesForCoding) * 8;
 }
