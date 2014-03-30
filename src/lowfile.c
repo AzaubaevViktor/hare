@@ -23,13 +23,14 @@ int _writeBytes(FILE *f, char *buf, size_t k_bytes) {
 }
 
 int dropWrBytes(FILE *f) {
-  LOGGING_FUNC_START;
-  IO("Drop buffer");
-  LOGGING_FUNC_STOP;
-  return writeNBytes(f, 0, NULL, 1);
+  return _writeNBytes(f, 0, NULL, 1);
 }
 
-int writeNBytes(FILE *f, int64_t N, char *str, int drop) {
+int writeNBytes(FILE *f, int64_t N, char *str) {
+  return _writeNBytes(f, N, str, 0);
+}
+
+int _writeNBytes(FILE *f, int64_t N, char *str, int drop) {
   static char buf[BUF_LEN];
   static uint64_t pos;
   uint64_t ext_pos = 0;
@@ -37,27 +38,28 @@ int writeNBytes(FILE *f, int64_t N, char *str, int drop) {
   size_t nBufBytes = 0;
   LOGGING_FUNC_START;
 
-  IO(L"Add %"PRId64 L" bytes to buffer", N);
-  while (ext_pos < N) {
-    nBufBytes = (BUF_LEN - pos) < ((uint64_t) N - ext_pos) ? (BUF_LEN - pos) : (N - ext_pos);
-    memcpy(buf+pos, str+ext_pos, nBufBytes);
-    ext_pos += nBufBytes;
-    pos += nBufBytes;
-    if (pos == BUF_LEN) {
-      IO(L"Drop buffer")
-          pos = 0;
-      wr_result = _writeBytes(f, buf, BUF_LEN);
-      if (wr_result) {
-        LOGGING_FUNC_STOP;
-        return wr_result;
-      }
-    }
-  }
 
   if (drop) {
     IO(L"Forsed drop buffer");
     wr_result = _writeBytes(f, buf, pos);
     pos = 0;
+  } else {
+    IO(L"Add %"PRId64 L" bytes to buffer", N);
+    while (ext_pos < N) {
+      nBufBytes = (BUF_LEN - pos) < ((uint64_t) N - ext_pos) ? (BUF_LEN - pos) : (N - ext_pos);
+      memcpy(buf+pos, str+ext_pos, nBufBytes);
+      ext_pos += nBufBytes;
+      pos += nBufBytes;
+      if (pos == BUF_LEN) {
+        IO(L"Drop buffer")
+            pos = 0;
+        wr_result = _writeBytes(f, buf, BUF_LEN);
+        if (wr_result) {
+          LOGGING_FUNC_STOP;
+          return wr_result;
+        }
+      }
+    }
   }
 
   LOGGING_FUNC_STOP;
@@ -65,7 +67,7 @@ int writeNBytes(FILE *f, int64_t N, char *str, int drop) {
 }
 
 
-int writeInt64(FILE *f, int64_t num, int drop) {
+int writeInt64(FILE *f, int64_t num) {
   int64_t _num = num;
   LOGGING_FUNC_START;
   char tmp[INT64SIZE] = "";
@@ -76,15 +78,15 @@ int writeInt64(FILE *f, int64_t num, int drop) {
     _num = _num >> 8;
   }
   LOGGING_FUNC_STOP;
-  return writeNBytes(f, INT64SIZE, tmp, drop);
+  return writeNBytes(f, INT64SIZE, tmp);
 }
 
 
-int writeChar(FILE *f, char ch, int drop) {
+int writeChar(FILE *f, char ch) {
   LOGGING_FUNC_START;
   IO(L"Write char");
   LOGGING_FUNC_STOP;
-  return writeNBytes(f, 1, &ch, drop);
+  return writeNBytes(f, 1, &ch);
 }
 
 
@@ -112,7 +114,15 @@ int _readBytes(FILE *f, char *buf, size_t k_bytes, size_t *rd_bytes) {
   return 0;
 }
 
-int readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int drop) {
+int dropRdBytes(FILE *f) {
+  return readNBytes(f, 0, NULL, 1);
+}
+
+int readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes) {
+  return _readNBytes(f, N, str, read_bytes);
+}
+
+int _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int drop) {
   static char buf[BUF_LEN];
   static uint64_t pos = 0;
   static size_t rd_bytes = 0;
