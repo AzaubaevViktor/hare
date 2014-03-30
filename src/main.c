@@ -1,6 +1,7 @@
 #include "logging.h"
 #include "archfiles.h"
 #include "hare.h"
+#include "extract.h"
 #include <stdio.h>
 #include <stdio.h>
 #include <wchar.h>
@@ -17,7 +18,8 @@ int main(int argc, char *argv[], char *env[])
   size_t read_bytes = 0;
   char str[100] = "";
   int _error = 0;
-
+  ArchFileInfo info;
+  FileInfo fInfo;
 
   INIT_LOGGING;
   LOGGING_FUNC_START;
@@ -26,20 +28,18 @@ int main(int argc, char *argv[], char *env[])
   printf("Hello World!\n");
   INFO(L"Programm ended");
 
-  f = fopen("test_t","rt");
-  do {
-    _error = readNBytes(f, 10, str, &read_bytes);
-    printf("%zd:`%s`\n", read_bytes, str);
-    for (test=0; test<100; test++) {
-      *(str+test) = 0;
-    }
-  } while (IO_EOF != _error);
+  f = fopen("test", "rb");
+
+  info.fileInfo = &fInfo;
+  readHeader(f, &info);
+
+  extract(f, 72, &info, "ololol");
 
   close(f);
 
+  LOGGING_FUNC_STOP;
   DEINIT_LOGGING;
   printf("Programm exit!\n");
-  printf("%s\n", *(cnt->workFiles));
   return 0;
 }
 

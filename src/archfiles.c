@@ -67,7 +67,7 @@ int readHeader(FILE *f, ArchFileInfo *info) {
 
   readChar(f, info->flags, &read_bytes);
 
-  readInt64(f, info->haffTreeSize, &read_bytes);
+  readInt64(f, &(info->haffTreeSize), &read_bytes);
 
   if (NULL == (info->haffTree = malloc(info->haffTreeSize + 1))) {
     MEMORY(L"Memory allocate error!");
@@ -76,7 +76,7 @@ int readHeader(FILE *f, ArchFileInfo *info) {
   }
   readNBytes(f, info->haffTreeSize, info->haffTree, &read_bytes);
 
-  readInt64(f, info->HeaderCheckSum, &read_bytes);
+  readInt64(f, &(info->HeaderCheckSum), &read_bytes);
 
   LOGGING_FUNC_STOP;
   return 0;
