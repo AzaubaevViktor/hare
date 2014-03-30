@@ -29,6 +29,7 @@
 #define IO_READ_ERROR  (2452)
 #define IO_EOF         (2453)
 
+int dropWrBytes(FILE *f);
 int writeNBytes(FILE *f, int64_t N, char *str, int drop);
 int writeInt64(FILE *f, int64_t num, int drop);
 int writeChar(FILE *f, char ch, int drop);

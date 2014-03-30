@@ -90,8 +90,10 @@ extern wchar_t __logging_pre_tree[1000];
 
 #ifdef DEBUG
 #define __OUT(str, ...) \
-  if (__logging) \
-    fwprintf(__logging_file, str, ##__VA_ARGS__);
+  if (__logging){ \
+    fwprintf(__logging_file, str, ##__VA_ARGS__);\
+    fflush(__logging_file);\
+  }
 #else
 #define __OUT(...)
 #endif
