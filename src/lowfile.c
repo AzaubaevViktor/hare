@@ -22,13 +22,6 @@ int _writeBytes(FILE *f, char *buf, size_t k_bytes) {
   return 0;
 }
 
-int dropWrBytes(FILE *f) {
-  return _writeNBytes(f, 0, NULL, 1);
-}
-
-int writeNBytes(FILE *f, int64_t N, char *str) {
-  return _writeNBytes(f, N, str, 0);
-}
 
 int _writeNBytes(FILE *f, int64_t N, char *str, int drop) {
   static char buf[BUF_LEN];
@@ -64,6 +57,16 @@ int _writeNBytes(FILE *f, int64_t N, char *str, int drop) {
 
   LOGGING_FUNC_STOP;
   return wr_result;
+}
+
+
+int dropWrBytes(FILE *f) {
+  return _writeNBytes(f, 0, NULL, 1);
+}
+
+
+int writeNBytes(FILE *f, int64_t N, char *str) {
+  return _writeNBytes(f, N, str, 0);
 }
 
 
@@ -114,13 +117,6 @@ int _readBytes(FILE *f, char *buf, size_t k_bytes, size_t *rd_bytes) {
   return 0;
 }
 
-int dropRdBytes(FILE *f) {
-  return readNBytes(f, 0, NULL, 1);
-}
-
-int readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes) {
-  return _readNBytes(f, N, str, read_bytes);
-}
 
 int _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int drop) {
   static char buf[BUF_LEN];
@@ -136,46 +132,56 @@ int _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int drop) {
 
   *read_bytes = 0;
 
-  IO(L"Read %"PRId64 L" bytes", N);
-  while (ext_pos < N) {
-    nBufBytes = (rd_bytes - pos) < (N - ext_pos) ? (rd_bytes - pos) : (N - ext_pos);
-    memcpy(str+ext_pos, buf+pos, nBufBytes);
-    ext_pos += nBufBytes;
-    pos += nBufBytes;
-    *read_bytes += nBufBytes;
+  if (drop) {
+    IO(L"Drop read buffer");
+    pos = 0;
+    rd_bytes = 0;
+    is_eof = 0;
+  } else {
+    IO(L"Read %"PRId64 L" bytes", N);
+    while (ext_pos < N) {
+      nBufBytes = (rd_bytes - pos) < (N - ext_pos) ? (rd_bytes - pos) : (N - ext_pos);
+      memcpy(str+ext_pos, buf+pos, nBufBytes);
+      ext_pos += nBufBytes;
+      pos += nBufBytes;
+      *read_bytes += nBufBytes;
 
-
-    if (pos >= rd_bytes) {
-      if (is_eof) {
-        for (i=ext_pos-1; i<N; i++) {
-          str[i] = '\0';
+      if (pos >= rd_bytes) {
+        if (is_eof) {
+          for (i=ext_pos-1; i<N; i++) {
+            str[i] = '\0';
+          }
+          LOGGING_FUNC_STOP;
+          return IO_EOF;
         }
-        LOGGING_FUNC_STOP;
-        return IO_EOF;
-      }
 
-      IO(L"Read file to buffer")
-          pos = 0;
-      r_result = _readBytes(f, buf, BUF_LEN, &rd_bytes);
+        IO(L"Read file to buffer");
+        pos = 0;
+        r_result = _readBytes(f, buf, BUF_LEN, &rd_bytes);
 
-      is_eof = (r_result == IO_EOF) ? 1 : 0;
+        is_eof = (r_result == IO_EOF) ? 1 : 0;
 
-      if ((r_result) && (IO_EOF != r_result)) {
-        LOGGING_FUNC_STOP;
-        return r_result;
+        if ((r_result) && (IO_EOF != r_result)) {
+          LOGGING_FUNC_STOP;
+          return r_result;
+        }
       }
     }
   }
 
-  if (drop) {
-    IO("Drop read buffer");
-    pos = 0;
-    rd_bytes = 0;
-    is_eof = 0;
-  }
-
   LOGGING_FUNC_STOP;
   return r_result;
+}
+
+
+int dropRdBytes(FILE *f) {
+  size_t read_bytes = 0;
+  return _readNBytes(f, 0, NULL, &read_bytes, 1);
+}
+
+
+int readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes) {
+  return _readNBytes(f, N, str, read_bytes, 0);
 }
 
 

@@ -2,21 +2,21 @@
 #include "archfiles.h"
 
 
-int writeFileHeader(FILE *f, ArchFileInfo *info, int drop) {
+int writeFileHeader(FILE *f, ArchFileInfo *info) {
   FileInfo *fInfo = NULL;
   IO("Write file header");
   fInfo = info->fileInfo;
-  writeNBytes(f, SIGNATURE_LEN, SIGNATURE, 0);
-  writeInt64(f, fInfo->sizeName, 0);
-  writeNBytes(f, fInfo->sizeName, fInfo->name, 0);
-  writeInt64(f, fInfo->timeLastModification, 0);
-  writeInt64(f, fInfo->size, 0);
-  writeInt64(f, info->dataSize, 0);
-  writeChar(f, info->endUnusedBits, 0);
-  writeChar(f, info->flags, 0);
-  writeInt64(f, info->haffTreeSize, 0);
-  writeNBytes(f, info->haffTreeSize, info->haffTree, 0);
-  writeInt64(f, info->HeaderCheckSum, drop);
+  writeNBytes(f, SIGNATURE_LEN, SIGNATURE);
+  writeInt64(f, fInfo->sizeName);
+  writeNBytes(f, fInfo->sizeName, fInfo->name);
+  writeInt64(f, fInfo->timeLastModification);
+  writeInt64(f, fInfo->size);
+  writeInt64(f, info->dataSize);
+  writeChar(f, info->endUnusedBits);
+  writeChar(f, info->flags);
+  writeInt64(f, info->haffTreeSize);
+  writeNBytes(f, info->haffTreeSize, info->haffTree);
+  writeInt64(f, info->HeaderCheckSum);
 
   return 0;
 }
@@ -26,7 +26,7 @@ size_t getHeaderLen(ArchFileInfo *info) {
 }
 
 int writeData(FILE *f, int64_t size, void *data) {
-  return writeNBytes(f, size, data, 0);
+  return writeNBytes(f, size, data);
 }
 
 int readHeader(FILE *f, ArchFileInfo *info) {
