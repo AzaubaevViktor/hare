@@ -13,6 +13,8 @@ int addFile2Arch(const char* archName, ArchFileInfo archFileInfo)
     char partialByte = 0;
     int `countUsedBits = 0;
     int i;
+    char left1[9] = {0x00, 0x80, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC, 0xFE, 0xFF};
+    char right1[9] = {0, 1, 3, 7, 15, 31, 63, 127, 255};
 
     archive = fopen(archName, "ab");
     file    = fopen(archFileInfo.fileInfo->name, "rb");
@@ -32,17 +34,30 @@ int addFile2Arch(const char* archName, ArchFileInfo archFileInfo)
         {
             byteForWrite = 0;
             byteForWrite |= partialByte;
-            byteForWrite |= (block[i] >> countUsedBits);
+            byteForWrite |= ((block[i] >> countUsedBits) & right1[8 - countUsedBits]);
 
-            partialByte = (block[i] << (8 - countUsedBits));
+            partialByte = (block[i] << (8 - countUsedBits)) & left1[countUsedBits];
 
             writeNBytes(archive, 1, byteForWrite, 0);
         }
-
+        
         if (countCodingBits % 8)
         {
-            partialByte = block[countCodingBits / 8];
-            countUsedBits = countCodingBits % 8;
+            if ((countUsedBits + countCodingBits % 8) >= 8)
+            {
+            	byteForWrite = 0;
+            	byteForWrite |= patrialByte;
+            	byteForWrite |= ((block[countCodingBits / 8] >> countUsedBits) & right1[8 - countUsedBits]);
+
+            	partialByte = (block[countCodingBits / 8] << (8 - countUsedBits)) & left1[countUsedBits];
+
+	            writeNBytes(archive, 1, byteForWrite, 0);
+            }
+            else
+            {
+                partialByte |= ((block[countCodingBits / 8] >> countUsedBits) & right1[8 - countUsedBits]);
+                countUsedBits += countCodingBits % 8;
+            }
         }
         else
         {
