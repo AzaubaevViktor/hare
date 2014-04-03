@@ -35,7 +35,7 @@ int main(int argc, char *argv[], char *env[])
 
   extract(f, 72, &info, "ololol");
 
-  close(f);
+  fclose(f);
 
   LOGGING_FUNC_STOP;
   DEINIT_LOGGING;
