@@ -11,7 +11,7 @@ int addFile2Arch(const char* archName, ArchFileInfo archFileInfo)
     char block[sizeBlock];
     char byteForWrite;
     char partialByte = 0;
-    int `countUsedBits = 0;
+    int countUsedBits = 0;
     int i;
     char left1[9] = {0x00, 0x80, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC, 0xFE, 0xFF};
     char right1[9] = {0, 1, 3, 7, 15, 31, 63, 127, 255};
