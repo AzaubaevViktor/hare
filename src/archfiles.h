@@ -23,7 +23,7 @@ typedef struct {
   int64_t HeaderCheckSum;
 } ArchFileInfo;
 
-int writeFileHeader(FILE *f, ArchFileInfo *info, int drop);
+int writeFileHeader(FILE *f, ArchFileInfo *info);
 
 size_t getHeaderLen(ArchFileInfo *info);
 
