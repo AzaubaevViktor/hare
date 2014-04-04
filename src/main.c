@@ -1,7 +1,6 @@
 #include "logging.h"
 #include "hare.h"
-
-#include "addFile.h"
+#include "init.h"
 
 #include <stdio.h>
 #include <stdio.h>
@@ -13,17 +12,29 @@ GLOBAL_LOGGING
 
 int main(int argc, char *argv[], char *env[])
 {
-//  INIT_LOGGING;
-//  LOGGING_FUNC_START;
-//  INFO(L"Programm started");
-//  INFO(L"Тест русского языка");
-//  wprintf(L"Hello World!\n");
-//  INFO(L"Programm ended");
-//  LOGGING_FUNC_STOP;
-//  DEINIT_LOGGING;
-//  printf("Programm exit!\n");
 
-    printf("%d\n", addFile2Arch());
+  Context *cnt = (Context *)malloc(sizeof(Context));
+  int _error = 0;
+  INIT_LOGGING;
+  LOGGING_FUNC_START;
+  INFO(L"Programm started");
+  INFO(L"Тест русского языка");
+  printf("Hello World!\n");
+  INFO(L"Programm ended");
+  cnt->argv = argv;
+  cnt->argc = argc;
+  cnt->env  = env;
+  _error = parseArgs(&cnt);
+
+  if (0 != _error) {
+    printHelp();
+  } else {
+    ;
+  }
+
+  DEINIT_LOGGING;
+  printf("Programm exit!\n");
+  printf("%s\n", *(cnt->workFiles));
 
   return 0;
 }

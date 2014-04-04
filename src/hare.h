@@ -1,29 +1,29 @@
 #ifndef HARE_H
 #define HARE_H
+#include "logging.h"
+#include "fileinfo.h"
 #include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>
 
-#include "fileinfo.h"
-
 typedef struct _FileNode {
   char *fileName;
-  FILE *file;
-  struct FileInfo *fileInfo;
+  FileInfo *fileInfo;
   struct _FileNode *next;
 } FileNode;
 
 typedef struct {
   int argc;
-  int8_t keys;
-  /* 0x80,0x40, ... , 0x2, 0x1: Ø, Ø, Ø, Add, eXtract, Delete, List, inTegrity check */
+  char **argv;
+  char **env;
+  int8_t keys; /* 0x80,0x40, ... , 0x2, 0x1: Ø, Ø, Ø, Add, eXtract, Delete, List, inTegrity check */
   char *archName;
-  char *workFiles[];
+  char **workFiles; /* Передали через аргументы */
+  FileNode *filesTree;
 } Context;
 
 
 
-int parseArgs(Context *cnt);
 
 int getFilesInfo(Context *cnt);
 int getArchFileInfo(Context *cnt, int64_t offset, FileInfo *info);

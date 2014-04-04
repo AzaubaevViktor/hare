@@ -1,6 +1,5 @@
-/* 2014 (c), Ktulhy-kun, велосипед олологирование
- *
- * КАК ПОЛЬЗОВАТЬСЯ:
+/* 2014, Korovin Viktor <sarvash.inc@gmail.com> велосипед олологирование
+ * Как пользоваться:
  * Перед main вызываем GLOBAL_LOGGING
  * В main() нутри объявления переменных вызываем INIT_LOGGING
  * В начале функции после объявления переменных написать LOGGING_FUNC_START
@@ -91,8 +90,10 @@ extern wchar_t __logging_pre_tree[1000];
 
 #ifdef DEBUG
 #define __OUT(str, ...) \
-  if (__logging) \
-    fwprintf(__logging_file, str, ##__VA_ARGS__);
+  if (__logging){ \
+    fwprintf(__logging_file, str, ##__VA_ARGS__);\
+    fflush(__logging_file);\
+  }
 #else
 #define __OUT(...)
 #endif
