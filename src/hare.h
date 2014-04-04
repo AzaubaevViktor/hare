@@ -6,14 +6,11 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "fileinfo.h"
-
 typedef struct _FileNode {
   char *fileName;
-  struct FileInfo *fileInfo;
+  FileInfo *fileInfo;
   struct _FileNode *next;
 } FileNode;
-
 
 typedef struct {
   int argc;
@@ -27,8 +24,6 @@ typedef struct {
 
 
 
-
-int parseArgs(Context **cnt);
 
 int getFilesInfo(Context *cnt);
 int getArchFileInfo(Context *cnt, int64_t offset, FileInfo *info);
