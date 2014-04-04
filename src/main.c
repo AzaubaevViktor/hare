@@ -11,7 +11,8 @@ GLOBAL_LOGGING
 
 int main(int argc, char *argv[], char *env[])
 {
-  Context *cnt = (Context *)malloc(sizeof(Context));	  INIT_LOGGING;
+  Context *cnt = (Context *)malloc(sizeof(Context));
+  INIT_LOGGING;
   LOGGING_FUNC_START;
   INFO(L"Programm started");
   INFO(L"Тест русского языка");
