@@ -43,4 +43,14 @@ file, который нужно закодировать
 ./fol_azaza/uhuhu/.
 ./fol_azaza/azaza1
 ./fol_azaza/azaza2
+
+./fol_lol/.
+./fol_azaza/.
+./fol_lol/file2
+./fol_azaza/azaza2
+./fol_lol/file1
+./fol_azaza/oh_ool/.
+./fol_azaza/oh_ool/file3
+./fol_azaza/uhuhu/.
+./fol_azaza/azaza1
 ```
