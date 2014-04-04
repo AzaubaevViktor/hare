@@ -14,7 +14,6 @@ int parseArgs(Context **context){
   if (cnt->argc < 3) {
     cnt->keys = 0x0;
     ERROR(L"Мало аргументов(1 этап)");
-    printHelp();
     LOGGING_FUNC_STOP;
     return -1;
   }
@@ -24,7 +23,6 @@ int parseArgs(Context **context){
   if (*(str + 2) != '\0' || *(str) != '-'){
     cnt->keys = 0x0;
     ERROR(L"Плохой аргумент");
-    printHelp();
     LOGGING_FUNC_STOP;
     return -1;
   }
@@ -34,7 +32,6 @@ int parseArgs(Context **context){
   case 'a':
     if (cnt->argc < 4) {
       cnt->keys = 0x0;
-      printHelp();
       ERROR(L"Мало аргументов(2 этап, case 'a'");
       break;
     }
@@ -77,7 +74,8 @@ int parseArgs(Context **context){
   default:
     cnt->keys = 0x0;
     ERROR(L"Неверный параметр -%c", id);
-    break;
+    LOGGING_FUNC_STOP;
+    return -1;
   }
 
   *context = cnt;

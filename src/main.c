@@ -1,6 +1,6 @@
 #include "logging.h"
-#include "archfiles.h"
 #include "hare.h"
+#include "init.h"
 #include <stdio.h>
 #include <stdio.h>
 #include <wchar.h>
@@ -12,19 +12,27 @@ GLOBAL_LOGGING
 int main(int argc, char *argv[], char *env[])
 {
   Context *cnt = (Context *)malloc(sizeof(Context));
+  int _error = 0;
   INIT_LOGGING;
   LOGGING_FUNC_START;
   INFO(L"Programm started");
   INFO(L"Тест русского языка");
-  wprintf(L"Hello World!\n");
+  printf("Hello World!\n");
   INFO(L"Programm ended");
   cnt->argv = argv;
   cnt->argc = argc;
   cnt->env  = env;
-  parseArgs(&cnt);
+  _error = parseArgs(&cnt);
+
+  if (0 != _error) {
+    printHelp();
+  } else {
+    ;
+  }
+
   DEINIT_LOGGING;
-  wprintf(L"Programm exit!\n");
-  wprintf(L"%s\n", *(cnt->workFiles));
+  printf("Programm exit!\n");
+  printf("%s\n", *(cnt->workFiles));
   return 0;
 }
 
