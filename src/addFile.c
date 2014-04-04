@@ -1,6 +1,6 @@
 #include  "addFile.h"
 
-int addFile2Arch(const char* archName, ArchFileInfo archFileInfo)
+int addFile2Arch(/*const char* archName, ArchFileInfo archFileInfo*/)
 {
     FILE* archive;
     FILE* file;
@@ -15,9 +15,12 @@ int addFile2Arch(const char* archName, ArchFileInfo archFileInfo)
     int i;
     char left1[9] = {0x00, 0x80, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC, 0xFE, 0xFF};
     char right1[9] = {0, 1, 3, 7, 15, 31, 63, 127, 255};
-
+/*
     archive = fopen(archName, "ab");
     file    = fopen(archFileInfo.fileInfo->name, "rb");
+*/
+    archive = fopen("lalka.txt", "ab");
+    file    = fopen("file.txt", "rb");
 
     if (!archive || !file)
     {
@@ -28,7 +31,8 @@ int addFile2Arch(const char* archName, ArchFileInfo archFileInfo)
     {
         readNBytes(file, sizeBlock, block, &sizeReadBlock);
 
-        coding(archFileInfo.haffTree, block, block, countCodingBits);
+        //coding(archFileInfo.haffTree, block, block, countCodingBits);
+        coding(block, block, block, countCodingBits);
 
         for (i = 0; i < countCodingBits / 8; i++)
         {
@@ -46,7 +50,7 @@ int addFile2Arch(const char* archName, ArchFileInfo archFileInfo)
             if ((countUsedBits + countCodingBits % 8) >= 8)
             {
             	byteForWrite = 0;
-            	byteForWrite |= patrialByte;
+                byteForWrite |= partialByte;
             	byteForWrite |= ((block[countCodingBits / 8] >> countUsedBits) & right1[8 - countUsedBits]);
 
             	partialByte = (block[countCodingBits / 8] << (8 - countUsedBits)) & left1[countUsedBits];

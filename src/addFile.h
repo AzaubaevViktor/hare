@@ -15,7 +15,7 @@
  * возвращает 0 в случае успешной записи
  * иначе код ошибки
  */
-int addFile2Arch(const char* archName, ArchFileInfo archFileInfo);
+int addFile2Arch(/*const char* archName, ArchFileInfo archFileInfo*/);
 
 
 /*
