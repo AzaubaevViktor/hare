@@ -12,6 +12,8 @@ pathInDest(pathCan, dest)
 
 isFolder(pathCon)
 Папка ли (определяется по '/.' в конце)
+0 = isFolder("./ololo")
+1 = isFolder("./fol/.")
 
 lelvels(pathCan)
 Уровни вложенности конечного файла, например:
@@ -25,8 +27,8 @@ getFileByPath(pathCan, dest)
 Возвращает имя файла, например:
 "./file"          == getFileByPath("./file", "./file")
 "./ololo"         == getFileByPath("./fololo/azaza/.", "./fololo/azaza/ololo")
-"./fol1/."      == getFileByPath("./fololo/azaza/.", "./fololo/azaza/fold1/.")
-"./fldr/123"    == getFileByPath("./fololo/azaza/.", "./fololo/azaza/fldr/123")
+"./fol1/."        == getFileByPath("./fololo/azaza/.", "./fololo/azaza/fold1/.")
+"./fldr/123"      == getFileByPath("./fololo/azaza/.", "./fololo/azaza/fldr/123")
 ```
 
 
