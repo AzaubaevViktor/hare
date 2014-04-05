@@ -1,3 +1,4 @@
+```
 pathToCanon(path)
 Возвращает имя файла в каноническом виде
 Например:
@@ -26,6 +27,6 @@ getFileByPath(pathCan, dest)
 "./ololo"         == getFileByPath("./fololo/azaza/.", "./fololo/azaza/ololo")
 "./fol1/."      == getFileByPath("./fololo/azaza/.", "./fololo/azaza/fold1/.")
 "./fldr/123"    == getFileByPath("./fololo/azaza/.", "./fololo/azaza/fldr/123")
-
+```
 
 
