@@ -11,7 +11,7 @@
 #define OPEN_FILE_ERROR (1234)
 
 //int addFile(const char* nameFileFrom, const char* nameFileTo);
-int addFile(ArchFileInfo archFileInfo, const char* nameArchive);
+int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive);
 
 void coding(char* huffTree, char* bytesForCoding, int countBytesForCoding, char* codingBits, int* countCodingBits);
 

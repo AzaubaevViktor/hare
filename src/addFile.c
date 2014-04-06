@@ -2,7 +2,7 @@
 
 #define DEBUG_
 
-int addFile(ArchFileInfo archFileInfo, const char* nameArchive)
+int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 {
     FILE* archive;
     FILE* file;
