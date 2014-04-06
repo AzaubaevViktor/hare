@@ -8,12 +8,11 @@ folder/ -> ./folder/.
 
 pathInDest(pathCan, dest)
 Если path в начале dest, то возвращает 1
-1 == nameToDest("./folder/.", "./folder/file")
+1 == nameInDest("./folder/.", "./folder/file")
+1 == nameInDest("./folder", "./folder/file")
+0 == nameInDest("./file", "./file")
 
-isFolder(pathCon)
-Папка ли (определяется по '/.' в конце)
-0 = isFolder("./ololo")
-1 = isFolder("./fol/.")
+Папки и файлы придётся определять на лету, т.к. пользователь может указать папку как `folder/`, так и `folder`
 
 lelvels(pathCan)
 Уровни вложенности конечного файла, например:
