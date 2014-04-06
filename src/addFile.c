@@ -1,82 +1,118 @@
 #include  "addFile.h"
 
-int addFile2Arch(/*const char* archName, ArchFileInfo archFileInfo*/)
+#define DEBUG_
+
+int addFile(ArchFileInfo archFileInfo, const char* nameArchive)
 {
     FILE* archive;
     FILE* file;
 
-    const size_t sizeBlock = 50;
-    int countCodingBits = 0;
-    size_t sizeReadBlock;
+    const int sizeBlock = 30000;
+    int sizeReadBlock;
     char block[sizeBlock];
+
+    int countCodingBits = 0;
+
     char byteForWrite;
+
+    char countUsedBits = 0;
     char partialByte = 0;
-    int countUsedBits = 0;
+
     int i;
+
     char left1[9] = {0x00, 0x80, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC, 0xFE, 0xFF};
     char right1[9] = {0, 1, 3, 7, 15, 31, 63, 127, 255};
-/*
-    archive = fopen(archName, "ab");
-    file    = fopen(archFileInfo.fileInfo->name, "rb");
-*/
-    archive = fopen("lalka.txt", "ab");
-    file    = fopen("file.txt", "rb");
+
+
+    strcpy(block, "");
+
+    file     = fopen(archFileInfo.fileInfo->name,  "rb");
+    archive  = fopen(nameArchive,                  "ab");
 
     if (!archive || !file)
     {
+        //printf("> ERROR OPEN FILE");
         return OPEN_FILE_ERROR;
     }
 
-    while(!feof(file))
+    /*
+
+    ВОТ СЮДА ДОБАВИТЬ ЗАПИСЬ ХЭДЭРА-ПУСТЫШКИ
+
+    */
+
+    while (!feof(file))
     {
-        readNBytes(file, sizeBlock, block, &sizeReadBlock);
+        sizeReadBlock = fread(block, sizeof(char), sizeBlock, file);
 
-        //coding(archFileInfo.haffTree, block, block, countCodingBits);
-        coding(block, block, block, countCodingBits);
+#ifdef DEBUG
+        printf("\n--------------------------------\nCount of read bytes:\t%d\n", sizeReadBlock);
+#endif
+        coding(block, block, sizeReadBlock, block, &countCodingBits);
 
-        for (i = 0; i < countCodingBits / 8; i++)
+#ifdef DEBUG
+        printf("Count of coding bytes:\t%d\n", countCodingBits / 8);
+#endif
+
+        for(i = 0; i < countCodingBits / 8; i++)
         {
-            byteForWrite = 0;
-            byteForWrite |= partialByte;
+            byteForWrite = partialByte;
             byteForWrite |= ((block[i] >> countUsedBits) & right1[8 - countUsedBits]);
 
-            partialByte = (block[i] << (8 - countUsedBits)) & left1[countUsedBits];
-
-            writeNBytes(archive, 1, byteForWrite, 0);
+            partialByte = ((block[i] << (8 - countUsedBits)) & left1[countUsedBits]);
+#ifdef DEBUG
+        printf("Byte for write:\t'%c'\n", byteForWrite);
+#endif
+            writeChar(archive, byteForWrite);
         }
-        
+
         if (countCodingBits % 8)
         {
             if ((countUsedBits + countCodingBits % 8) >= 8)
             {
-            	byteForWrite = 0;
-                byteForWrite |= partialByte;
-            	byteForWrite |= ((block[countCodingBits / 8] >> countUsedBits) & right1[8 - countUsedBits]);
+                byteForWrite = partialByte;
+                byteForWrite |= ((block[countCodingBits / 8] >> countUsedBits) & right1[8 - countUsedBits]);
 
-            	partialByte = (block[countCodingBits / 8] << (8 - countUsedBits)) & left1[countUsedBits];
+                partialByte = ((block[countCodingBits / 8] << (8 - countUsedBits)) & left1[countUsedBits]);
 
-	            writeNBytes(archive, 1, byteForWrite, 0);
+                writeChar(archive, byteForWrite);
             }
             else
             {
-                partialByte |= ((block[countCodingBits / 8] >> countUsedBits) & right1[8 - countUsedBits]);
+                partialByte |= ((block[countCodingBits / 8] >> countUsedBits) & right1[8 - countUsedBits] & left1[countUsedBits + countCodingBits % 8]);
                 countUsedBits += countCodingBits % 8;
             }
         }
-        else
-        {
-            partialByte = 0;
-            countUsedBits = 0;
-        }
+
+
+
+        strcpy(block, "");
     }
+
+    if (countUsedBits)
+    {
+        writeChar(archive, partialByte);
+    }
+    archFileInfo.endUnusedBits = 8 - countUsedBits;
+
+    /*
+
+    ВОТ СЮДА ЗАПИСАТЬ УЖЕ ГОТОВЫЙ ХЭДЭР
+
+    */
+
+
+    dropWrBytes(archive);
 
     fclose(archive);
     fclose(file);
+
     return 0;
 }
 
-void coding(char* huffTree, char* bytesForCoding, char* codingBits, int* countCodingBits)
+
+void coding(char* huffTree, char* bytesForCoding, int countBytesForCoding, char* codingBits, int* countCodingBits)
 {
-    codingBits = bytesForCoding;
-    *countCodingBits = strlen(bytesForCoding) * 8;
+    memcpy(codingBits, bytesForCoding, countBytesForCoding);
+    *countCodingBits = countBytesForCoding * 8;
 }

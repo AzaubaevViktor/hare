@@ -2,6 +2,8 @@
 #include "hare.h"
 #include "init.h"
 
+#include "addFile.h"
+
 #include <stdio.h>
 #include <stdio.h>
 #include <wchar.h>
@@ -24,7 +26,7 @@ int main(int argc, char *argv[], char *env[])
   cnt->argv = argv;
   cnt->argc = argc;
   cnt->env  = env;
-  _error = parseArgs(&cnt);
+  //_error = parseArgs(&cnt);
 
   if (0 != _error) {
     printHelp();
@@ -33,8 +35,8 @@ int main(int argc, char *argv[], char *env[])
   }
 
   DEINIT_LOGGING;
-  printf("Programm exit!\n");
-  printf("%s\n", *(cnt->workFiles));
+  //printf("Programm exit!\n");
+  //printf("%s\n", *(cnt->workFiles));
 
   return 0;
 }
