@@ -10,7 +10,8 @@ SOURCES += main.c \
     fileinfo.c \
     getFilesInfo.c \
     lowfile.c \
-    archfiles.c
+    archfiles.c \
+    path.c
 
 HEADERS += \
     hare.h \
@@ -18,5 +19,6 @@ HEADERS += \
     logging.h \
     init.h \
     lowfile.h \
-    archfiles.h
+    archfiles.h \
+    path.h
 
