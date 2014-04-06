@@ -1,5 +1,5 @@
 ```
-pathToCanon(path)
+pathToCanon(path) ЛЁША
 Возвращает имя файла в каноническом виде
 Например:
 name -> ./name
@@ -15,7 +15,7 @@ pathInDest(pathCan, dest)
 
 Папки и файлы придётся определять на лету, т.к. пользователь может указать папку как `folder/`, так и `folder`
 
-lelvels(pathCan)
+lelvels(pathCan) ЛЁША
 Уровни вложенности конечного файла, например:
 0 = levels("./file")
 1 = levels("./folder/.")
@@ -29,6 +29,8 @@ getFileByPath(pathCan, dest)
 "./ololo"         == getFileByPath("./fololo/azaza/.", "./fololo/azaza/ololo")
 "./fol1/."        == getFileByPath("./fololo/azaza/.", "./fololo/azaza/fold1/.")
 "./fldr/123"      == getFileByPath("./fololo/azaza/.", "./fololo/azaza/fldr/123")
+
+isFolder(pathCan) ЛЁША
 ```
 
 
