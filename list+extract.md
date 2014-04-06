@@ -10,7 +10,8 @@ pathInDest(pathCan, dest)
 Если path в начале dest, то возвращает 1
 1 == nameInDest("./folder/.", "./folder/file")
 1 == nameInDest("./folder", "./folder/file")
-0 == nameInDest("./file", "./file")
+1 == nameInDest("./file", "./file")
+0 == nameInDest("./file/.", "./file")
 
 Папки и файлы придётся определять на лету, т.к. пользователь может указать папку как `folder/`, так и `folder`
 
