@@ -8,7 +8,7 @@ folder/ -> ./folder/.
 
 pathInDest(pathCan, dest)
 Если path в начале dest, то возвращает 1
-1 == nameToDest("./folder", "./folder/file")
+1 == nameToDest("./folder/.", "./folder/file")
 
 isFolder(pathCon)
 Папка ли (определяется по '/.' в конце)
