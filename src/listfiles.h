@@ -2,6 +2,7 @@
 #define LISTFILES_H
 #include "logging.h"
 #include "archfiles.h"
+#include "path.h"
 
 #define READ_ARCH_ERROR (3321)
 

@@ -2,8 +2,11 @@
 
 /* Convert `path` to canonical view. Return _new_ string */
 char *pathToCanon(char *path) {
-    char *current = path;
-    int64_t i = strlen(current);
+
+    //char *current = path;
+    int64_t i = strlen(path);
+    char *current = (char *)calloc(i + 1, sizeof(char));
+    strcpy(current, path);
     if (*(current + 0) != '.' && *(current + 1) != '/'){
         if ((current = realloc(current, (i + 3) * sizeof(char))) == NULL){
                 return NULL;
