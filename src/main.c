@@ -1,6 +1,7 @@
 #include "logging.h"
 #include "hare.h"
 #include "init.h"
+#include "path.h"
 #include <stdio.h>
 #include <stdio.h>
 #include <wchar.h>
