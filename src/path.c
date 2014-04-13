@@ -2,27 +2,27 @@
 
 /* Convert `path` to canonical view. Return _new_ string */
 char *pathToCanon(char *path) {
-    char *current = path;
-        int i = strlen(current);
-        if (*(current + 0) != '.' && *(current + 1) != '/'){
-            if ((current = realloc(current, (i + 3) * sizeof(char))) == NULL){
-                return NULL;
-            }
-            memmove(current + 2, current, (i + 1) * sizeof(char));
-            *(current + 0) = '.';
-            *(current + 1) = '/';
-        }
-        if (*(current + strlen(current) - 1) == '/'){
-            i = strlen(current);
-            if ((current = (char *)realloc(current, (i + 2) * sizeof(char))) == NULL){
-                return NULL;
-        }
-
-            *(current + i) = '.';
-            *(current + i + 1) = '\0';
-        }
-        return current;
+  char *current = path;
+  int i = strlen(current);
+  if (*(current + 0) != '.' && *(current + 1) != '/'){
+    if ((current = realloc(current, (i + 3) * sizeof(char))) == NULL){
+      return NULL;
     }
+    memmove(current + 2, current, (i + 1) * sizeof(char));
+    *(current + 0) = '.';
+    *(current + 1) = '/';
+  }
+  if (*(current + strlen(current) - 1) == '/'){
+    i = strlen(current);
+    if ((current = (char *)realloc(current, (i + 2) * sizeof(char))) == NULL){
+      return NULL;
+    }
+
+    *(current + i) = '.';
+    *(current + i + 1) = '\0';
+  }
+  return current;
+}
 
 
 /* If `pathCan` in begin of `destCan` `pathInDest` return 1 */
@@ -43,12 +43,12 @@ int pathInDest(char *pathCan, char *destCan) {
 
 /* return nesting level */
 int levels(char *pathCan) {
-    int len = strlen(pathCan);
-        int i, j = 0;
-        for (i = 0; i < len; i++){
-            if (*(pathCan + i) == '/') j++;
-        }
-        return j - 1;
+  int len = strlen(pathCan);
+  int i, j = 0;
+  for (i = 0; i < len; i++){
+    if (*(pathCan + i) == '/') j++;
+  }
+  return j - 1;
 }
 
 /* return file name to extract by path in current directory*/
@@ -58,7 +58,7 @@ char *getFileByPath(char *pathCan, char *dest) {
 
 /* Folder or not folder (using after getFileByPath) */
 int isFolder(char *pathCan) {
-    int i = strlen(pathCan);
-    if (*(pathCan + i - 2) == '/' && *(pathCan + i - 1) == '.') return 1;
-    else return 0;
+  int i = strlen(pathCan);
+  if (*(pathCan + i - 2) == '/' && *(pathCan + i - 1) == '.') return 1;
+  else return 0;
 }
