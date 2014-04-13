@@ -23,7 +23,6 @@ char *pathToCanon(char *path) {
         *(current + i) = '.';
         *(current + i + 1) = '\0';
     }
-    free(path);//Интерестно, не залажает?
     return current;
 }
 
