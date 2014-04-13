@@ -5,6 +5,8 @@ pathToCanon(path) ЛЁША
 name -> ./name
 folder/ -> ./folder/.
 ./folder/dddd -> ./folder/dddd
+/file -> NULL
+
 
 pathInDest(pathCan, dest)
 Если path в начале dest, то возвращает 1
@@ -22,6 +24,9 @@ lelvels(pathCan) ЛЁША
 1 = levels("./folder/123")
 2 = levels("./folder/fol1/.")
 2 = levels("./folder/fol1/lol")
+
+0 = levels("/.")
+1 = levels("/fold/.")
 
 getFileByPath(pathCan, dest)
 Возвращает имя файла, например:
