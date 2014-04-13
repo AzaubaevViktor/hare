@@ -5,10 +5,7 @@ pathToCanon(path) ЛЁША
 name -> ./name
 folder/ -> ./folder/.
 ./folder/dddd -> ./folder/dddd
-/file -> /file
-/fold/ -> /fold/.
-/fold/. -> /fold/.
-/ -> /.
+/file -> NULL
 
 
 pathInDest(pathCan, dest)
@@ -17,8 +14,6 @@ pathInDest(pathCan, dest)
 1 == nameInDest("./folder", "./folder/file")
 1 == nameInDest("./file", "./file")
 0 == nameInDest("./file/.", "./file")
-1 == nameInDest("/fold/.", "/fold/file")
-0 == nameInDest("/fold/.", "./fold/file")
 
 Папки и файлы придётся определять на лету, т.к. пользователь может указать папку как `folder/`, так и `folder`
 
