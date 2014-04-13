@@ -2,21 +2,18 @@
 
 /* Convert `path` to canonical view. Return _new_ string */
 char *pathToCanon(char *path) {
-    //char *current = path;
+
 
     int64_t i = strlen(path);
     char *current = (char *)calloc(i + 1, sizeof(char));
     strcpy(current, path);
     if (*(current + 0) == '/'){
-            if ((current = realloc(current, (i + 2) * sizeof(char))) == NULL){
-                    return NULL;
-            }
-            memmove(current + 1, current, (i + 1) * sizeof(char));
-            *(current + 0) = '.';
+            free(current);
+            return NULL;
         }
-    else if ((*(current + 0) != '.'&& *(current + 1) != '/') || (*(current + 0) != '.'&& *(current + 1) == '/')){
+    else if (!(*(current + 0) == '.'&& *(current + 1) == '/')){
         if ((current = realloc(current, (i + 3) * sizeof(char))) == NULL){
-                return NULL;
+            return NULL;
         }
         memmove(current + 2, current, (i + 1) * sizeof(char));
         *(current + 0) = '.';
