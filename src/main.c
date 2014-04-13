@@ -66,7 +66,8 @@ int main(int argc, char *argv[], char *env[])
   } else {
     ;
   }
-
+  char *str = pathToCanon("f/");
+  printf("%s\n", str);
   DEINIT_LOGGING;
   printf("Programm exit!\n");
   printf("%s\n", *(cnt->workFiles));

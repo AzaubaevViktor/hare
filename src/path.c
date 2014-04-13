@@ -7,7 +7,14 @@ char *pathToCanon(char *path) {
     int64_t i = strlen(path);
     char *current = (char *)calloc(i + 1, sizeof(char));
     strcpy(current, path);
-    if (*(current + 0) != '.' && *(current + 1) != '/'){
+    if (*(current + 0) == '/'){
+            if ((current = realloc(current, (i + 2) * sizeof(char))) == NULL){
+                    return NULL;
+            }
+            memmove(current + 1, current, (i + 1) * sizeof(char));
+            *(current + 0) = '.';
+        }
+    else if ((*(current + 0) != '.'&& *(current + 1) != '/') || (*(current + 0) != '.'&& *(current + 1) == '/')){
         if ((current = realloc(current, (i + 3) * sizeof(char))) == NULL){
                 return NULL;
         }
