@@ -30,7 +30,8 @@ int main(int argc, char *argv[], char *env[])
   printf("%s\n", pathToCanon("/fold/"));
   printf("%s\n", pathToCanon("fold/fold"));
   printf("%s\n", pathToCanon("./fold/"));
-  printf("%s\n", pathToCanon(""));
+  printf("%s\n", pathToCanon("/file"));
+  printf("%s\n", pathToCanon("/"));
 
   printf("pathInDest\n");
 
