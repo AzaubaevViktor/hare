@@ -148,7 +148,7 @@ int _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int drop) {
 
       if (pos >= rd_bytes) {
         if (is_eof) {
-          for (i=ext_pos-1; i<N; i++) {
+          for (i=ext_pos; i<N; i++) {
             str[i] = '\0';
           }
           LOGGING_FUNC_STOP;
