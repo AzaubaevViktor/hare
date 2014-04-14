@@ -1,6 +1,8 @@
 #ifndef EXTRACT_H
 #define EXTRACT_H
 
+#include "path.h"
+#include "hare.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <logging.h>
@@ -16,7 +18,12 @@
  * Внутри есть буфер (static ???), который хранит символ (например, если тот не до конца присутствует в текущей строке
  * drop сбрасывает буфер
  */
+
+int extractFiles(FILE *f, Context *cnt);
+
 char *decoding(char *bytes, size_t lenBits, size_t *returnBytes, int drop);
 int extract(FILE *f, size_t offset, ArchFileInfo *info, char *fileName);
+
+
 
 #endif // EXTRACT_H

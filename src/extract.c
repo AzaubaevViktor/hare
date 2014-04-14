@@ -24,7 +24,6 @@ int extract(FILE *f, size_t offset, ArchFileInfo *info, char *fileName) {
   FILE *fOut = NULL;
   char *buf = malloc(BUF_SIZE*sizeof(char));
   char *buf2Write = NULL;
-  char charBuf = 0;
   int dropBuf = 0;
   size_t lenBits = 0;
   size_t readBytes = 0;
@@ -74,4 +73,22 @@ int extract(FILE *f, size_t offset, ArchFileInfo *info, char *fileName) {
 
   return 0;
   LOGGING_FUNC_STOP;
+}
+
+
+int extractFiles(FILE *f, Context *cnt) {
+  char **files = cnt->workFiles;
+  int64_t len = 0;
+  ArchFileInfo file;
+  LOGGING_FUNC_START;
+  for (len=0; *(files+len); len++);
+
+  INFO(L"Len:%d", len);
+
+  readHeader(f, &file);
+
+  file.fileInfo->name;
+
+  LOGGING_FUNC_STOP;
+  return 0;
 }

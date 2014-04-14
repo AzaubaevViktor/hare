@@ -1,6 +1,7 @@
 #include "logging.h"
 #include "hare.h"
 #include "init.h"
+#include "extract.h"
 #include <stdio.h>
 #include <stdio.h>
 #include <wchar.h>
@@ -12,6 +13,7 @@ GLOBAL_LOGGING
 int main(int argc, char *argv[], char *env[])
 {
   Context *cnt = (Context *)malloc(sizeof(Context));
+  FILE *f = NULL;
   int _error = 0;
   INIT_LOGGING;
   LOGGING_FUNC_START;
@@ -41,7 +43,9 @@ int main(int argc, char *argv[], char *env[])
       ;
       break;
     case 0x8:
-      ;
+      f = fopen(argv[2], "rb");
+      extractFiles(f, cnt);
+      fclose(f);
       break;
     case 0x10:
       ;
