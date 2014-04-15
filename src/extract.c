@@ -13,12 +13,11 @@
 
 char *decoding(char *bytes, size_t lenBits, size_t *returnBytes, int drop) {
   *returnBytes = lenBits / 8;
-  bytes[lenBits/16] = 'F';
   return bytes;
 }
 
 
-int extract(FILE *f, size_t offset, ArchFileInfo *info, char *fileName) {
+int extract(FILE *f, ArchFileInfo *info, char *fileName) {
   LOGGING_FUNC_START;
   int _error = 0;
   FILE *fOut = NULL;
@@ -31,19 +30,12 @@ int extract(FILE *f, size_t offset, ArchFileInfo *info, char *fileName) {
   size_t readedBytes = 0;
   size_t howManyBytesRead = 0;
 
-  if (0 != (_error = fseek(f, offset, SEEK_SET))) {
-    IO(L"`fseek` return `%d`", _error);
-    LOGGING_FUNC_STOP;
-    return FSEEK_ERROR;
-  }
-
   if (NULL == (fOut = fopen(fileName, "wb"))) {
     IO(L"Couldnt open file `%s`", fileName);
     LOGGING_FUNC_STOP;
     return FILE_OPEN_ERROR;
   }
 
-  dropRdBytes(f);
   dropWrBytes(fOut);
 
   for (readedBytes=0; readedBytes < info->dataSize;) {
@@ -54,7 +46,7 @@ int extract(FILE *f, size_t offset, ArchFileInfo *info, char *fileName) {
 
     if ((howManyBytesRead == BUF_SIZE) & (IO_EOF ==  _error)) {
       LOGGING_FUNC_STOP;
-      IO(L"Error reading archive file by offset `%zd`", offset);
+      IO(L"Error reading archive file");
       return IO_READ_ERROR;
     }
 
@@ -71,23 +63,70 @@ int extract(FILE *f, size_t offset, ArchFileInfo *info, char *fileName) {
 
   fclose(fOut);
 
-  return 0;
+  return _error;
   LOGGING_FUNC_STOP;
 }
 
 
 int extractFiles(FILE *f, Context *cnt) {
   char **files = cnt->workFiles;
+  char *res = NULL;
+  char *currentFile = NULL;
   int64_t len = 0;
-  ArchFileInfo file;
+  int64_t i = 0;
+  ArchFileInfo aFileInfo;
+  FileInfo fInfo;
+  int shifted = 0;
+  int _error = 0;
+  fpos_t archPos;
   LOGGING_FUNC_START;
-  for (len=0; *(files+len); len++);
+  for (len=0; *(files+len); len++) {
+    res = *(files + len);
+    *(files + len) = pathToCanon(res);
+  }
 
   INFO(L"Len:%d", len);
+  aFileInfo.fileInfo = &fInfo;
 
-  readHeader(f, &file);
+  while (IO_EOF != _error) {
+    _error = readHeader(f, &aFileInfo);
 
-  file.fileInfo->name;
+    if (_error) {
+      WARNING(L"readHeader return `%d` error", _error);
+      LOGGING_FUNC_STOP;
+      return _error;
+    }
+
+    INFO(L"File: %s", aFileInfo.fileInfo->name);
+
+    shifted = 0;
+
+    for (i=0; i<len; i++) {
+      if ((*(files + i)) &&
+          (pathInDest(*(files + i), aFileInfo.fileInfo->name))) {
+        currentFile = getFileByPath(*(files + i), aFileInfo.fileInfo->name);
+        INFO(L"Current file: `%s`", currentFile);
+        if (isFolder(*(files + i))) {
+          INFO(L"Folder");
+          ;
+        } else {
+          IO(L"Extract `%s` to `%s`", aFileInfo.fileInfo->name, *(files + i));
+          _error = extract(f, &aFileInfo, *(files + i));
+          shifted = 1;
+        }
+        free(*(files+i));
+        free(currentFile);
+        currentFile = NULL;
+      }
+    }
+
+    if (!shifted) {
+      fgetpos(f, &archPos);
+      fseek(f, archPos.__pos - (BUF_LEN - getRdPos(f)) + aFileInfo.dataSize, SEEK_SET);
+      dropRdBytes(f);
+      INFO(L"Position: `%d` + `%d` ", (archPos.__pos - (BUF_LEN - getRdPos(f))), aFileInfo.dataSize);
+    }
+  }
 
   LOGGING_FUNC_STOP;
   return 0;

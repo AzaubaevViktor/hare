@@ -56,9 +56,9 @@ int main(int argc, char *argv[], char *env[])
     }
   }
 
+  LOGGING_FUNC_STOP;
   DEINIT_LOGGING;
   printf("Programm exit!\n");
-  printf("%s\n", *(cnt->workFiles));
   return 0;
 }
 
