@@ -7,7 +7,6 @@
 
 /* ======================== WRITE ===================== */
 
-
 int _writeBytes(FILE *f, char *buf, size_t k_bytes) {
   LOGGING_FUNC_START;
   size_t wr_bytes = 0;
@@ -118,7 +117,7 @@ int _readBytes(FILE *f, char *buf, size_t k_bytes, size_t *rd_bytes) {
 }
 
 
-int _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int drop) {
+int _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int drop, uint64_t *position) {
   static char buf[BUF_LEN];
   static uint64_t pos = 0;
   static size_t rd_bytes = 0;
@@ -130,11 +129,13 @@ int _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int drop) {
 
   LOGGING_FUNC_START;
 
+  *position = pos;
+
   *read_bytes = 0;
 
   if (drop) {
     IO(L"Drop read buffer");
-    pos = 0;
+    *position = (pos = 0);
     rd_bytes = 0;
     is_eof = 0;
   } else {
@@ -143,7 +144,7 @@ int _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int drop) {
       nBufBytes = (rd_bytes - pos) < (N - ext_pos) ? (rd_bytes - pos) : (N - ext_pos);
       memcpy(str+ext_pos, buf+pos, nBufBytes);
       ext_pos += nBufBytes;
-      pos += nBufBytes;
+      *position = (pos += nBufBytes);
       *read_bytes += nBufBytes;
 
       if (pos >= rd_bytes) {
@@ -156,7 +157,7 @@ int _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int drop) {
         }
 
         IO(L"Read file to buffer");
-        pos = 0;
+        *position = (pos = 0);
         r_result = _readBytes(f, buf, BUF_LEN, &rd_bytes);
 
         is_eof = (r_result == IO_EOF) ? 1 : 0;
@@ -175,13 +176,22 @@ int _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int drop) {
 
 
 int dropRdBytes(FILE *f) {
+  uint64_t position = 0;
   size_t read_bytes = 0;
-  return _readNBytes(f, 0, NULL, &read_bytes, 1);
+  return _readNBytes(f, 0, NULL, &read_bytes, 1, &position);
 }
 
 
 int readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes) {
-  return _readNBytes(f, N, str, read_bytes, 0);
+  uint64_t position = 0;
+  return _readNBytes(f, N, str, read_bytes, 0, &position);
+}
+
+uint64_t getRdPos(FILE *f) {
+  uint64_t position = 0;
+  size_t read_bytes = 0;
+  _readNBytes(f, 0, NULL, &read_bytes, 0, &position);
+  return position;
 }
 
 
@@ -205,10 +215,8 @@ int readInt64(FILE *f, int64_t *num, size_t *read_bytes) {
 }
 
 
-int readChar(FILE *f, char ch, size_t *read_bytes) {
-  LOGGING_FUNC_START;
+int readChar(FILE *f, char *ch, size_t *read_bytes) {
   IO(L"Read char");
-  readNBytes(f, 1, &ch, read_bytes);
-  LOGGING_FUNC_STOP;
+  readNBytes(f, 1, ch, read_bytes);
   return 0;
 }

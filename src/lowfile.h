@@ -37,8 +37,9 @@ int writeInt64(FILE *f, int64_t num);
 int writeChar(FILE *f, char ch);
 
 int dropRdBytes(FILE *f);
+uint64_t getRdPos(FILE *f);
 int readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes);
 int readInt64(FILE *f, int64_t *num, size_t *read_bytes);
-int readChar(FILE *f, char ch, size_t *read_bytes);
+int readChar(FILE *f, char *ch, size_t *read_bytes);
 
 #endif // LOWFILE_H
