@@ -29,6 +29,8 @@ int writeData(FILE *f, int64_t size, void *data) {
   return writeNBytes(f, size, data);
 }
 
+//TODO: Добавить проброс ошибок наружу, нормальный обработчик EOF
+
 int readHeader(FILE *f, ArchFileInfo *info) {
   char signature[SIGNATURE_LEN] = "";
   int64_t fileNameLen = 0;
@@ -63,9 +65,9 @@ int readHeader(FILE *f, ArchFileInfo *info) {
 
   readInt64(f, &(info->dataSize), &read_bytes);
 
-  readChar(f, info->endUnusedBits, &read_bytes);
+  readChar(f, &(info->endUnusedBits), &read_bytes);
 
-  readChar(f, info->flags, &read_bytes);
+  readChar(f, &(info->flags), &read_bytes);
 
   readInt64(f, &(info->haffTreeSize), &read_bytes);
 
