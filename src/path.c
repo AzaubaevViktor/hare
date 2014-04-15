@@ -3,11 +3,15 @@
 /* Convert `path` to canonical view. Return _new_ string */
 char *pathToCanon(char *path) {
 
-    //char *current = path;
+
     int64_t i = strlen(path);
     char *current = (char *)calloc(i + 1, sizeof(char));
     strcpy(current, path);
-    if (*(current + 0) != '.' && *(current + 1) != '/'){
+    if (*(current + 0) == '/'){
+            free(current);
+            return NULL;
+        }
+    else if (!(*(current + 0) == '.'&& *(current + 1) == '/')){
         if ((current = realloc(current, (i + 3) * sizeof(char))) == NULL){
                 return NULL;
         }
@@ -31,10 +35,16 @@ char *pathToCanon(char *path) {
 int pathInDest(char *pathCan, char *destCan) {
   int64_t pos = 0;
   int64_t minLen = min(strlen(pathCan), strlen(destCan));
-  for (pos = 2; pos < minLen; pos++) {
-    if (('.' == pathCan[pos]) && (0 == pathCan[pos])) {
+  for (pos = 0; pos <= minLen; pos++) {
+
+    if (0 == pathCan[pos]) {
       return 1;
     }
+
+    if (('.' == pathCan[pos]) && (0 == pathCan[pos+1])) {
+      return 1;
+    }
+
     if (pathCan[pos] != destCan[pos]) {
       return 0;
     }
@@ -53,8 +63,38 @@ int levels(char *pathCan) {
         return j - 1;
 }
 
-/* return file name to extract by path in current directory*/
+
+/* return file name to extract by path in current directory, use only after pathInDest!*/
 char *getFileByPath(char *pathCan, char *dest) {
+  int64_t lenPath = strlen(pathCan);
+  int64_t lenDest = strlen(dest);
+  char *name = NULL;
+  int64_t pos = 0;
+
+  if ('.' == pathCan[lenPath]) {
+    name = calloc((lenDest-lenPath) + 2, sizeof(char));
+    name[0] = '.';
+    name[1] = '/';
+    strcpy(name + 2, dest + (lenDest - lenPath - 1));
+    return name;
+  } else {
+    if (lenDest == lenPath) {
+      for (pos=lenDest; 0 < pos; pos--) {
+        if ('/' == dest[pos]) {
+          name = calloc(lenDest-pos + 1,sizeof(char));
+          name[0] = '.';
+          strcpy(name+1,dest+pos);
+          return name;
+        }
+      }
+    } else {
+      name = calloc((lenDest - lenPath) + 1, sizeof(char));
+      name[0] = '.';
+      strcpy(name + 1, dest + (lenPath - 2));
+      return name;
+    }
+  }
+
   return NULL;
 }
 
