@@ -68,7 +68,29 @@ int main(int argc, char *argv[], char *env[])
   if (0 != _error) {
     printHelp();
   } else {
-    ;
+    switch(cnt->keys) {
+    case 0x0:
+      ;
+      break;
+    case 0x1:
+      ;
+      break;
+    case 0x2:
+      ;
+      break;
+    case 0x4:
+      ;
+      break;
+    case 0x8:
+      ;
+      break;
+    case 0x10:
+      ;
+      break;
+    default:
+      printHelp();
+      break;
+    }
   }
   char *str = pathToCanon("./file/");
   printf("%s\n", str);

@@ -105,7 +105,7 @@ extern wchar_t __logging_pre_tree[1000];
   if (__logging_level) {\
     __logging_pre_tree[wcslen(__logging_pre_tree) - 1] = 0; \
   } \
-  __OUT(L"%ls│\n%ls├─`"__FILE__ L"`:%d:\n", __logging_pre_tree, __logging_pre_tree, __LINE__); \
+  __OUT(L"%ls├─`"__FILE__ L"`:%d:\n", __logging_pre_tree, __LINE__); \
   if (__logging_level) { \
     wcscat(__logging_pre_tree, L"│  ├"); \
   }
@@ -117,7 +117,7 @@ extern wchar_t __logging_pre_tree[1000];
 #ifdef DEBUG
 #define LOGGING_FUNC_STOP \
   __logging_pre_tree[wcslen(__logging_pre_tree) - 1] = 0; \
-  __OUT(L"%ls└────────\n%ls\n", __logging_pre_tree, __logging_pre_tree); \
+  __OUT(L"%ls└────────\n", __logging_pre_tree); \
   if (__logging_level) { \
     __logging_pre_tree[wcslen(__logging_pre_tree) - 3] = 0; \
     __logging_level -= 1; \
