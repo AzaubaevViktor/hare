@@ -2,6 +2,7 @@
 #include "hare.h"
 #include "init.h"
 #include "path.h"
+#include "listfiles.h"
 #include <stdio.h>
 #include <stdio.h>
 #include <wchar.h>
@@ -24,7 +25,7 @@ int main(int argc, char *argv[], char *env[])
   cnt->argc = argc;
   cnt->env  = env;
   _error = parseArgs(&cnt);
-
+/*
   printf("%s\n", pathToCanon("f"));
   printf("%s\n", pathToCanon("f/"));
   printf("%s\n", pathToCanon("/fold/"));
@@ -60,7 +61,10 @@ int main(int argc, char *argv[], char *env[])
   printf("%s\n", getFileByPath("./","./"));
   printf("%s\n", getFileByPath("./","./"));
   printf("%s\n", getFileByPath("./","./"));
-
+*/
+  FILE *f = fopen("archive.hr", "r");
+  if (f == NULL) printf("NOT\n");
+  printFilesOfFolder(f, "");
   if (0 != _error) {
     printHelp();
   } else {
