@@ -17,6 +17,7 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
         if (err != 0){
             ERROR(L"Some problem in readHeader with code %d", err);
             LOGGING_FUNC_STOP;
+
             return READ_ARCH_ERROR;
         }
         currentNameFile = info->fileInfo->name;
