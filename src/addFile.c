@@ -18,6 +18,8 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     char countUsedBits = 0;
     char partialByte = 0;
 
+    long positionHeaderInFile;
+
     int i;
 
     char left1[9] = {0x00, 0x80, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC, 0xFE, 0xFF};
@@ -35,11 +37,15 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
         return OPEN_FILE_ERROR;
     }
 
-    /*
+    positionHeaderInFile = ftell(archive);
 
-    ВОТ СЮДА ДОБАВИТЬ ЗАПИСЬ ХЭДЭРА-ПУСТЫШКИ
+    archFileInfo.dataSize = 0;
+    archFileInfo.endUnusedBits = 0;
+    archFileInfo.haffTreeSize = 0;
+    strcpy(archFileInfo.haffTree, "");
+    archFileInfo.HeaderCheckSum = 0;
 
-    */
+    writeFileHeader(archive, &archFileInfo);
 
     while (!feof(file))
     {
@@ -95,14 +101,13 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     }
     archFileInfo.endUnusedBits = 8 - countUsedBits;
 
-    /*
-
-    ВОТ СЮДА ЗАПИСАТЬ УЖЕ ГОТОВЫЙ ХЭДЭР
-
-    */
-
-
     dropWrBytes(archive);
+
+
+    fseek(archive, positionHeaderInFile, SEEK_SET);
+
+    writeFileHeader(archive, &archFileInfo);
+
 
     fclose(archive);
     fclose(file);
