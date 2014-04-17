@@ -40,6 +40,8 @@ int main(int argc, char *argv[], char *env[])
   printf("%d\n", pathInDest("./file/.","./file"));
   printf("%d\n", pathInDest("./file/.","./file/ololo"));
   printf("%d\n", pathInDest("/file/.","./file/ololo"));
+  printf("%d\n", pathInDest("/file","./fileololo"));
+  printf("%d\n", pathInDest("/file/aza","./file/azaololo"));
 
   printf("LEVELS\n");
 
