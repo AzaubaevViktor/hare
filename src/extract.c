@@ -45,8 +45,8 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
     readedBytes += readBytes;
 
     if ((howManyBytesRead == BUF_SIZE) & (IO_EOF ==  _error)) {
-      LOGGING_FUNC_STOP;
       IO(L"Error reading archive file");
+      LOGGING_FUNC_STOP;
       return IO_READ_ERROR;
     }
 
@@ -63,8 +63,8 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
 
   fclose(fOut);
 
-  return _error;
   LOGGING_FUNC_STOP;
+  return _error;
 }
 
 
@@ -79,6 +79,7 @@ int extractFiles(FILE *f, Context *cnt) {
   int shifted = 0;
   int _error = 0;
   fpos_t archPos;
+  struct stat st = {0};
   LOGGING_FUNC_START;
   for (len=0; *(files+len); len++) {
     res = *(files + len);
@@ -106,15 +107,24 @@ int extractFiles(FILE *f, Context *cnt) {
           (pathInDest(*(files + i), aFileInfo.fileInfo->name))) {
         currentFile = getFileByPath(*(files + i), aFileInfo.fileInfo->name);
         INFO(L"Current file: `%s`", currentFile);
-        if (isFolder(*(files + i))) {
+        if (isFolder(currentFile)) {
           INFO(L"Folder");
-          ;
-        } else {
-          IO(L"Extract `%s` to `%s`", aFileInfo.fileInfo->name, *(files + i));
-          _error = extract(f, &aFileInfo, *(files + i));
+          if (-1 == stat(currentFile, &st)) {
+            currentFile[max(strlen(currentFile)-2, 0)] = 0;
+            _error = mkdir(currentFile, 0777);
+            INFO(L"Folder create with error `%d`", _error)
+          }
           shifted = 1;
+        } else {
+          IO(L"Extract `%s` to `%s`", aFileInfo.fileInfo->name, currentFile);
+          _error = extract(f, &aFileInfo, currentFile);
+          INFO(L"Extract with error `%d`", _error)
+          shifted = 1;
+          if (!isFolder(*(files + i))) {
+            free(*(files+i));
+            *(files + i) = NULL;
+          }
         }
-        free(*(files+i));
         free(currentFile);
         currentFile = NULL;
       }
