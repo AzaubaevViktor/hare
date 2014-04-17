@@ -53,14 +53,20 @@ int main(int argc, char *argv[], char *env[])
 
   printf("getFileByPath\n");
 
-  printf("%s\n", getFileByPath("./file","./file"));
-  printf("%s\n", getFileByPath("./fold/.","./fold/file"));
-  printf("%s\n", getFileByPath("./fold/.","./fold/fold1/."));
-  printf("%s\n", getFileByPath("./fold/.","./fold/fold1/file"));
-  printf("%s\n", getFileByPath("/.","/file"));
-  printf("%s\n", getFileByPath("./","./"));
-  printf("%s\n", getFileByPath("./","./"));
-  printf("%s\n", getFileByPath("./","./"));
+  printf("%s\n", getFileByPath("./file", "./file"));
+  printf("%s\n", getFileByPath("./file/.", "./file/."));
+  printf("%s\n", getFileByPath("./fold/.", "./fold/file"));
+  printf("%s\n", getFileByPath("./fold/.", "./fold/fold1/."));
+  printf("%s\n", getFileByPath("./fold/.", "./fold/fold1/file"));
+  printf("%s\n", getFileByPath("./fold", "./fold/file"));
+  printf("%s\n", getFileByPath("./fold", "./fold/fold1/."));
+  printf("%s\n", getFileByPath("./fold", "./fold/fold1/file"));
+  printf("%s\n", getFileByPath("./fold/fold1", "./fold/fold1/."));
+  printf("%s\n", getFileByPath("./fold/fold1", "./fold/fold1/file"));
+  printf("%s\n", getFileByPath("./.", "./."));
+  printf("%s\n", getFileByPath("./.", "./."));
+
+    printf("Yiiiiiiii\n");
 
   if (0 != _error) {
     printHelp();
