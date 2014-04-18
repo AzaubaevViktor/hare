@@ -12,13 +12,12 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
     int64_t i;
     fpos_t archPos;
     int err = 0;
+    int64_t max_len = 0;
     char *nameFolderCan = pathToCanon(nameFolder);
     LOGGING_FUNC_START;
     while ((err = readHeader(arch, info)) != IO_EOF){
         if (err != 0){
             ERROR(L"Some problem in readHeader with code %d", err);
-
-
             break;
         }
         currentNameFile = info->fileInfo->name;
@@ -34,6 +33,9 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
             }
 
             foldersArch[howFolders - 1] = info;
+            if ((int64_t)strlen(currentNameFile) > max_len) {
+                max_len = strlen(currentNameFile);
+            }
         } else if (!isFolder(currentNameFile) && (levels(nameFolderCan) == levels(currentNameFile))) {
             howFiles++;
             if (howFiles > blocksFile * SIZE_BLOCK){
@@ -46,6 +48,9 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
             }
 
             filesArch[howFiles - 1] = info;
+            if ((int64_t)strlen(currentNameFile) > max_len){
+                max_len = strlen(currentNameFile);
+            }
         }
         fgetpos(arch, &archPos);
         fseek(arch, archPos.__pos - (BUF_LEN - getRdPos(arch)) + info->dataSize, SEEK_SET);
@@ -56,10 +61,12 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
 
     }
     printf("FOLDERS\n");
-    for (i = 0;i < howFolders;i++) printf("%s\n", foldersArch[i]->fileInfo->name);
+    for (i = 0;i < howFolders;i++) printf("%-*s|\n", (int)max_len, foldersArch[i]->fileInfo->name);
     printf("FILES\n");
-    for (i = 0;i < howFiles  ;i++) printf("%s\n",   filesArch[i]->fileInfo->name);
+    for (i = 0;i < howFiles  ;i++) printf("%-*s|\n", (int)max_len, filesArch[i]->fileInfo->name);
 
+
+    printf("\n%d\n", max_len);
 
     for(i = 0;i < howFiles;i++){
         free(filesArch[i]->fileInfo);
