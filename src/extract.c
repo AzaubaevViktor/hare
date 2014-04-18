@@ -17,6 +17,7 @@ char *decoding(char *bytes, size_t lenBits, size_t *returnBytes, int drop) {
 }
 
 
+//TODO: Добавить изменение времени создания
 int extract(FILE *f, ArchFileInfo *info, char *fileName) {
   LOGGING_FUNC_START;
   int _error = 0;
@@ -44,10 +45,18 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
 
     readedBytes += readBytes;
 
-    if ((howManyBytesRead == BUF_SIZE) & (IO_EOF ==  _error)) {
+    if ((howManyBytesRead == BUF_SIZE) & (_error)) {
       IO(L"Error reading archive file");
       LOGGING_FUNC_STOP;
-      return IO_READ_ERROR;
+      return ARCHIVE_ERROR;
+    }
+
+    if (_error) {
+      WARNING(L"Read bytes error `%d`", _error);
+      free(buf);
+      fclose(fOut);
+      LOGGING_FUNC_STOP;
+      return _error;
     }
 
     lenBits = (howManyBytesRead < BUF_SIZE)
@@ -66,6 +75,27 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
   LOGGING_FUNC_STOP;
   return _error;
 }
+
+
+#define ERROR_CHECK\
+  switch (_error) {\
+  case 0:\
+    break;\
+  case SIGNATURE_ERROR:\
+    WARNING(L"Signature error, find next");\
+    LOGGING_FUNC_STOP;\
+    return _error;\
+    break;\
+  case IO_EOF:\
+    INFO(L"End of file");\
+    LOGGING_FUNC_STOP;\
+    return 0;\
+  default:\
+    WARNING(L"readHeader return `%d` error", _error);\
+    LOGGING_FUNC_STOP;\
+    return _error;\
+    break;\
+  }
 
 
 int extractFiles(FILE *f, Context *cnt) {
@@ -91,14 +121,9 @@ int extractFiles(FILE *f, Context *cnt) {
 
   while (IO_EOF != _error) {
     _error = readHeader(f, &aFileInfo);
+    ERROR_CHECK;
 
-    if (_error) {
-      WARNING(L"readHeader return `%d` error", _error);
-      LOGGING_FUNC_STOP;
-      return _error;
-    }
-
-    INFO(L"File: %s", aFileInfo.fileInfo->name);
+    INFO(L"File in arch: %s", aFileInfo.fileInfo->name);
 
     shifted = 0;
 
@@ -112,12 +137,14 @@ int extractFiles(FILE *f, Context *cnt) {
           if (-1 == stat(currentFile, &st)) {
             currentFile[max(strlen(currentFile)-2, 0)] = 0;
             _error = mkdir(currentFile, 0777);
-            INFO(L"Folder create with error `%d`", _error)
+            INFO(L"Folder create with error `%d`", _error);
+            _error = 0;
           }
           shifted = 1;
         } else {
           IO(L"Extract `%s` to `%s`", aFileInfo.fileInfo->name, currentFile);
           _error = extract(f, &aFileInfo, currentFile);
+          ERROR_CHECK;
           INFO(L"Extract with error `%d`", _error)
           shifted = 1;
           if (!isFolder(*(files + i))) {

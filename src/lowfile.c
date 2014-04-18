@@ -9,8 +9,7 @@
 
 int _writeBytes(FILE *f, char *buf, size_t k_bytes) {
   //LOGGING_FUNC_START;
-  size_t wr_bytes = 0;
-  wr_bytes = fwrite(buf, k_bytes, 1, f);
+  fwrite(buf, k_bytes, 1, f);
   //IO(L"Wrote %zdx%zd bytes, bs=%d", wr_bytes, k_bytes, BUF_LEN);
   if (ferror(f)) {
     //WARNING(L"Writing error");
@@ -24,38 +23,38 @@ int _writeBytes(FILE *f, char *buf, size_t k_bytes) {
 
 int _writeNBytes(FILE *f, int64_t N, char *str, int drop) {
   static char buf[BUF_LEN];
-  static uint64_t pos;
-  uint64_t ext_pos = 0;
-  int wr_result = 0;
+  static int64_t pos;
+  int64_t ext_pos = 0;
+  int _error = 0;
   size_t nBufBytes = 0;
   //LOGGING_FUNC_START;
 
 
   if (drop) {
     //IO(L"Forsed drop buffer");
-    wr_result = _writeBytes(f, buf, pos);
+    _error = _writeBytes(f, buf, pos);
     pos = 0;
   } else {
     //IO(L"Add %"PRId64 L" bytes to buffer", N);
     while (ext_pos < N) {
-      nBufBytes = (BUF_LEN - pos) < ((uint64_t) N - ext_pos) ? (BUF_LEN - pos) : (N - ext_pos);
+      nBufBytes = (BUF_LEN - pos) < (N - ext_pos) ? (BUF_LEN - pos) : (N - ext_pos);
       memcpy(buf+pos, str+ext_pos, nBufBytes);
       ext_pos += nBufBytes;
       pos += nBufBytes;
       if (pos == BUF_LEN) {
         //IO(L"Drop buffer")
             pos = 0;
-        wr_result = _writeBytes(f, buf, BUF_LEN);
-        if (wr_result) {
+        _error = _writeBytes(f, buf, BUF_LEN);
+        if (_error) {
           //LOGGING_FUNC_STOP;
-          return wr_result;
+          return _error;
         }
       }
     }
   }
 
   //LOGGING_FUNC_STOP;
-  return wr_result;
+  return _error;
 }
 
 
@@ -125,7 +124,7 @@ int _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int drop, ui
   size_t i = 0;
   uint64_t ext_pos = 0;
   size_t nBufBytes = 0;
-  int r_result = 0;
+  int _error = 0;
 
   //LOGGING_FUNC_START;
 
@@ -158,20 +157,20 @@ int _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int drop, ui
 
         //IO(L"Read file to buffer");
         *position = (pos = 0);
-        r_result = _readBytes(f, buf, BUF_LEN, &rd_bytes);
+        _error = _readBytes(f, buf, BUF_LEN, &rd_bytes);
 
-        is_eof = (r_result == IO_EOF) ? 1 : 0;
+        is_eof = (_error == IO_EOF) ? 1 : 0;
 
-        if ((r_result) && (IO_EOF != r_result)) {
+        if ((_error) && (IO_EOF != _error)) {
           //LOGGING_FUNC_STOP;
-          return r_result;
+          return _error;
         }
       }
     }
   }
 
   //LOGGING_FUNC_STOP;
-  return r_result;
+  return _error;
 }
 
 
@@ -198,13 +197,14 @@ uint64_t getRdPos(FILE *f) {
 int readInt64(FILE *f, int64_t *num, size_t *read_bytes) {
   char tmp[INT64SIZE] = "";
   size_t i = 0;
+  int _error = 0;
   //LOGGING_FUNC_START;
   *read_bytes = 0;
-  readNBytes(f, INT64SIZE, tmp, read_bytes);
-  if (*read_bytes < INT64SIZE) {
-    //WARNING(L"Read error!");
+  _error = readNBytes(f, INT64SIZE, tmp, read_bytes);
+  if (_error) {
+    //WARNING(L"Read error `%d`", _error);
     //LOGGING_FUNC_STOP;
-    return IO_READ_ERROR;
+    return _error;
   }
   for (i=0; i<INT64SIZE; i++) {
     *num = *num << 8;
@@ -217,6 +217,5 @@ int readInt64(FILE *f, int64_t *num, size_t *read_bytes) {
 
 int readChar(FILE *f, char *ch, size_t *read_bytes) {
   //IO(L"Read char");
-  readNBytes(f, 1, ch, read_bytes);
-  return 0;
+  return readNBytes(f, 1, ch, read_bytes);
 }
