@@ -9,19 +9,20 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
     info->fileInfo = (FileInfo *)malloc(sizeof(FileInfo));
     int64_t howFolders = 0, howFiles = 0;
     int64_t blocksFolder = 1, blocksFile = 1;
+    int64_t i;
     fpos_t archPos;
-    int err;
+    int err = 0;
     char *nameFolderCan = pathToCanon(nameFolder);
     LOGGING_FUNC_START;
-    while ((err = readHeader(arch, info)) != SIGNATURE_ERROR){
+    while ((err = readHeader(arch, info)) != IO_EOF){
         if (err != 0){
             ERROR(L"Some problem in readHeader with code %d", err);
             LOGGING_FUNC_STOP;
 
-            return READ_ARCH_ERROR;
+            break;
         }
         currentNameFile = info->fileInfo->name;
-        if (isFolder(currentNameFile)) {
+        if (isFolder(currentNameFile) && (levels(nameFolderCan) == levels(currentNameFile) - 1)) {
             howFolders++;
             if (howFolders > blocksFolder * SIZE_BLOCK){
                 blocksFolder++;
@@ -33,7 +34,7 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
             }
 
             foldersArch[howFolders - 1] = info;
-        } else if (!isFolder(currentNameFile)){
+        } else if (!isFolder(currentNameFile) && (levels(nameFolderCan) == levels(currentNameFile))) {
             howFiles++;
             if (howFiles > blocksFile * SIZE_BLOCK){
                 blocksFile++;
@@ -54,10 +55,20 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
         info->fileInfo = malloc(sizeof(FileInfo));
 
     }
-    currentNameFile = info->fileInfo->name;
-    printf("func: %s\n", foldersArch[0]->fileInfo->name);
+    printf("FOLDERS\n");
+    for (i = 0;i < howFolders;i++) printf("%s\n", foldersArch[i]->fileInfo->name);
+    printf("FILES\n");
+    for (i = 0;i < howFiles  ;i++) printf("%s\n",   filesArch[i]->fileInfo->name);
 
 
+    for(i = 0;i < howFiles;i++){
+        free(filesArch[i]->fileInfo);
+        free(filesArch[i]);
+    }
+    for (i = 0;i < howFolders;i++){
+        free(foldersArch[i]->fileInfo);
+        free(foldersArch[i]);
+    }
     LOGGING_FUNC_STOP;
     return 0;
 }
