@@ -17,7 +17,7 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
     while ((err = readHeader(arch, info)) != IO_EOF){
         if (err != 0){
             ERROR(L"Some problem in readHeader with code %d", err);
-            LOGGING_FUNC_STOP;
+
 
             break;
         }
