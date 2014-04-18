@@ -2,32 +2,35 @@
 
 /* Convert `path` to canonical view. Return _new_ string */
 char *pathToCanon(char *path) {
+  //char *current = path;
 
-
-    int64_t i = strlen(path);
-    char *current = (char *)calloc(i + 1, sizeof(char));
-    strcpy(current, path);
-    if (*(current + 0) == '/'){
-            free(current);
-            return NULL;
-        }
-    else if (!(*(current + 0) == '.'&& *(current + 1) == '/')){
-        if ((current = realloc(current, (i + 3) * sizeof(char))) == NULL){
-                return NULL;
-        }
-        memmove(current + 2, current, (i + 1) * sizeof(char));
-        *(current + 0) = '.';
-        *(current + 1) = '/';
+  int64_t i = strlen(path);
+  char *current = (char *)calloc(i + 1, sizeof(char));
+  strcpy(current, path);
+  if (*(current + 0) == '/'){
+    if ((current = realloc(current, (i + 2) * sizeof(char))) == NULL){
+      return NULL;
     }
-    if (*(current + strlen(current) - 1) == '/'){
-        i = strlen(current);
-        if ((current = (char *)realloc(current, (i + 2) * sizeof(char))) == NULL){
-            return NULL;
+    memmove(current + 1, current, (i + 1) * sizeof(char));
+    *(current + 0) = '.';
+  }
+  else if ((*(current + 0) != '.'&& *(current + 1) != '/') || (*(current + 0) != '.'&& *(current + 1) == '/')){
+    if ((current = realloc(current, (i + 3) * sizeof(char))) == NULL){
+      return NULL;
     }
-        *(current + i) = '.';
-        *(current + i + 1) = '\0';
+    memmove(current + 2, current, (i + 1) * sizeof(char));
+    *(current + 0) = '.';
+    *(current + 1) = '/';
+  }
+  if (*(current + strlen(current) - 1) == '/'){
+    i = strlen(current);
+    if ((current = (char *)realloc(current, (i + 2) * sizeof(char))) == NULL){
+      return NULL;
     }
-    return current;
+    *(current + i) = '.';
+    *(current + i + 1) = '\0';
+  }
+  return current;
 }
 
 
@@ -55,23 +58,23 @@ int pathInDest(char *pathCan, char *destCan) {
 
 /* return nesting level */
 int levels(char *pathCan) {
-    int64_t len = strlen(pathCan);
-        int64_t i, j = 0;
-        for (i = 0; i < len; i++){
-            if (*(pathCan + i) == '/') j++;
-        }
-        return j - 1;
+  int64_t len = strlen(pathCan);
+  int64_t i, j = 0;
+  for (i = 0; i < len; i++){
+    if (*(pathCan + i) == '/') j++;
+  }
+  return j - 1;
 }
 
 
 /* return file name to extract by path in current directory, use only after pathInDest!*/
-char *getFileByPath(char *pathCan, char *dest) {
-  int64_t lenPath = strlen(pathCan);
+char *getFileByPath(char *path, char *dest) {
+  int64_t lenPath = strlen(path);
   int64_t lenDest = strlen(dest);
   char *name = NULL;
   int64_t pos = 0;
 
-  if ('.' == pathCan[lenPath]) {
+  if ('.' == path[lenPath]) {
     name = calloc((lenDest-lenPath) + 2, sizeof(char));
     name[0] = '.';
     name[1] = '/';
@@ -90,7 +93,11 @@ char *getFileByPath(char *pathCan, char *dest) {
     } else {
       name = calloc((lenDest - lenPath) + 1, sizeof(char));
       name[0] = '.';
-      strcpy(name + 1, dest + (lenPath - 2));
+      if ((levels(path) < levels(dest)) && (!isFolder(path)))  {
+        strcpy(name + 1, dest + lenPath);
+      } else {
+        strcpy(name + 1, dest + (lenPath - 2));
+      }
       return name;
     }
   }
@@ -98,9 +105,10 @@ char *getFileByPath(char *pathCan, char *dest) {
   return NULL;
 }
 
+
 /* Folder or not folder (using after getFileByPath) */
 int isFolder(char *pathCan) {
-    int64_t len = strlen(pathCan);
-    if (*(pathCan + len - 2) == '/' && *(pathCan + len - 1) == '.') return 1;
-    else return 0;
+  int64_t len = strlen(pathCan);
+  if (*(pathCan + len - 2) == '/' && *(pathCan + len - 1) == '.') return 1;
+  else return 0;
 }

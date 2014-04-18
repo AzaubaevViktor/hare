@@ -18,7 +18,7 @@ int pathInDest(char *pathCan, char *destCan);
 int levels(char *pathCan);
 
 /* return file name to extract by path in current directory*/
-char *getFileByPath(char *pathCan, char *dest);
+char *getFileByPath(char *path, char *dest);
 
 /* Folder or not folder (using after getFileByPath) */
 int isFolder(char *pathCan);
