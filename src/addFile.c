@@ -2,6 +2,38 @@
 
 #define DEBUG_
 
+int addFiles2Arch(Context context, int recurse)
+{
+    int i;
+    struct stat fileInfo;
+    struct ArchFileInfo archFileInfo;
+
+    for (i = 0; i < countWorkFiles/* HUI ZNAET GDE LAL */; i++)
+    {
+        stat(context.workFiles[i], &fileInfo);
+
+        if (S_ISREG(fileInfo.st_mode))
+        {
+            archFileInfo.fileInfo = (FileInfo*)malloc(sizeof(FileInfo));
+
+            if (NULL == archFileInfo.fileInfo)
+            {
+                return -1;
+            }
+
+            getFileInfo(context.workFiles[i], archFileInfo.fileInfo);
+
+            addFile2Arch(archFileInfo, context.archName);
+        }
+        else if (recurse && S_ISDIR(fileInfo.st_mode))
+        {
+            recurseAddFiles2Arch(context.workFiles[i]);
+        }
+    }
+
+    return 0;
+}
+
 int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 {
     FILE* archive;
@@ -120,4 +152,93 @@ void coding(char* huffTree, char* bytesForCoding, int countBytesForCoding, char*
 {
     memcpy(codingBits, bytesForCoding, countBytesForCoding);
     *countCodingBits = countBytesForCoding * 8;
+}
+
+void recurseAddFiles2Arch(char * path)
+{
+    DIR * dir = NULL;
+    struct dirent * dir_entry;
+    struct stat file_info;
+
+    struct FileInfo fileInfo2Arch;
+    struct ArchFileInfo archFileInfo;
+
+    int i;
+
+    static int depth = 0;
+    static char buffer[1000000] = "";
+
+    if (NULL == path)
+        return;
+
+    dir = opendir(path);
+
+    if (NULL == dir)
+    {
+        depth--;
+        return;
+    }
+
+    strcpy(buffer, path);
+
+    while ((dir_entry = readdir(dir)) != NULL)
+    {
+        stat(dir_entry->d_name, &file_info);
+
+        if (S_ISDIR(file_info.st_mode))
+        {
+            if (strcmp(dir_entry->d_name, ".") && strcmp(dir_entry->d_name, ".."))
+            {
+                depth++;
+                strcat(buffer, dir_entry->d_name);
+                strcat(buffer, "/");
+                sasai(buffer);
+            }
+        }
+        else if (S_ISREG(file_info.st_mode))
+        {
+            // add file to arch
+            archFileInfo.fileInfo = (FileInfo*)malloc(sizeof(FileInfo));
+
+            if (NULL == archFileInfo.fileInfo)
+            {
+                return -1;
+            }
+
+            getFileInfo(concatenateStrings(buffer, concatenateStrings("/", dir_entry->d_name)), archFileInfo.fileInfo);
+
+            addFile2Arch(archFileInfo, context.archName);
+        }
+    }
+
+    if (depth > 0)
+    {
+        buffer[strlen(buffer) - 1] = '\0';
+        for (i = strlen(buffer) - 1; buffer[i] != '/'; i--)
+            buffer[i] = '\0';
+    }
+    depth--;
+}
+
+static char* concatenateStrings(const char * str1, const char * str2)
+{
+    int lengthStr1 = strlen(str1);
+    int i;
+    char * result = (char*)calloc((strlen(str1) + strlen(str2) + 1) * sizeof(char));
+
+    if (NULL == result)
+    {
+        return NULL;
+    }
+
+    for (i = 0; i < lengthStr1; i++)
+    {
+        result[i] = str1[i];
+    }
+    for (int i = 0; i < strlen(str2); i++)
+    {
+        result[i + lengthStr1] = str2[i];
+    }
+
+    return result;
 }
