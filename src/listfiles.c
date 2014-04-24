@@ -3,12 +3,12 @@
 int printFilesOfFolder(FILE *arch, char *nameFolder)
 {
     char *currentNameFile;
-    ArchFileInfo **foldersArch = (ArchFileInfo **)calloc(1, sizeof(ArchFileInfo *)),
-                 **filesArch   = (ArchFileInfo **)calloc(1, sizeof(ArchFileInfo *));
+    ArchFileInfo **foldersArch = NULL,
+                 **filesArch   = NULL;
     ArchFileInfo *info = (ArchFileInfo *)malloc(sizeof(ArchFileInfo));
     info->fileInfo = (FileInfo *)malloc(sizeof(FileInfo));
     int64_t howFolders = 0, howFiles = 0;
-    int64_t blocksFolder = 1, blocksFile = 1;
+    int64_t blocksFolder = 0, blocksFile = 0;
     int64_t i;
     fpos_t archPos;
     int err = 0;
@@ -22,7 +22,7 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
         }
         currentNameFile = info->fileInfo->name;
         if (isFolder(currentNameFile) && (levels(nameFolderCan) == levels(currentNameFile) - 1)
-                && ( strncmp(currentNameFile, nameFolderCan, strlen(nameFolderCan)) )) {
+                && ( strncmp(currentNameFile, nameFolderCan, strlen(nameFolderCan) - 1) == 0)) {
             howFolders++;
             if (howFolders > blocksFolder * SIZE_BLOCK){
                 blocksFolder++;
@@ -38,8 +38,9 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
                 max_len = strlen(currentNameFile);
             }
         } else if (!isFolder(currentNameFile) && (levels(nameFolderCan) == levels(currentNameFile))
-                   && (strncmp(currentNameFile, nameFolderCan, strlen(nameFolderCan)))) {
+                   && (strncmp(currentNameFile, nameFolderCan, strlen(nameFolderCan) -1) == 0)) {
             howFiles++;
+            //printf("DEBUG: %s | %s \n", currentNameFile, )
             if (howFiles > blocksFile * SIZE_BLOCK){
                 blocksFile++;
                 if ((filesArch = (ArchFileInfo **)realloc(filesArch, blocksFile * SIZE_BLOCK * sizeof(ArchFileInfo *))) == NULL){
