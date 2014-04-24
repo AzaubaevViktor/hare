@@ -21,7 +21,8 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
             break;
         }
         currentNameFile = info->fileInfo->name;
-        if (isFolder(currentNameFile) && (levels(nameFolderCan) == levels(currentNameFile) - 1)) {
+        if (isFolder(currentNameFile) && (levels(nameFolderCan) == levels(currentNameFile) - 1)
+                && ( strncmp(currentNameFile, nameFolderCan, strlen(nameFolderCan)) )) {
             howFolders++;
             if (howFolders > blocksFolder * SIZE_BLOCK){
                 blocksFolder++;
@@ -36,7 +37,8 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
             if ((int64_t)strlen(currentNameFile) > max_len) {
                 max_len = strlen(currentNameFile);
             }
-        } else if (!isFolder(currentNameFile) && (levels(nameFolderCan) == levels(currentNameFile))) {
+        } else if (!isFolder(currentNameFile) && (levels(nameFolderCan) == levels(currentNameFile))
+                   && (strncmp(currentNameFile, nameFolderCan, strlen(nameFolderCan)))) {
             howFiles++;
             if (howFiles > blocksFile * SIZE_BLOCK){
                 blocksFile++;
@@ -60,13 +62,30 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
         info->fileInfo = malloc(sizeof(FileInfo));
 
     }
-    printf("FOLDERS\n");
-    for (i = 0;i < howFolders;i++) printf("%-*s|\n", (int)max_len, foldersArch[i]->fileInfo->name);
-    printf("FILES\n");
-    for (i = 0;i < howFiles  ;i++) printf("%-*s|\n", (int)max_len, filesArch[i]->fileInfo->name);
 
+    double size_can; char char_size;
+    for (i = 0;i < howFolders;i++)
+    {
 
-    printf("\n%d\n", max_len);
+        printf("%-*s|\n", (int)max_len, getFileByPath(nameFolderCan, foldersArch[i]->fileInfo->name) + 2);
+    }
+    for (i = 0;i < howFiles  ;i++)
+    {
+        size_can = (double)filesArch[i]->fileInfo->size;
+        char_size = 'b';
+        if (size_can > 1024){
+            size_can /= 1024;
+            char_size = 'K';
+            if (size_can > 1024){
+                size_can /= 1024;
+                char_size = 'M';
+            }
+        }
+
+        printf("%-*s|%7.2f%c %3d%%\n", (int)max_len, getFileByPath(nameFolderCan, filesArch[i]->fileInfo->name) + 2,
+               size_can, char_size,
+               (int)(filesArch[i]->dataSize * 100 / filesArch[i]->fileInfo->size));
+    }
 
     for(i = 0;i < howFiles;i++){
         free(filesArch[i]->fileInfo);
