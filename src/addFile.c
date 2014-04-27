@@ -31,7 +31,7 @@ int addFiles2Arch(Context context, int recurse)
     struct stat fileInfo;
     ArchFileInfo archFileInfo;
 
-    for (i = 0; i < countWorkFiles/* HUI ZNAET GDE LAL */; i++)
+    for (i = 0; i < context.argc - 3; i++)
     {
         stat(context.workFiles[i], &fileInfo);
 
@@ -215,7 +215,7 @@ void recurseAddFiles2Arch(char * path, Context context)
                 depth++;
                 strcat(buffer, dir_entry->d_name);
                 strcat(buffer, "/");
-                sasai(buffer);
+                recurseAddFiles2Arch(buffer, context);
             }
         }
         else if (S_ISREG(file_info.st_mode))
