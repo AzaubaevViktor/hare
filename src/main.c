@@ -68,6 +68,26 @@ int main(int argc, char *argv[], char *env[])
   printf("%s\n", getFileByPath("./.", "./."));
   printf("%s\n", getFileByPath("./.", "./."));
 
+  printf("getLastName\n");
+  printf("%s\n", getLastName("./."));
+  printf("%s\n", getLastName("./file"));
+  printf("%s\n", getLastName("./folder/."));
+  printf("%s\n", getLastName("./f1/f2/deepfile"));
+  printf("%s\n", getLastName("./f1/f2/deepfolder/."));
+
+  printf("getFileByPathWithFolder\n");
+  printf("%s\n", getFileByPathWithFolder("./.", "./."));
+  printf("%s\n", getFileByPathWithFolder("./.", "./file"));
+  printf("%s\n", getFileByPathWithFolder("./folder/.", "./folder/file"));
+  printf("%s\n", getFileByPathWithFolder("./folder", "./folder/file"));
+  printf("%s\n", getFileByPathWithFolder("", ""));
+  printf("%s\n", getFileByPathWithFolder("", ""));
+  printf("%s\n", getFileByPathWithFolder("", ""));
+  printf("%s\n", getFileByPathWithFolder("", ""));
+  printf("%s\n", getFileByPathWithFolder("", ""));
+  printf("%s\n", getFileByPathWithFolder("", ""));
+  printf("%s\n", getFileByPathWithFolder("", ""));
+
     printf("Yiiiiiiii\n");
 
   if (0 != _error) {

@@ -112,3 +112,40 @@ int isFolder(char *pathCan) {
   if (*(pathCan + len - 2) == '/' && *(pathCan + len - 1) == '.') return 1;
   else return 0;
 }
+
+char *getLastName(char *path) {
+  int64_t i = 0;
+  char *name = NULL;
+  for (i=strlen(path)-isFolder(path)*2-1; (i>=0) && ('/' != path[i]); i--);
+  if (isFolder(path)) {
+    i+=1;
+    name = calloc(strlen(path)-i-2, sizeof(char));
+    memcpy(name,path+i,strlen(path)-i-2);
+  } else {
+    i+=1;
+    name = calloc(strlen(path)-i, sizeof(char));
+    memcpy(name,path+i,strlen(path)-i);
+  }
+  return name;
+}
+
+
+char *getFileByPathWithFolder(char *path, char *dest) {
+  char *buf = NULL;
+  char *lastName = NULL;
+  char *name = NULL;
+  buf = getFileByPath(path,dest);
+
+  if (levels(path) < levels(dest)) {
+    lastName = getLastName(path);
+    name = calloc(strlen(lastName) + 1 + strlen(buf), sizeof(char));
+    strcpy(name, "./");
+    strcpy(name + strlen(name), lastName);
+    strcpy(name + strlen(name), buf + 1);
+    free(lastName);
+  } else {
+    name = calloc(strlen(buf), sizeof(char));
+    return buf;
+  }
+  return name;
+}
