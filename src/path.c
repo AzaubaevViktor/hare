@@ -116,11 +116,13 @@ int isFolder(char *pathCan) {
 char *getLastName(char *path) {
   int64_t i = 0;
   char *name = NULL;
-  for (i=strlen(path)-2; (i>0) && ('/' != path[i]) && ('.' != path[i+1]); i++);
+  for (i=strlen(path)-isFolder(path)*2-1; (i>=0) && ('/' != path[i]); i--);
   if (isFolder(path)) {
+    i+=1;
     name = calloc(strlen(path)-i-2, sizeof(char));
     memcpy(name,path+i,strlen(path)-i-2);
   } else {
+    i+=1;
     name = calloc(strlen(path)-i, sizeof(char));
     memcpy(name,path+i,strlen(path)-i);
   }
