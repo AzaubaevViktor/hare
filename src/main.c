@@ -15,6 +15,7 @@ GLOBAL_LOGGING
 int main(int argc, char *argv[], char *env[])
 {
 
+    int i;
   Context *cnt = (Context *)malloc(sizeof(Context));
   int _error = 0;
   INIT_LOGGING;
@@ -37,6 +38,9 @@ int main(int argc, char *argv[], char *env[])
   DEINIT_LOGGING;
   //printf("Programm exit!\n");
   //printf("%s\n", *(cnt->workFiles));
+
+  for (i = 0; i < argc; i++)
+      printf("%s\n", argv[i]);
 
   return 0;
 }

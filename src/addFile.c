@@ -2,11 +2,34 @@
 
 #define DEBUG_
 
+static char* concatenateStrings(const char * str1, const char * str2)
+{
+    int lengthStr1 = strlen(str1);
+    int i;
+    char * result = (char*)calloc((strlen(str1) + strlen(str2) + 1), sizeof(char));
+
+    if (NULL == result)
+    {
+        return NULL;
+    }
+
+    for (i = 0; i < lengthStr1; i++)
+    {
+        result[i] = str1[i];
+    }
+    for (i = 0; i < strlen(str2); i++)
+    {
+        result[i + lengthStr1] = str2[i];
+    }
+
+    return result;
+}
+
 int addFiles2Arch(Context context, int recurse)
 {
     int i;
     struct stat fileInfo;
-    struct ArchFileInfo archFileInfo;
+    ArchFileInfo archFileInfo;
 
     for (i = 0; i < countWorkFiles/* HUI ZNAET GDE LAL */; i++)
     {
@@ -27,7 +50,7 @@ int addFiles2Arch(Context context, int recurse)
         }
         else if (recurse && S_ISDIR(fileInfo.st_mode))
         {
-            recurseAddFiles2Arch(context.workFiles[i]);
+            recurseAddFiles2Arch(context.workFiles[i], context);
         }
     }
 
@@ -154,14 +177,14 @@ void coding(char* huffTree, char* bytesForCoding, int countBytesForCoding, char*
     *countCodingBits = countBytesForCoding * 8;
 }
 
-void recurseAddFiles2Arch(char * path)
+void recurseAddFiles2Arch(char * path, Context context)
 {
     DIR * dir = NULL;
     struct dirent * dir_entry;
     struct stat file_info;
 
-    struct FileInfo fileInfo2Arch;
-    struct ArchFileInfo archFileInfo;
+    FileInfo fileInfo2Arch;
+    ArchFileInfo archFileInfo;
 
     int i;
 
@@ -220,25 +243,4 @@ void recurseAddFiles2Arch(char * path)
     depth--;
 }
 
-static char* concatenateStrings(const char * str1, const char * str2)
-{
-    int lengthStr1 = strlen(str1);
-    int i;
-    char * result = (char*)calloc((strlen(str1) + strlen(str2) + 1) * sizeof(char));
 
-    if (NULL == result)
-    {
-        return NULL;
-    }
-
-    for (i = 0; i < lengthStr1; i++)
-    {
-        result[i] = str1[i];
-    }
-    for (int i = 0; i < strlen(str2); i++)
-    {
-        result[i + lengthStr1] = str2[i];
-    }
-
-    return result;
-}
