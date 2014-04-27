@@ -17,7 +17,6 @@ char *decoding(char *bytes, size_t lenBits, size_t *returnBytes, int drop) {
 }
 
 
-//TODO: Добавить изменение времени создания
 int extract(FILE *f, ArchFileInfo *info, char *fileName) {
   LOGGING_FUNC_START;
   int _error = 0;
@@ -30,6 +29,7 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
   size_t returnBytes = 0;
   size_t readedBytes = 0;
   size_t howManyBytesRead = 0;
+  struct utimbuf times;
 
   if (NULL == (fOut = fopen(fileName, "wb"))) {
     IO(L"Couldnt open file `%s`", fileName);
@@ -51,14 +51,6 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
       return ARCHIVE_ERROR;
     }
 
-    if (_error) {
-      WARNING(L"Read bytes error `%d`", _error);
-      free(buf);
-      fclose(fOut);
-      LOGGING_FUNC_STOP;
-      return _error;
-    }
-
     lenBits = (howManyBytesRead < BUF_SIZE)
               ? ((dropBuf = 1), readBytes*8 - info->endUnusedBits)
               : ((dropBuf = 0), readBytes*8);
@@ -66,11 +58,20 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
     buf2Write = decoding(buf, lenBits, &returnBytes, dropBuf);
 
     writeNBytes(fOut, returnBytes, buf2Write);
+
+    if (_error) {
+      WARNING(L"Read bytes error `%d`", _error);
+      break;
+    }
   }
 
   dropWrBytes(fOut);
 
   fclose(fOut);
+
+  times.actime = info->fileInfo->timeLastAccess;
+  times.modtime = info->fileInfo->timeLastModification;
+  printf("%d", utime(fileName, &times));
 
   LOGGING_FUNC_STOP;
   return _error;
