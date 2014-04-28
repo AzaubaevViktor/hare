@@ -131,7 +131,7 @@ int extractFiles(FILE *f, Context *cnt) {
     for (i=0; i<len; i++) {
       if ((*(files + i)) &&
           (pathInDest(*(files + i), aFileInfo.fileInfo->name))) {
-        currentFile = getFileByPath(*(files + i), aFileInfo.fileInfo->name);
+        currentFile = getFileByPathWithFolder(*(files + i), aFileInfo.fileInfo->name);
         INFO(L"Current file: `%s`", currentFile);
         if (isFolder(currentFile)) {
           INFO(L"Folder");
