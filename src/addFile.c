@@ -29,15 +29,15 @@ int addFiles2Arch(Context context, int recurse)
 {
     int sasai = 0;
     int i;
-    struct stat fileInfo;
-    ArchFileInfo archFileInfo;
 
     for (i = 0; i < context.argc - 3; i++)
     {
+        struct stat fileInfo;
         stat(context.workFiles[i], &fileInfo);
 
         if (S_ISREG(fileInfo.st_mode))
         {
+            ArchFileInfo archFileInfo;
             archFileInfo.fileInfo = (FileInfo*)malloc(sizeof(FileInfo));
 
             if (NULL == archFileInfo.fileInfo)

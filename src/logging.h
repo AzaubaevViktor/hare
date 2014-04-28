@@ -26,7 +26,7 @@
 #include <wctype.h> //"Классификация" широких символов
 #include <locale.h> //Во избежание "крокозябр" на выводе
 
-#define DEBUG
+#define _DEBUG
 
 
 #ifdef DEBUG

@@ -29,7 +29,7 @@ int _writeNBytes(FILE *f, int64_t N, char *str, int drop) {
   uint64_t ext_pos = 0;
   int wr_result = 0;
   size_t nBufBytes = 0;
-  LOGGING_FUNC_START;
+  //LOGGING_FUNC_START;
 
 
   if (drop) {
@@ -48,14 +48,14 @@ int _writeNBytes(FILE *f, int64_t N, char *str, int drop) {
             pos = 0;
         wr_result = _writeBytes(f, buf, BUF_LEN);
         if (wr_result) {
-          LOGGING_FUNC_STOP;
+          //LOGGING_FUNC_STOP;
           return wr_result;
         }
       }
     }
   }
 
-  LOGGING_FUNC_STOP;
+  //LOGGING_FUNC_STOP;
   return wr_result;
 }
 
