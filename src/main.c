@@ -15,7 +15,6 @@ GLOBAL_LOGGING
 int main(int argc, char *argv[], char *env[])
 {
 
-    int i;
   Context *cnt = (Context *)malloc(sizeof(Context));
   int _error = 0;
   INIT_LOGGING;
@@ -27,7 +26,7 @@ int main(int argc, char *argv[], char *env[])
   cnt->argv = argv;
   cnt->argc = argc;
   cnt->env  = env;
-  //_error = parseArgs(&cnt);
+  _error = parseArgs(&cnt);
 
   if (0 != _error) {
     printHelp();
@@ -36,12 +35,10 @@ int main(int argc, char *argv[], char *env[])
   }
 
   DEINIT_LOGGING;
-  //printf("Programm exit!\n");
+  printf("Programm exit!\n");
   //printf("%s\n", *(cnt->workFiles));
 
-  for (i = 0; i < argc; i++)
-      printf("%s\n", argv[i]);
-
+  addFiles2Arch(*cnt, 0);
   return 0;
 }
 

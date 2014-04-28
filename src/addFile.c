@@ -27,6 +27,7 @@ static char* concatenateStrings(const char * str1, const char * str2)
 
 int addFiles2Arch(Context context, int recurse)
 {
+    int sasai = 0;
     int i;
     struct stat fileInfo;
     ArchFileInfo archFileInfo;
@@ -44,7 +45,7 @@ int addFiles2Arch(Context context, int recurse)
                 return -1;
             }
 
-            getFileInfo(context.workFiles[i], archFileInfo.fileInfo);
+            sasai = getFileInfo(context.workFiles[i], archFileInfo.fileInfo);
 
             addFile2Arch(archFileInfo, context.archName);
         }
@@ -97,6 +98,7 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     archFileInfo.dataSize = 0;
     archFileInfo.endUnusedBits = 0;
     archFileInfo.haffTreeSize = 0;
+    archFileInfo.haffTree = (char*)calloc(archFileInfo.haffTreeSize + 1, sizeof(char));
     strcpy(archFileInfo.haffTree, "");
     archFileInfo.HeaderCheckSum = 0;
 

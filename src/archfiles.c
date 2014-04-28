@@ -4,7 +4,7 @@
 
 int writeFileHeader(FILE *f, ArchFileInfo *info) {
   FileInfo *fInfo = NULL;
-  IO("Write file header");
+  //IO("Write file header");
   fInfo = info->fileInfo;
   writeNBytes(f, SIGNATURE_LEN, SIGNATURE);
   writeInt64(f, fInfo->sizeName);
