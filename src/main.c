@@ -57,7 +57,7 @@ int main(int argc, char *argv[], char *env[])
       break;
     }
   }
-  printFilesOfFolder(fopen("archive.hr", "r"), "./tir/");
+  printFilesOfFolder(fopen("../archive.hr", "r"), "./");
   LOGGING_FUNC_STOP;
   DEINIT_LOGGING;
   printf("Programm exit!\n");

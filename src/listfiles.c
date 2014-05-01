@@ -67,11 +67,17 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
     double size_can; char char_size;
     for (i = 0;i < howFolders;i++)
     {
-
+        if (strchr(foldersArch[i]->fileInfo->name + 2, '/') - foldersArch[i]->fileInfo->name + 1
+                != strlen(foldersArch[i]->fileInfo->name) - 1){
+            continue;
+        }
         printf("%-*s|\n", (int)max_len, getFileByPath(nameFolderCan, foldersArch[i]->fileInfo->name) + 2);
     }
     for (i = 0;i < howFiles  ;i++)
     {
+        if ( strchr(filesArch[i]->fileInfo->name + 2,'/' ) != NULL){
+            continue;
+        }
         size_can = (double)filesArch[i]->fileInfo->size;
         char_size = 'b';
         if (size_can > 1024){
