@@ -107,15 +107,7 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     while (!feof(file))
     {
         sizeReadBlock = fread(block, sizeof(char), sizeBlock, file);
-
-#ifdef DEBUG
-        printf("\n--------------------------------\nCount of read bytes:\t%d\n", sizeReadBlock);
-#endif
         coding(block, block, sizeReadBlock, block, &countCodingBits);
-
-#ifdef DEBUG
-        printf("Count of coding bytes:\t%d\n", countCodingBits / 8);
-#endif
 
         for(i = 0; i < countCodingBits / 8; i++)
         {
@@ -123,9 +115,6 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
             byteForWrite |= ((block[i] >> countUsedBits) & right1[8 - countUsedBits]);
 
             partialByte = ((block[i] << (8 - countUsedBits)) & left1[countUsedBits]);
-#ifdef DEBUG
-        printf("Byte for write:\t'%c'\n", byteForWrite);
-#endif
             writeChar(archive, byteForWrite);
         }
 
@@ -158,13 +147,13 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     }
     archFileInfo.endUnusedBits = 8 - countUsedBits;
 
-    dropWrBytes(archive);
 
 
     fseek(archive, positionHeaderInFile, SEEK_SET);
 
     writeFileHeader(archive, &archFileInfo);
 
+    dropWrBytes(archive);
 
     fclose(archive);
     fclose(file);
