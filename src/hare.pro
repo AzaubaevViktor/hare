@@ -11,7 +11,8 @@ SOURCES += main.c \
     getFilesInfo.c \
     lowfile.c \
     archfiles.c \
-    addFile.c
+    addFile.c \
+    huff.c
 
 HEADERS += \
     hare.h \
@@ -20,5 +21,6 @@ HEADERS += \
     init.h \
     lowfile.h \
     archfiles.h \
-    addFile.h
+    addFile.h \
+    huff.h
 

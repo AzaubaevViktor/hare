@@ -2,7 +2,7 @@
 #include "hare.h"
 #include "init.h"
 
-#include "addFile.h"
+#include "huff.h"
 
 #include <stdio.h>
 #include <stdio.h>
@@ -37,7 +37,10 @@ int main(int argc, char *argv[], char *env[])
   printf("Programm exit!\n");
   //printf("%s\n", *(cnt->workFiles));
 
-  addFiles2Arch(*cnt, 1);
+  printList(createList(createTableFrequencies(fopen("file.txt", "rb"))));
+  printf("-----------------\n");
+  printTree(createTree(createList(createTableFrequencies(fopen("file.txt", "rb")))), 0);
+
   return 0;
 }
 
