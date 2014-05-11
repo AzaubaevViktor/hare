@@ -90,6 +90,9 @@ struct Node* createTree(struct Node* list)
     tmpNode->left = list;
     list = list->next;
     tmpNode->right = list;
+    
+    if (!tmpNode->right)
+        return tmpNode;
 
     tmpNode->data = tmpNode->left->data + tmpNode->right->data;
 
