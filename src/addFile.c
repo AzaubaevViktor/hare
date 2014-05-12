@@ -65,15 +65,11 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     char block[sizeBlock];
 
     int countCodingBits = 0;
-
     char byteForWrite;
-
     char countUsedBits = 0;
     char partialByte = 0;
-
     long positionHeaderInFile;
 
-    int i;
 
     char left1[9] = {0x00, 0x80, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC, 0xFE, 0xFF};
     char right1[9] = {0, 1, 3, 7, 15, 31, 63, 127, 255};
@@ -81,16 +77,16 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 
     strcpy(block, "");
 
-    file     = fopen(archFileInfo.fileInfo->name,  "rb");
-    archive  = fopen(nameArchive,                  "rb+");
 
+    file     = fopen(archFileInfo.fileInfo->name,  "rb");
     if (!file)
         return OPEN_FILE_ERROR;
 
+
+    archive  = fopen(nameArchive, "rb+");
     if (!archive)
     {
         archive  = fopen(nameArchive, "wb");
-
         if (!archive)
             return OPEN_ARCHIVE_ERROR;
 
@@ -100,8 +96,8 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     }
 
     fseek(archive, 0L, SEEK_END);
-
     positionHeaderInFile = ftell(archive);
+
 
     archFileInfo.dataSize = 0;
     archFileInfo.endUnusedBits = 0;
@@ -110,11 +106,15 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     strcpy(archFileInfo.haffTree, "");
     archFileInfo.HeaderCheckSum = 0;
 
+
     writeFileHeader(archive, &archFileInfo);
     dropWrBytes(archive);
 
+
     while (!feof(file))
     {
+        int i;
+
         sizeReadBlock = fread(block, sizeof(char), sizeBlock, file);
         coding(block, block, sizeReadBlock, block, &countCodingBits);
 
@@ -153,14 +153,14 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
         writeChar(archive, partialByte);
     dropWrBytes(archive);
 
+
     archFileInfo.endUnusedBits = 8 - countUsedBits;
 
 
     fseek(archive, positionHeaderInFile, SEEK_SET);
-
     writeFileHeader(archive, &archFileInfo);
-
     dropWrBytes(archive);
+
 
     fclose(archive);
     fclose(file);
@@ -179,13 +179,7 @@ void recurseAddFiles2Arch(char * path, Context context)
 {
     DIR * dir = NULL;
     struct dirent * dir_entry;
-    struct stat file_info;
-
-
     ArchFileInfo archFileInfo;
-
-    int i;
-
     static int depth = 0;
     static char buffer[1000000] = "";
 
@@ -204,9 +198,18 @@ void recurseAddFiles2Arch(char * path, Context context)
 
     while ((dir_entry = readdir(dir)) != NULL)
     {
-        stat(dir_entry->d_name, &file_info);
+        if (dir_entry->d_type == DT_REG)
+        {
+            // add file to arch
+            archFileInfo.fileInfo = (FileInfo*)malloc(sizeof(FileInfo));
 
-        if (S_ISDIR(file_info.st_mode))
+            if (NULL == archFileInfo.fileInfo)
+                return;
+
+            getFileInfo(concatenateStrings(buffer, dir_entry->d_name), archFileInfo.fileInfo);
+            addFile2Arch(archFileInfo, context.archName);
+        }
+        else if (dir_entry->d_type == DT_DIR)
         {
             if (strcmp(dir_entry->d_name, ".") && strcmp(dir_entry->d_name, ".."))
             {
@@ -216,21 +219,12 @@ void recurseAddFiles2Arch(char * path, Context context)
                 recurseAddFiles2Arch(buffer, context);
             }
         }
-        else if (S_ISREG(file_info.st_mode))
-        {
-            // add file to arch
-            archFileInfo.fileInfo = (FileInfo*)malloc(sizeof(FileInfo));
 
-            if (NULL == archFileInfo.fileInfo)
-                return -1;
-
-            getFileInfo(concatenateStrings(buffer, concatenateStrings("/", dir_entry->d_name)), archFileInfo.fileInfo);
-            addFile2Arch(archFileInfo, context.archName);
-        }
     }
 
     if (depth > 0)
     {
+        int i;
         buffer[strlen(buffer) - 1] = '\0';
         for (i = strlen(buffer) - 1; buffer[i] != '/'; i--)
             buffer[i] = '\0';
