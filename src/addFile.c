@@ -2,28 +2,6 @@
 
 #define DEBUG_
 
-static char* concatenateStrings(const char * str1, const char * str2)
-{
-    int lengthStr1 = strlen(str1);
-    int i;
-    char * result = (char*)calloc((strlen(str1) + strlen(str2) + 1), sizeof(char));
-
-    if (NULL == result)
-    {
-        return NULL;
-    }
-
-    for (i = 0; i < lengthStr1; i++)
-    {
-        result[i] = str1[i];
-    }
-    for (i = 0; i < strlen(str2); i++)
-    {
-        result[i + lengthStr1] = str2[i];
-    }
-
-    return result;
-}
 
 int addFiles2Arch(Context context, int recurse)
 {
@@ -206,7 +184,7 @@ void recurseAddFiles2Arch(char * path, Context context)
             if (NULL == archFileInfo.fileInfo)
                 return;
 
-            getFileInfo(concatenateStrings(buffer, dir_entry->d_name), archFileInfo.fileInfo);
+            getFileInfo(strcat(buffer, dir_entry->d_name), archFileInfo.fileInfo);
             addFile2Arch(archFileInfo, context.archName);
         }
         else if (dir_entry->d_type == DT_DIR)

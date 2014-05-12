@@ -39,11 +39,15 @@ int main(int argc, char *argv[], char *env[])
   printf("Programm exit!\n");
   //printf("%s\n", *(cnt->workFiles));
 
-//  printList(createList(createTableFrequencies(fopen("file.txt", "rb"))));
-//  printf("-----------------\n");
-//  printTree(createTree(createList(createTableFrequencies(fopen("file.txt", "rb")))), 0);
-
-
+  printList(createList(createTableFrequencies(fopen("test_file.txt", "rb"))));
+  printf("-----------------\n");
+  printTree(createTree(createList(createTableFrequencies(fopen("test_file.txt", "rb")))), 0);
+  printf("-----------------\n");
+    {
+        struct Code codes[COUNT_SYMBOLS] = {0, 0};
+        createCodes(codes, createTree(createList(createTableFrequencies(fopen("test_file.txt", "rb")))), "");
+        printCodes(codes);
+    }
   addFiles2Arch(*cnt, 1);
 
 

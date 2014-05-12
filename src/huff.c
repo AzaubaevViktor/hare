@@ -1,12 +1,25 @@
 #include "huff.h"
-
-void printTable(size_t* table)
+static char* concatenateStrings(const char * str1, const char * str2)
 {
+    int lengthStr1 = strlen(str1);
     int i;
+    char * result = (char*)calloc((strlen(str1) + strlen(str2) + 1), sizeof(char));
 
-    for (i = 0; i < COUNT_SYMBOLS; i++)
-        if (table[i])
-            printf("'%c' - %d\n", (char)i, table[i]);
+    if (NULL == result)
+    {
+        return NULL;
+    }
+
+    for (i = 0; i < lengthStr1; i++)
+    {
+        result[i] = str1[i];
+    }
+    for (i = 0; i < strlen(str2); i++)
+    {
+        result[i + lengthStr1] = str2[i];
+    }
+
+    return result;
 }
 
 size_t* createTableFrequencies(FILE *file)
@@ -97,6 +110,27 @@ struct Node* createTree(struct Node* list)
     return createTree(list->next);
 }
 
+void createCodes(struct Code* codes, struct Node* node, char* buf)
+{
+    if (node)
+    {
+        if (node->symbol > -1)
+        {
+            strcpy(codes[node->symbol].code, buf);
+            codes[node->symbol].size = strlen(buf);
+        }
+        else
+        {
+            if (node->left)
+                createCodes(codes, node->left, concatenateStrings(buf, "0"));
+
+            if (node->right)
+                createCodes(codes, node->right, concatenateStrings(buf, "1"));
+        }
+    }
+}
+
+// delete this shit
 void printTree(struct Node* node, int n)
 {
     int i;
@@ -126,4 +160,21 @@ void printList(struct Node* head)
         printf("'%c' - %d\n", (char)tmpNode->symbol, tmpNode->data);
         tmpNode = tmpNode->next;
     }
+}
+
+void printTable(size_t* table)
+{
+    int i;
+
+    for (i = 0; i < COUNT_SYMBOLS; i++)
+        if (table[i])
+            printf("'%c' - %d\n", (char)i, table[i]);
+}
+
+void printCodes(struct Code* codes)
+{
+    int i;
+    for (i = 0; i < COUNT_SYMBOLS; i++)
+        if (codes[i].size)
+            printf("'%c' - '%s'\n", i, codes[i].code);
 }
