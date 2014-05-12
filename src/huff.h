@@ -35,4 +35,7 @@ size_t* createTableFrequencies(FILE* file);
 void printTable(size_t* table);
 void printCodes(struct Code* codes);
 
+// THE MOST IMPORTANT FUNCTION, BITCH!!!!
+void coding(struct Code* codes, char* bytesForCoding, int countBytesForCoding, unsigned char* codingBits, int* countCodingBits);
+
 #endif // HUFF_H

@@ -4,6 +4,7 @@
 #include "archfiles.h"
 #include "lowfile.h"
 #include "hare.h"
+#include "huff.h"
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -21,7 +22,7 @@
 int addFiles2Arch(Context context, int recurse);
 int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive);
 
-void coding(char* huffTree, char* bytesForCoding, int countBytesForCoding, char* codingBits, int* countCodingBits);
+void coding_(char* huffTree, char* bytesForCoding, int countBytesForCoding, char* codingBits, int* countCodingBits);
 
 void recurseAddFiles2Arch(char * path, Context context);
 #endif // ADDFILE_H

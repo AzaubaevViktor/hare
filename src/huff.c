@@ -178,3 +178,35 @@ void printCodes(struct Code* codes)
         if (codes[i].size)
             printf("'%c' - '%s'\n", i, codes[i].code);
 }
+
+void coding(struct Code* codes, char* bytesForCoding, int countBytesForCoding, unsigned char* codingBits, int* countCodingBits)
+{
+    int i, j;
+    int tmpCountCodingBits = 0;
+
+    for (i = 0; i < strlen(bytesForCoding); i++)
+        codingBits[i] = 0;
+
+    char bits[] = {1, 2, 4, 8, 16, 32, 64, 128};
+
+    for (i = 0; i < strlen(bytesForCoding); i++)
+    {
+        for (j = 0; j < codes[bytesForCoding[i]].size; j++)
+        {
+            unsigned char tmp = (codes[bytesForCoding[i]].code[j] == '1' ? bits[7 - (tmpCountCodingBits % 8)] : 0);
+            codingBits[tmpCountCodingBits / 8] |= tmp;
+
+
+
+
+            printf("count coding bits = %d\n\ttmp = %d\n\tres = %d\n", tmpCountCodingBits, tmp, codingBits[tmpCountCodingBits / 8]);
+
+            if (tmpCountCodingBits && !((tmpCountCodingBits + 1) % 8))
+                printf("\tresult byte = %d\n", codingBits[tmpCountCodingBits / 8]);
+
+            tmpCountCodingBits++;
+        }
+    }
+
+    *countCodingBits = tmpCountCodingBits;
+}

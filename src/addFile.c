@@ -1,6 +1,6 @@
 #include  "addFile.h"
 
-#define DEBUG_
+#define WRITE_HEADER_
 
 
 int addFiles2Arch(Context context, int recurse)
@@ -38,9 +38,12 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     FILE* archive;
     FILE* file;
 
+    struct Code codes[COUNT_SYMBOLS] = {0, 0};
+
     const int sizeBlock = 30000;
     int sizeReadBlock;
-    char block[sizeBlock];
+    unsigned char block[sizeBlock];
+    unsigned char codingBlock[sizeBlock];
 
     int countCodingBits = 0;
     char byteForWrite;
@@ -73,6 +76,10 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 
     }
 
+    createCodes(codes, createTree(createList(createTableFrequencies(file))), "");
+    printCodes(codes);
+
+    fseek(file, 0L, SEEK_SET);
     fseek(archive, 0L, SEEK_END);
     positionHeaderInFile = ftell(archive);
 
@@ -84,24 +91,38 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     strcpy(archFileInfo.haffTree, "");
     archFileInfo.HeaderCheckSum = 0;
 
-
+#ifdef WRITE_HEADER
     writeFileHeader(archive, &archFileInfo);
     dropWrBytes(archive);
-
+#endif
 
     while (!feof(file))
     {
         int i;
 
         sizeReadBlock = fread(block, sizeof(char), sizeBlock, file);
-        coding(block, block, sizeReadBlock, block, &countCodingBits);
 
+        coding(codes, block, sizeBlock, codingBlock, &countCodingBits);
+        {
+            int count = 0, j;
+        for (i = 0; i < strlen(block); i++)
+        {
+            for (j = 0; j < codes[block[i]].size; j++)
+            {
+                printf("%c", codes[block[i]].code[j]);
+                count++;
+
+                if (!(count % 8))
+                    printf(" ");
+            }
+        }
+        }
         for(i = 0; i < countCodingBits / 8; i++)
         {
             byteForWrite = partialByte;
-            byteForWrite |= ((block[i] >> countUsedBits) & right1[8 - countUsedBits]);
+            byteForWrite |= ((codingBlock[i] >> countUsedBits) & right1[8 - countUsedBits]);
 
-            partialByte = ((block[i] << (8 - countUsedBits)) & left1[countUsedBits]);
+            partialByte = ((codingBlock[i] << (8 - countUsedBits)) & left1[countUsedBits]);
             writeChar(archive, byteForWrite);
         }
 
@@ -110,15 +131,15 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
             if ((countUsedBits + countCodingBits % 8) >= 8)
             {
                 byteForWrite = partialByte;
-                byteForWrite |= ((block[countCodingBits / 8] >> countUsedBits) & right1[8 - countUsedBits]);
+                byteForWrite |= ((codingBlock[countCodingBits / 8] >> countUsedBits) & right1[8 - countUsedBits]);
 
-                partialByte = ((block[countCodingBits / 8] << (8 - countUsedBits)) & left1[countUsedBits]);
+                partialByte = ((codingBlock[countCodingBits / 8] << (8 - countUsedBits)) & left1[countUsedBits]);
 
                 writeChar(archive, byteForWrite);
             }
             else
             {
-                partialByte |= ((block[countCodingBits / 8] >> countUsedBits) & right1[8 - countUsedBits] & left1[countUsedBits + countCodingBits % 8]);
+                partialByte |= ((codingBlock[countCodingBits / 8] >> countUsedBits) & right1[8 - countUsedBits] & left1[countUsedBits + countCodingBits % 8]);
                 countUsedBits += countCodingBits % 8;
             }
         }
@@ -134,11 +155,11 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 
     archFileInfo.endUnusedBits = 8 - countUsedBits;
 
-
+#ifdef WRITE_HEADER
     fseek(archive, positionHeaderInFile, SEEK_SET);
     writeFileHeader(archive, &archFileInfo);
     dropWrBytes(archive);
-
+#endif
 
     fclose(archive);
     fclose(file);
@@ -147,7 +168,7 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 }
 
 
-void coding(char* huffTree, char* bytesForCoding, int countBytesForCoding, char* codingBits, int* countCodingBits)
+void coding_(char* huffTree, char* bytesForCoding, int countBytesForCoding, char* codingBits, int* countCodingBits)
 {
     memcpy(codingBits, bytesForCoding, countBytesForCoding);
     *countCodingBits = countBytesForCoding * 8;

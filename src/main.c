@@ -2,8 +2,6 @@
 #include "hare.h"
 #include "init.h"
 
-#include "huff.h"
-
 #include "addFile.h"
 
 #include <stdio.h>
@@ -39,18 +37,21 @@ int main(int argc, char *argv[], char *env[])
   printf("Programm exit!\n");
   //printf("%s\n", *(cnt->workFiles));
 
-  printList(createList(createTableFrequencies(fopen("test_file.txt", "rb"))));
-  printf("-----------------\n");
-  printTree(createTree(createList(createTableFrequencies(fopen("test_file.txt", "rb")))), 0);
-  printf("-----------------\n");
-    {
-        struct Code codes[COUNT_SYMBOLS] = {0, 0};
-        createCodes(codes, createTree(createList(createTableFrequencies(fopen("test_file.txt", "rb")))), "");
-        printCodes(codes);
-    }
-  addFiles2Arch(*cnt, 1);
+//  printList(createList(createTableFrequencies(fopen("test_file.txt", "rb"))));
+//  printf("-----------------\n");
+//  printTree(createTree(createList(createTableFrequencies(fopen("test_file.txt", "rb")))), 0);
+//  printf("-----------------\n");
+//    {
+//        int lal;
+//        char blockOrig[20] = "sasai", blockCod[20];
+//        struct Code codes[COUNT_SYMBOLS] = {0, 0};
+//        createCodes(codes, createTree(createList(createTableFrequencies(fopen("test_file.txt", "rb")))), "");
+//        printCodes(codes);
 
+//        coding(codes, blockOrig, 5, blockCod, &lal);
+//    }
 
+    addFiles2Arch(*cnt, 0);
 
   return 0;
 }
