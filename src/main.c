@@ -4,6 +4,8 @@
 
 #include "huff.h"
 
+#include "addFile.h"
+
 #include <stdio.h>
 #include <stdio.h>
 #include <wchar.h>
@@ -37,9 +39,12 @@ int main(int argc, char *argv[], char *env[])
   printf("Programm exit!\n");
   //printf("%s\n", *(cnt->workFiles));
 
-  printList(createList(createTableFrequencies(fopen("file.txt", "rb"))));
-  printf("-----------------\n");
-  printTree(createTree(createList(createTableFrequencies(fopen("file.txt", "rb")))), 0);
+//  printList(createList(createTableFrequencies(fopen("file.txt", "rb"))));
+//  printf("-----------------\n");
+//  printTree(createTree(createList(createTableFrequencies(fopen("file.txt", "rb")))), 0);
+
+
+//  addFiles2Arch(*cnt, 0);
 
   return 0;
 }

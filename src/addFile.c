@@ -27,7 +27,6 @@ static char* concatenateStrings(const char * str1, const char * str2)
 
 int addFiles2Arch(Context context, int recurse)
 {
-    int sasai = 0;
     int i;
 
     for (i = 0; i < context.argc - 3; i++)
@@ -41,11 +40,9 @@ int addFiles2Arch(Context context, int recurse)
             archFileInfo.fileInfo = (FileInfo*)malloc(sizeof(FileInfo));
 
             if (NULL == archFileInfo.fileInfo)
-            {
                 return -1;
-            }
 
-            sasai = getFileInfo(context.workFiles[i], archFileInfo.fileInfo);
+            getFileInfo(context.workFiles[i], archFileInfo.fileInfo);
 
             addFile2Arch(archFileInfo, context.archName);
         }
@@ -88,10 +85,8 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     archive  = fopen(nameArchive,                  "ab");
 
     if (!archive || !file)
-    {
-        //printf("> ERROR OPEN FILE");
         return OPEN_FILE_ERROR;
-    }
+
 
     positionHeaderInFile = ftell(archive);
 
@@ -137,20 +132,20 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
         }
 
 
-
         strcpy(block, "");
     }
 
     if (countUsedBits)
-    {
         writeChar(archive, partialByte);
-    }
+
     archFileInfo.endUnusedBits = 8 - countUsedBits;
 
+    {
+        int check = 0;
+        check = fseek(archive, positionHeaderInFile, SEEK_SET);
+        fprintf(archive, "\n check_seek = %d\n", check);
 
-
-    fseek(archive, positionHeaderInFile, SEEK_SET);
-
+    }
     writeFileHeader(archive, &archFileInfo);
 
     dropWrBytes(archive);
@@ -174,7 +169,7 @@ void recurseAddFiles2Arch(char * path, Context context)
     struct dirent * dir_entry;
     struct stat file_info;
 
-    FileInfo fileInfo2Arch;
+
     ArchFileInfo archFileInfo;
 
     int i;
@@ -215,12 +210,9 @@ void recurseAddFiles2Arch(char * path, Context context)
             archFileInfo.fileInfo = (FileInfo*)malloc(sizeof(FileInfo));
 
             if (NULL == archFileInfo.fileInfo)
-            {
                 return -1;
-            }
 
             getFileInfo(concatenateStrings(buffer, concatenateStrings("/", dir_entry->d_name)), archFileInfo.fileInfo);
-
             addFile2Arch(archFileInfo, context.archName);
         }
     }

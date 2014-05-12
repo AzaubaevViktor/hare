@@ -50,9 +50,7 @@ void insertNodeInList(struct Node** list, struct Node* node)
     while (tmpNode->next)
     {
         if (node->data <= tmpNode->next->data)
-        {
             break;
-        }
         tmpNode = tmpNode->next;
     }
     node->next = tmpNode->next;
@@ -69,13 +67,9 @@ struct Node* createList(size_t* table)
         if (table[i])
         {
             if (head)
-            {
                 insertNodeInList(&head, createNode(table[i], i));
-            }
             else
-            {
                 head = createNode(table[i], i);
-            }
         }
     }
 
