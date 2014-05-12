@@ -15,6 +15,7 @@
 
 
 #define OPEN_FILE_ERROR (1234)
+#define OPEN_ARCHIVE_ERROR (4321)
 
 /* если recurse == 1, то начинает рекурсивно обходить папки и добавлять файлы из них. иначе пнх! */
 int addFiles2Arch(Context context, int recurse);

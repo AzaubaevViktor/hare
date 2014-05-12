@@ -82,11 +82,24 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     strcpy(block, "");
 
     file     = fopen(archFileInfo.fileInfo->name,  "rb");
-    archive  = fopen(nameArchive,                  "ab");
+    archive  = fopen(nameArchive,                  "rb+");
 
-    if (!archive || !file)
+    if (!file)
         return OPEN_FILE_ERROR;
 
+    if (!archive)
+    {
+        archive  = fopen(nameArchive, "wb");
+
+        if (!archive)
+            return OPEN_ARCHIVE_ERROR;
+
+        fclose(archive);
+        archive  = fopen(nameArchive, "rb+");
+
+    }
+
+    fseek(archive, 0L, SEEK_END);
 
     positionHeaderInFile = ftell(archive);
 
@@ -98,6 +111,7 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     archFileInfo.HeaderCheckSum = 0;
 
     writeFileHeader(archive, &archFileInfo);
+    dropWrBytes(archive);
 
     while (!feof(file))
     {
@@ -137,15 +151,13 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 
     if (countUsedBits)
         writeChar(archive, partialByte);
+    dropWrBytes(archive);
 
     archFileInfo.endUnusedBits = 8 - countUsedBits;
 
-    {
-        int check = 0;
-        check = fseek(archive, positionHeaderInFile, SEEK_SET);
-        fprintf(archive, "\n check_seek = %d\n", check);
 
-    }
+    fseek(archive, positionHeaderInFile, SEEK_SET);
+
     writeFileHeader(archive, &archFileInfo);
 
     dropWrBytes(archive);

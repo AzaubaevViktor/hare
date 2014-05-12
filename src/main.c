@@ -44,7 +44,9 @@ int main(int argc, char *argv[], char *env[])
 //  printTree(createTree(createList(createTableFrequencies(fopen("file.txt", "rb")))), 0);
 
 
-//  addFiles2Arch(*cnt, 0);
+  addFiles2Arch(*cnt, 0);
+
+
 
   return 0;
 }
