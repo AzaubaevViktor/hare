@@ -51,7 +51,7 @@ int main(int argc, char *argv[], char *env[])
 //        coding(codes, blockOrig, 5, blockCod, &lal);
 //    }
 
-    addFiles2Arch(*cnt, 0);
+    addFiles2Arch(*cnt, 1);
 
   return 0;
 }

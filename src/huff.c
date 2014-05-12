@@ -199,10 +199,10 @@ void coding(struct Code* codes, char* bytesForCoding, int countBytesForCoding, u
 
 
 
-            printf("count coding bits = %d\n\ttmp = %d\n\tres = %d\n", tmpCountCodingBits, tmp, codingBits[tmpCountCodingBits / 8]);
+//            printf("count coding bits = %d\n\ttmp = %d\n\tres = %d\n", tmpCountCodingBits, tmp, codingBits[tmpCountCodingBits / 8]);
 
-            if (tmpCountCodingBits && !((tmpCountCodingBits + 1) % 8))
-                printf("\tresult byte = %d\n", codingBits[tmpCountCodingBits / 8]);
+//            if (tmpCountCodingBits && !((tmpCountCodingBits + 1) % 8))
+//                printf("\tresult byte = %d\n", codingBits[tmpCountCodingBits / 8]);
 
             tmpCountCodingBits++;
         }

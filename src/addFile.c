@@ -2,6 +2,29 @@
 
 #define WRITE_HEADER_
 
+static char* concatenateStrings(const char * str1, const char * str2)
+{
+    int lengthStr1 = strlen(str1);
+    int i;
+    char * result = (char*)calloc((strlen(str1) + strlen(str2) + 1), sizeof(char));
+
+    if (NULL == result)
+    {
+        return NULL;
+    }
+
+    for (i = 0; i < lengthStr1; i++)
+    {
+        result[i] = str1[i];
+    }
+    for (i = 0; i < strlen(str2); i++)
+    {
+        result[i + lengthStr1] = str2[i];
+    }
+
+    return result;
+}
+
 
 int addFiles2Arch(Context context, int recurse)
 {
@@ -77,7 +100,7 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     }
 
     createCodes(codes, createTree(createList(createTableFrequencies(file))), "");
-    printCodes(codes);
+//    printCodes(codes);
 
     fseek(file, 0L, SEEK_SET);
     fseek(archive, 0L, SEEK_END);
@@ -105,18 +128,21 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
         coding(codes, block, sizeBlock, codingBlock, &countCodingBits);
         {
             int count = 0, j;
-        for (i = 0; i < strlen(block); i++)
-        {
-            for (j = 0; j < codes[block[i]].size; j++)
+            for (i = 0; i < strlen(block); i++)
             {
-                printf("%c", codes[block[i]].code[j]);
-                count++;
+                for (j = 0; j < codes[block[i]].size; j++)
+                {
+                    printf("%c", codes[block[i]].code[j]);
+                    count++;
 
-                if (!(count % 8))
-                    printf(" ");
+                    if (!(count % 8))
+                        printf(" ");
+                }
             }
         }
-        }
+        printf("\n----------------------------------------\n");
+//        getchar();
+
         for(i = 0; i < countCodingBits / 8; i++)
         {
             byteForWrite = partialByte;
@@ -205,7 +231,7 @@ void recurseAddFiles2Arch(char * path, Context context)
             if (NULL == archFileInfo.fileInfo)
                 return;
 
-            getFileInfo(strcat(buffer, dir_entry->d_name), archFileInfo.fileInfo);
+            getFileInfo(concatenateStrings(buffer, dir_entry->d_name), archFileInfo.fileInfo);
             addFile2Arch(archFileInfo, context.archName);
         }
         else if (dir_entry->d_type == DT_DIR)
