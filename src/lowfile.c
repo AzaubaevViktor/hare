@@ -2,6 +2,7 @@
  * Будьте осторожны с writeBytes! Не пытайтесь одновременно писать в два файла, поведение будет не определено
  */
 #include "lowfile.h"
+#include "crc.h"
 
 #define elif else if
 
@@ -9,15 +10,12 @@
 
 
 int _writeBytes(FILE *f, char *buf, size_t k_bytes) {
-  //LOGGING_FUNC_START;
   fwrite(buf, k_bytes, 1, f);
-  //IO(L"Wrote %zdx%zd bytes, bs=%d", wr_bytes, k_bytes, BUF_LEN);
   if (ferror(f)) {
-    //WARNING(L"Writing error");
-    //LOGGING_FUNC_STOP;
+    WARNING(L"Writing error");
     return IO_WRITE_ERROR;
   }
-  //LOGGING_FUNC_STOP;
+  LOGGING_FUNC_STOP;
   return 0;
 }
 
@@ -26,6 +24,7 @@ int _writeNBytes(FILE *f, int64_t N, char *str, int drop) {
   static char buf[BUF_LEN];
   static int64_t pos;
   int64_t ext_pos = 0;
+  int64_t i = 0;
   int _error = 0;
   size_t nBufBytes = 0;
   //LOGGING_FUNC_START;
@@ -39,11 +38,14 @@ int _writeNBytes(FILE *f, int64_t N, char *str, int drop) {
     //IO(L"Add %"PRId64 L" bytes to buffer", N);
     while (ext_pos < N) {
       nBufBytes = (BUF_LEN - pos) < (N - ext_pos) ? (BUF_LEN - pos) : (N - ext_pos);
+      //CRC
+
+      //Copy to buffer
       memcpy(buf+pos, str+ext_pos, nBufBytes);
       ext_pos += nBufBytes;
       pos += nBufBytes;
       if (pos == BUF_LEN) {
-        //IO(L"Drop buffer")
+            //IO(L"Drop buffer")
             pos = 0;
         _error = _writeBytes(f, buf, BUF_LEN);
         if (_error) {
