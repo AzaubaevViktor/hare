@@ -96,8 +96,7 @@ crc _crcFast(unsigned char const message[], int nBytes, int drop);
 * Returns: None defined.
 *
 *********************************************************************/
-void crcInit(void)
-{
+void crcInit(crc *crcTable) {
   crc	remainder;
   int	dividend;
   unsigned char bit;
@@ -122,8 +121,6 @@ void crcInit(void)
     crcTable[dividend] = remainder;
   }
 
-  _crcFast("", 0, 1);
-
 } /* crcInit() */
 
 
@@ -139,20 +136,10 @@ void crcInit(void)
 *
 *********************************************************************/
 
-crc crcFast(const unsigned char message[], int nBytes) {
-  _crcFast(message, nBytes, 0);
-}
 
-crc _crcFast(unsigned char const message[], int nBytes, int drop) {
-  static crc	remainder = 0;
+crc crcFast(unsigned char const message[], int nBytes, crc *crcTable, crc remainder) {
   unsigned char data;
   int byte;
-
-  if (drop) {
-    remainder = INITIAL_REMAINDER;
-    return;
-  }
-
 
   /* Divide the message by the polynomial, a byte at a time. */
   for (byte = 0; byte < nBytes; ++byte)

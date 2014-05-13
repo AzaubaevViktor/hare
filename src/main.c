@@ -58,11 +58,11 @@ int main(int argc, char *argv[], char *env[])
     }
   }
 
-  crcInit();
-  printf("%X\n",crcFast("test",4));
-  printf("%X\n",crcFast("lol",3));
-  crcInit();
-  printf("%X\n",crcFast("lol",3));
+//  crcInit();
+//  printf("%X\n",crcFast("test",4));
+//  printf("%X\n",crcFast("lol",3));
+//  crcInit();
+//  printf("%X\n",crcFast("lol",3));
 
   LOGGING_FUNC_STOP;
   DEINIT_LOGGING;
