@@ -32,6 +32,7 @@ struct Node* createList(size_t* table);
 struct Node* createTree(struct Node* list);
 void createCodes(struct Code* codes, struct Node* node, char* buf);
 size_t* createTableFrequencies(FILE* file);
+void writeHuffTreeInBuffer(struct Node* node, char* buffer, int* lengthTree, char* countUsedBits);
 void printTable(size_t* table);
 void printCodes(struct Code* codes);
 

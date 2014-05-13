@@ -91,6 +91,9 @@ struct Node* createList(size_t* table)
 
 struct Node* createTree(struct Node* list)
 {
+    if (!list)
+        return NULL;
+
     struct Node* tmpNode = createNode(0,-1);
 
     tmpNode->next = NULL;
@@ -209,4 +212,47 @@ void coding(struct Code* codes, char* bytesForCoding, int countBytesForCoding, u
     }
 
     *countCodingBits = tmpCountCodingBits;
+}
+
+void writeHuffTreeInBuffer(struct Node* node, char* buffer, int* lengthTree, char* countUsedBits)
+{
+    static char left1[9] = {0x00, 0x80, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC, 0xFE, 0xFF};
+    static char right1[9] = {0, 1, 3, 7, 15, 31, 63, 127, 255};
+    static char bits[] = {1, 2, 4, 8, 16, 32, 64, 128};
+
+
+    if (node)
+    {
+        if (node->symbol > -1)
+        {
+            unsigned char ch = node->symbol;
+
+            (*countUsedBits)++;
+            if (8 == (*countUsedBits))
+            {
+                (*lengthTree)++;
+                (*countUsedBits) = 0;
+            }
+
+            buffer[(*lengthTree)    ] |= ((ch >>     (*countUsedBits)) & right1[8 - (*countUsedBits)]);
+            buffer[(*lengthTree) + 1] |= ((ch << 8 - (*countUsedBits)) &  left1[    (*countUsedBits)]);
+            (*lengthTree)++;
+        }
+        else
+        {
+            buffer[(*lengthTree)] |= bits[7 - *countUsedBits];
+            (*countUsedBits)++;
+            if (8 == (*countUsedBits))
+            {
+                (*lengthTree)++;
+                (*countUsedBits) = 0;
+            }
+
+            if (node->left)
+                writeHuffTreeInBuffer(node->left, buffer, lengthTree, countUsedBits);
+
+            if (node->right)
+                writeHuffTreeInBuffer(node->right, buffer, lengthTree, countUsedBits);
+        }
+    }
 }

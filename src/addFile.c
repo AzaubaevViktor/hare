@@ -62,6 +62,7 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     FILE* file;
 
     struct Code codes[COUNT_SYMBOLS] = {0, 0};
+    struct Node* headTree = NULL;
 
     const int sizeBlock = 30000;
     int sizeReadBlock;
@@ -99,8 +100,12 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 
     }
 
-    createCodes(codes, createTree(createList(createTableFrequencies(file))), "");
-//    printCodes(codes);
+    if (headTree = createTree(createList(createTableFrequencies(file))))
+    {
+        createCodes(codes, headTree, "");
+//        printCodes(codes);
+    }
+
 
     fseek(file, 0L, SEEK_SET);
     fseek(archive, 0L, SEEK_END);
