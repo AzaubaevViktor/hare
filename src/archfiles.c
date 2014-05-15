@@ -63,7 +63,7 @@ int writeFileHeader(FILE *f, ArchFileInfo *info) {
 }
 
 size_t getHeaderLen(ArchFileInfo *info) {
-  return SIGNATURE_LEN + info->fileInfo->sizeName + info->haffTreeSize / 8 + sizeof(char)*2 + INT64SIZE*(6);
+  return SIGNATURE_LEN + info->fileInfo->sizeName + ceil8(info->haffTreeSize) + sizeof(char)*2 + INT64SIZE*(6);
 }
 
 int writeData(FILE *f, int64_t size, void *data) {
