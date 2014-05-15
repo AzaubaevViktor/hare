@@ -29,7 +29,6 @@ crc _writeNBytes(FILE *f, int64_t N, char *str, int _drop, int _crc_comm) {
   crc remainder = INITIAL_REMAINDER;
   //LOGGING_FUNC_START;
 
-
   if (1 == _crc_comm) {
     crcInit(crcTable);
     remainder = INITIAL_REMAINDER;
@@ -51,7 +50,7 @@ crc _writeNBytes(FILE *f, int64_t N, char *str, int _drop, int _crc_comm) {
   while (ext_pos < N) {
     nBufBytes = (BUF_LEN - pos) < (N - ext_pos) ? (BUF_LEN - pos) : (N - ext_pos);
     //CRC
-
+    remainder = crcFast((unsigned char const *) str+ext_pos, nBufBytes, crcTable, remainder);
     //Copy to buffer
     memcpy(buf+pos, str+ext_pos, nBufBytes);
     ext_pos += nBufBytes;
@@ -141,7 +140,7 @@ int _readBytes(FILE *f, char *buf, size_t k_bytes, size_t *rd_bytes) {
 }
 
 
-int _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int drop, uint64_t *position) {
+int _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int _drop, uint64_t *position) {
   static char buf[BUF_LEN];
   static uint64_t pos = 0;
   static size_t rd_bytes = 0;
@@ -157,7 +156,7 @@ int _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int drop, ui
 
   *read_bytes = 0;
 
-  if (drop) {
+  if (_drop) {
     //IO(L"Drop read buffer");
     *position = (pos = 0);
     rd_bytes = 0;

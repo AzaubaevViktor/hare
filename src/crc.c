@@ -137,7 +137,7 @@ void crcInit(crc *crcTable) {
 *********************************************************************/
 
 
-crc crcFast(unsigned char const message[], int nBytes, crc *crcTable, crc remainder) {
+crc crcFast(unsigned char const *message, int nBytes, crc *crcTable, crc remainder) {
   unsigned char data;
   int byte;
 

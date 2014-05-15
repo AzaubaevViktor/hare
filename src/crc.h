@@ -70,8 +70,7 @@ typedef unsigned long crc;
 
 
 void crcInit(crc *crcTable);
-crc crcSlow(unsigned char const message[], int nBytes);
-crc crcFast(unsigned char const message[], int nBytes, crc *crcTable, crc remainder);
+crc crcFast(unsigned char const *message, int nBytes, crc *crcTable, crc remainder);
 
 
 #endif /* _crc_h */
