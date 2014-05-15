@@ -4,11 +4,40 @@
 
 #define ERROR_TEST(func) \
   (_error = (func));\
-  {if (_error) {\
-    WARNING(L"function return error `%d`", _error);\
-    LOGGING_FUNC_STOP;\
-    return _error;\
+{if (_error) {\
+  WARNING(L"function return error `%d`", _error);\
+  LOGGING_FUNC_STOP;\
+  return _error;\
   }}
+
+#define _crcF(mess, len) crcFast((unsigned char *) mess, len, crcTable, &remainder)
+#define _crcInt64(num) _crcF((unsigned char *) &num, sizeof(int64_t))
+#define _crcChar(ch) _crcF(&ch, sizeof(char))
+
+crc _calculateHeaderHash(ArchFileInfo *info) {
+  crc crcTable[256];
+  crc remainder = INITIAL_REMAINDER;
+  FileInfo *fInfo = NULL;
+
+  fInfo = info->fileInfo;
+  crcInit(crcTable);
+  _crcF(SIGNATURE, SIGNATURE_LEN);
+  _crcInt64(fInfo->sizeName);
+  _crcF(fInfo->name, fInfo->sizeName);
+  _crcInt64(fInfo->timeLastModification);
+  _crcInt64(fInfo->size);
+  _crcInt64(info->dataSize);
+  _crcChar(info->endUnusedBits);
+  _crcChar(info->flags);
+  _crcInt64(info->haffTreeSize);
+  _crcF(info->haffTree, info->haffTreeSize / 8);
+  _crcInt64(info->HeaderCheckSum);
+
+  return remainder;
+}
+
+
+#define ceil8(num) (((num) / 8) + !!((num) % 8))
 
 
 int writeFileHeader(FILE *f, ArchFileInfo *info) {
@@ -16,6 +45,8 @@ int writeFileHeader(FILE *f, ArchFileInfo *info) {
   int _error = 0;
   IO("Write file header");
   fInfo = info->fileInfo;
+  info->HeaderCheckSum = _calculateHeaderHash(info);
+  
   ERROR_TEST(writeNBytes(f, SIGNATURE_LEN, SIGNATURE));
   ERROR_TEST(writeInt64(f, fInfo->sizeName));
   ERROR_TEST(writeNBytes(f, fInfo->sizeName, fInfo->name));
@@ -25,7 +56,7 @@ int writeFileHeader(FILE *f, ArchFileInfo *info) {
   ERROR_TEST(writeChar(f, info->endUnusedBits));
   ERROR_TEST(writeChar(f, info->flags));
   ERROR_TEST(writeInt64(f, info->haffTreeSize));
-  ERROR_TEST(writeNBytes(f, info->haffTreeSize / 8, info->haffTree));
+  ERROR_TEST(writeNBytes(f, ceil8(info->haffTreeSize), info->haffTree));
   ERROR_TEST(writeInt64(f, info->HeaderCheckSum));
 
   return 0;
@@ -46,6 +77,8 @@ int readHeader(FILE *f, ArchFileInfo *info) {
   size_t read_bytes = 0;
   FileInfo *fInfo = NULL;
   int _error = 0;
+  crc checkSumm = 0;
+
   LOGGING_FUNC_START;
   IO(L"Read signature");
 
@@ -69,6 +102,7 @@ int readHeader(FILE *f, ArchFileInfo *info) {
   }
   ERROR_TEST(readNBytes(f, fileNameLen, fInfo->name, &read_bytes));
   fInfo->name[fileNameLen] = 0;
+  fInfo->sizeName = fileNameLen;
 
   ERROR_TEST(readInt64(f, &(fInfo->timeLastModification), &read_bytes));
   ERROR_TEST(readInt64(f, &(fInfo->size), &read_bytes));
@@ -76,17 +110,19 @@ int readHeader(FILE *f, ArchFileInfo *info) {
   ERROR_TEST(readChar(f, &(info->endUnusedBits), &read_bytes));
   ERROR_TEST(readChar(f, &(info->flags), &read_bytes));
   ERROR_TEST(readInt64(f, &(info->haffTreeSize), &read_bytes));
-  if (NULL == (info->haffTree = malloc(info->haffTreeSize / 8 + 1))) {
+  if (NULL == (info->haffTree = malloc(ceil8(info->haffTreeSize) + 1))) {
     MEMORY(L"Memory allocate error!");
     LOGGING_FUNC_STOP;
     return MEMORY_ALLOCATE_ERROR;
   }
-  ERROR_TEST(readNBytes(f, info->haffTreeSize / 8, info->haffTree, &read_bytes));
+  ERROR_TEST(readNBytes(f, ceil8(info->haffTreeSize), info->haffTree, &read_bytes));
+
+  checkSumm = _calculateHeaderHash(info);
 
   ERROR_TEST(readInt64(f, &(info->HeaderCheckSum), &read_bytes));
 
   LOGGING_FUNC_STOP;
-  return 0;
+  return (checkSumm == info->HeaderCheckSum) ? HASH_HEADER_CHECK_ERROR : 0;
 }
 
 #undef ERROR_TEST

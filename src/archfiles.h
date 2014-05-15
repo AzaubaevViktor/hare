@@ -4,6 +4,7 @@
 #include "logging.h"
 #include "fileinfo.h"
 #include "lowfile.h"
+#include "crc.h"
 #include <inttypes.h>
 #include <stdio.h>
 
@@ -11,6 +12,7 @@
 #define SIGNATURE_LEN (4)
 #define SIGNATURE_ERROR (6443)
 #define MEMORY_ALLOCATE_ERROR (9165)
+#define HASH_HEADER_CHECK_ERROR (3270)
 #define INT64SIZE (sizeof(int64_t))
 
 typedef struct {
@@ -27,6 +29,7 @@ int writeFileHeader(FILE *f, ArchFileInfo *info);
 
 size_t getHeaderLen(ArchFileInfo *info);
 
+/* return HASH_HEADER_CHECK_ERROR if checksum doesn't match */
 int readHeader(FILE *f, ArchFileInfo *file);
 
 #endif // ADDFILES2ARCH_H
