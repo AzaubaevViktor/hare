@@ -81,21 +81,21 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
 #define ERROR_CHECK\
   switch (_error) {\
   case 0:\
-    break;\
+  break;\
   case SIGNATURE_ERROR:\
-    WARNING(L"Signature error, find next");\
-    LOGGING_FUNC_STOP;\
-    return _error;\
-    break;\
+  WARNING(L"Signature error, find next");\
+  LOGGING_FUNC_STOP;\
+  return _error;\
+  break;\
   case IO_EOF:\
-    INFO(L"End of file");\
-    LOGGING_FUNC_STOP;\
-    return 0;\
+  INFO(L"End of file");\
+  LOGGING_FUNC_STOP;\
+  return 0;\
   default:\
-    WARNING(L"readHeader return `%d` error", _error);\
-    LOGGING_FUNC_STOP;\
-    return _error;\
-    break;\
+  WARNING(L"readHeader return `%d` error", _error);\
+  LOGGING_FUNC_STOP;\
+  return _error;\
+  break;\
   }
 
 
@@ -147,7 +147,7 @@ int extractFiles(FILE *f, Context *cnt) {
           _error = extract(f, &aFileInfo, currentFile);
           ERROR_CHECK;
           INFO(L"Extract with error `%d`", _error)
-          shifted = 1;
+              shifted = 1;
           if (!isFolder(*(files + i))) {
             free(*(files+i));
             *(files + i) = NULL;
