@@ -50,7 +50,7 @@ crc _writeNBytes(FILE *f, int64_t N, char *str, int _buf_drop, int _crc_comm) {
   while (ext_pos < N) {
     nBufBytes = (BUF_LEN - pos) < (N - ext_pos) ? (BUF_LEN - pos) : (N - ext_pos);
     //CRC
-    remainder = crcFast((unsigned char const *) str+ext_pos, nBufBytes, crcTable, remainder);
+    remainder = crcFast((unsigned char const *) str+ext_pos, nBufBytes, crcTable, &remainder);
     //Copy to buffer
     memcpy(buf+pos, str+ext_pos, nBufBytes);
     ext_pos += nBufBytes;

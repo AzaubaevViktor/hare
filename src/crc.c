@@ -137,18 +137,18 @@ void crcInit(crc *crcTable) {
 *********************************************************************/
 
 
-crc crcFast(unsigned char const *message, int nBytes, crc *crcTable, crc remainder) {
+crc crcFast(unsigned char const *message, int64_t nBytes, crc *crcTable, crc *remainder) {
   unsigned char data;
-  int byte;
+  int64_t byte;
 
   /* Divide the message by the polynomial, a byte at a time. */
   for (byte = 0; byte < nBytes; ++byte)
   {
-    data = REFLECT_DATA(message[byte]) ^ (remainder >> (WIDTH - 8));
-    remainder = crcTable[data] ^ (remainder << 8);
+    data = REFLECT_DATA(message[byte]) ^ (*remainder >> (WIDTH - 8));
+    *remainder = crcTable[data] ^ (*remainder << 8);
   }
 
   /* The final remainder is the CRC. */
-  return (REFLECT_REMAINDER(remainder) ^ FINAL_XOR_VALUE);
+  return (REFLECT_REMAINDER(*remainder) ^ FINAL_XOR_VALUE);
 
 } /* crcFast() */
