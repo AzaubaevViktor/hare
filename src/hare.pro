@@ -12,8 +12,8 @@ SOURCES += main.c \
     lowfile.c \
     archfiles.c \
     path.c \
-    listfiles.c \
-	extract.c
+    extract.c \
+    crc.c
 
 HEADERS += \
     hare.h \
@@ -24,5 +24,5 @@ HEADERS += \
     archfiles.h \
     path.h \
     extract.h \
-	listfiles.h
+    crc.h
 

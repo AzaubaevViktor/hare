@@ -2,7 +2,6 @@
 #include "hare.h"
 #include "init.h"
 #include "path.h"
-#include "listfiles.h"
 #include "extract.h"
 #include <stdio.h>
 #include <stdio.h>
@@ -57,10 +56,10 @@ int main(int argc, char *argv[], char *env[])
       break;
     }
   }
+
   LOGGING_FUNC_STOP;
   DEINIT_LOGGING;
   printf("Programm exit!\n");
-  printf("%s\n", *(cnt->workFiles));
   return 0;
 }
 

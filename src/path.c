@@ -58,23 +58,41 @@ int pathInDest(char *pathCan, char *destCan) {
 
 /* return nesting level */
 int levels(char *pathCan) {
+<<<<<<< Temporary merge branch 1
+    int64_t len = strlen(pathCan);
+        int64_t i, j = 0;
+        for (i = 0; i < len; i++){
+            if (*(pathCan + i) == '/') j++;
+        }
+        return j - 1;
+=======
   int64_t len = strlen(pathCan);
   int64_t i, j = 0;
   for (i = 0; i < len; i++){
     if (*(pathCan + i) == '/') j++;
   }
   return j - 1;
+>>>>>>> Temporary merge branch 2
 }
 
 
 /* return file name to extract by path in current directory, use only after pathInDest!*/
+<<<<<<< Temporary merge branch 1
+char *getFileByPath(char *pathCan, char *dest) {
+  int64_t lenPath = strlen(pathCan);
+=======
 char *getFileByPath(char *path, char *dest) {
   int64_t lenPath = strlen(path);
+>>>>>>> Temporary merge branch 2
   int64_t lenDest = strlen(dest);
   char *name = NULL;
   int64_t pos = 0;
 
+<<<<<<< Temporary merge branch 1
+  if ('.' == pathCan[lenPath]) {
+=======
   if ('.' == path[lenPath]) {
+>>>>>>> Temporary merge branch 2
     name = calloc((lenDest-lenPath) + 2, sizeof(char));
     name[0] = '.';
     name[1] = '/';
@@ -93,11 +111,15 @@ char *getFileByPath(char *path, char *dest) {
     } else {
       name = calloc((lenDest - lenPath) + 1, sizeof(char));
       name[0] = '.';
+<<<<<<< Temporary merge branch 1
+      strcpy(name + 1, dest + (lenPath - 2));
+=======
       if ((levels(path) < levels(dest)) && (!isFolder(path)))  {
         strcpy(name + 1, dest + lenPath);
       } else {
         strcpy(name + 1, dest + (lenPath - 2));
       }
+>>>>>>> Temporary merge branch 2
       return name;
     }
   }
@@ -108,7 +130,13 @@ char *getFileByPath(char *path, char *dest) {
 
 /* Folder or not folder (using after getFileByPath) */
 int isFolder(char *pathCan) {
+<<<<<<< Temporary merge branch 1
+    int64_t len = strlen(pathCan);
+    if (*(pathCan + len - 2) == '/' && *(pathCan + len - 1) == '.') return 1;
+    else return 0;
+=======
   int64_t len = strlen(pathCan);
   if (*(pathCan + len - 2) == '/' && *(pathCan + len - 1) == '.') return 1;
   else return 0;
+>>>>>>> Temporary merge branch 2
 }
