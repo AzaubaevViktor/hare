@@ -25,14 +25,14 @@ int writeFileHeader(FILE *f, ArchFileInfo *info) {
   ERROR_TEST(writeChar(f, info->endUnusedBits));
   ERROR_TEST(writeChar(f, info->flags));
   ERROR_TEST(writeInt64(f, info->haffTreeSize));
-  ERROR_TEST(writeNBytes(f, info->haffTreeSize, info->haffTree));
+  ERROR_TEST(writeNBytes(f, info->haffTreeSize / 8, info->haffTree));
   ERROR_TEST(writeInt64(f, info->HeaderCheckSum));
 
   return 0;
 }
 
 size_t getHeaderLen(ArchFileInfo *info) {
-  return SIGNATURE_LEN + info->fileInfo->sizeName + info->haffTreeSize + sizeof(char)*2 + INT64SIZE*(6);
+  return SIGNATURE_LEN + info->fileInfo->sizeName + info->haffTreeSize / 8 + sizeof(char)*2 + INT64SIZE*(6);
 }
 
 int writeData(FILE *f, int64_t size, void *data) {
@@ -71,23 +71,17 @@ int readHeader(FILE *f, ArchFileInfo *info) {
   fInfo->name[fileNameLen] = 0;
 
   ERROR_TEST(readInt64(f, &(fInfo->timeLastModification), &read_bytes));
-
   ERROR_TEST(readInt64(f, &(fInfo->size), &read_bytes));
-
   ERROR_TEST(readInt64(f, &(info->dataSize), &read_bytes));
-
   ERROR_TEST(readChar(f, &(info->endUnusedBits), &read_bytes));
-
   ERROR_TEST(readChar(f, &(info->flags), &read_bytes));
-
   ERROR_TEST(readInt64(f, &(info->haffTreeSize), &read_bytes));
-
-  if (NULL == (info->haffTree = malloc(info->haffTreeSize + 1))) {
+  if (NULL == (info->haffTree = malloc(info->haffTreeSize / 8 + 1))) {
     MEMORY(L"Memory allocate error!");
     LOGGING_FUNC_STOP;
     return MEMORY_ALLOCATE_ERROR;
   }
-  ERROR_TEST(readNBytes(f, info->haffTreeSize, info->haffTree, &read_bytes));
+  ERROR_TEST(readNBytes(f, info->haffTreeSize / 8, info->haffTree, &read_bytes));
 
   ERROR_TEST(readInt64(f, &(info->HeaderCheckSum), &read_bytes));
 
