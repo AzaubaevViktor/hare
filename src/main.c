@@ -54,21 +54,21 @@ int main(int argc, char *argv[], char *env[])
 //    addFiles2Arch(*cnt, 1);
 
 
-  {
-      int i;
-      int countBits = 0;
-      char buffer[30000] = {0};
-      int length = 0;
-      FILE * file = fopen("test_tree.txt", "wb");
-      struct Node* head = createTree(createList(createTableFrequencies(fopen("test_file.txt", "rb"))));
-      printTree(head, 0);
+//  {
+//      int i;
+//      int countBits = 0;
+//      char buffer[30000] = {0};
+//      int length = 0;
+//      FILE * file = fopen("test_tree.txt", "wb");
+//      struct Node* head = createTree(createList(createTableFrequencies(fopen("test_file.txt", "rb"))));
+//      printTree(head, 0);
 
-      writeHuffTreeInBuffer(head, buffer, &length, &countBits);
+//      writeHuffTreeInBuffer(head, buffer, &length, &countBits);
 
-      for (i = 0; i < length + (countBits ? 1 : 0); i++)
-        fprintf(file, "%c", buffer[i]);
-      fclose(file);
-  }
+//      for (i = 0; i < length + (countBits ? 1 : 0); i++)
+//        fprintf(file, "%c", buffer[i]);
+//      fclose(file);
+//  }
 
   return 0;
 }

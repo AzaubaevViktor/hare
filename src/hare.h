@@ -37,8 +37,6 @@ int checkIntegrity(Context *cnt);
 int getArchFiles(Context *cnt);
 int printArchFiles(Context *cnt);
 
-int extractFiles(Context *cnt, FileInfo *files);
-
 int deleteFileBlock(Context *cnt, int64_t offset, int64_t length);
 int deleteArchFiles(Context *cnt, FileInfo *files);
 
