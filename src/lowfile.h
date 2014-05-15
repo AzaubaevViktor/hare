@@ -39,6 +39,8 @@ int writeNBytes(FILE *f, int64_t N, char *str);
 int writeInt64(FILE *f, int64_t num);
 int writeChar(FILE *f, char ch);
 
+void initRdCrc();
+crc getRdCrc();
 int dropRdBytes(FILE *f);
 uint64_t getRdPos(FILE *f);
 int readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes);
