@@ -1,4 +1,6 @@
 #include "huff.h"
+
+
 static char* concatenateStrings(const char * str1, const char * str2)
 {
     int lengthStr1 = strlen(str1);
@@ -73,20 +75,20 @@ void insertNodeInList(struct Node** list, struct Node* node)
 struct Node* createList(size_t* table)
 {
     int i;
-    struct Node* head = NULL;
+    struct Node* headList = NULL;
 
     for (i = 0; i < COUNT_SYMBOLS; i++)
     {
         if (table[i])
         {
-            if (head)
-                insertNodeInList(&head, createNode(table[i], i));
+            if (headList)
+                insertNodeInList(&headList, createNode(table[i], i));
             else
-                head = createNode(table[i], i);
+                headList = createNode(table[i], i);
         }
     }
 
-    return head;
+    return headList;
 }
 
 struct Node* createTree(struct Node* list)
@@ -186,30 +188,18 @@ void coding(struct Code* codes, char* bytesForCoding, int countBytesForCoding, u
 {
     int i, j;
     int tmpCountCodingBits = 0;
-
-    for (i = 0; i < strlen(bytesForCoding); i++)
-        codingBits[i] = 0;
-
     char bits[] = {1, 2, 4, 8, 16, 32, 64, 128};
 
-    for (i = 0; i < strlen(bytesForCoding); i++)
-    {
+    for (i = 0; i < countBytesForCoding; i++)
+        codingBits[i] = 0;
+
+    for (i = 0; i < countBytesForCoding; i++)
         for (j = 0; j < codes[bytesForCoding[i]].size; j++)
         {
             unsigned char tmp = (codes[bytesForCoding[i]].code[j] == '1' ? bits[7 - (tmpCountCodingBits % 8)] : 0);
             codingBits[tmpCountCodingBits / 8] |= tmp;
-
-
-
-
-//            printf("count coding bits = %d\n\ttmp = %d\n\tres = %d\n", tmpCountCodingBits, tmp, codingBits[tmpCountCodingBits / 8]);
-
-//            if (tmpCountCodingBits && !((tmpCountCodingBits + 1) % 8))
-//                printf("\tresult byte = %d\n", codingBits[tmpCountCodingBits / 8]);
-
             tmpCountCodingBits++;
         }
-    }
 
     *countCodingBits = tmpCountCodingBits;
 }

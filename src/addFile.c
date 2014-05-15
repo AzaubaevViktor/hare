@@ -1,6 +1,6 @@
 #include  "addFile.h"
 
-#define WRITE_HEADER_
+#define WRITE_HEADER
 
 static char* concatenateStrings(const char * str1, const char * str2)
 {
@@ -26,7 +26,7 @@ static char* concatenateStrings(const char * str1, const char * str2)
 }
 
 
-int addFiles2Arch(Context context, int recurse)
+int addFiles2Arch(Context context)
 {
     int i;
 
@@ -47,9 +47,9 @@ int addFiles2Arch(Context context, int recurse)
 
             addFile2Arch(archFileInfo, context.archName);
         }
-        else if (recurse && S_ISDIR(fileInfo.st_mode))
+        else if (S_ISDIR(fileInfo.st_mode))
         {
-            recurseAddFiles2Arch(context.workFiles[i], context);
+//            recurseAddFiles2Arch(context.workFiles[i], context);
         }
     }
 
@@ -69,6 +69,7 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     unsigned char block[sizeBlock];
     unsigned char codingBlock[sizeBlock];
 
+    crc crcData = 0;
     int countCodingBits = 0;
     char byteForWrite;
     char countUsedBits = 0;
@@ -78,7 +79,6 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 
     char left1[9] = {0x00, 0x80, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC, 0xFE, 0xFF};
     char right1[9] = {0, 1, 3, 7, 15, 31, 63, 127, 255};
-
 
     strcpy(block, "");
 
@@ -111,18 +111,21 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     fseek(archive, 0L, SEEK_END);
     positionHeaderInFile = ftell(archive);
 
-
+    archFileInfo.haffTreeSize = COUNT_SYMBOLS * 2;
+    archFileInfo.haffTree = (char*)calloc(archFileInfo.haffTreeSize + 1, sizeof(char));
+    writeHuffTreeInBuffer(headTree, archFileInfo.haffTree, &archFileInfo.haffTreeSize, &countUsedBits);
+    archFileInfo.haffTreeSize = archFileInfo.haffTreeSize * 8 + countUsedBits;
     archFileInfo.dataSize = 0;
     archFileInfo.endUnusedBits = 0;
-    archFileInfo.haffTreeSize = 0;
-    archFileInfo.haffTree = (char*)calloc(archFileInfo.haffTreeSize + 1, sizeof(char));
-    strcpy(archFileInfo.haffTree, "");
-    archFileInfo.HeaderCheckSum = 0;
 
 #ifdef WRITE_HEADER
     writeFileHeader(archive, &archFileInfo);
     dropWrBytes(archive);
 #endif
+
+    countUsedBits = 0;
+
+    initWrCrc();
 
     while (!feof(file))
     {
@@ -130,31 +133,32 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 
         sizeReadBlock = fread(block, sizeof(char), sizeBlock, file);
 
-        coding(codes, block, sizeBlock, codingBlock, &countCodingBits);
-        {
-            int count = 0, j;
-            for (i = 0; i < strlen(block); i++)
-            {
-                for (j = 0; j < codes[block[i]].size; j++)
-                {
-                    printf("%c", codes[block[i]].code[j]);
-                    count++;
+        coding(codes, block, sizeReadBlock, codingBlock, &countCodingBits);
+//        {
+//            int count = 0, j;
+//            for (i = 0; i < strlen(block); i++)
+//            {
+//                for (j = 0; j < codes[block[i]].size; j++)
+//                {
+//                    printf("%c", codes[block[i]].code[j]);
+//                    count++;
 
-                    if (!(count % 8))
-                        printf(" ");
-                }
-            }
-        }
-        printf("\n----------------------------------------\n");
+//                    if (!(count % 8))
+//                        printf(" ");
+//                }
+//            }
+//        }
+//        printf("\n----------------------------------------\n");
 //        getchar();
 
         for(i = 0; i < countCodingBits / 8; i++)
         {
             byteForWrite = partialByte;
             byteForWrite |= ((codingBlock[i] >> countUsedBits) & right1[8 - countUsedBits]);
-
             partialByte = ((codingBlock[i] << (8 - countUsedBits)) & left1[countUsedBits]);
+
             writeChar(archive, byteForWrite);
+            archFileInfo.dataSize++;
         }
 
         if (countCodingBits % 8)
@@ -163,10 +167,10 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
             {
                 byteForWrite = partialByte;
                 byteForWrite |= ((codingBlock[countCodingBits / 8] >> countUsedBits) & right1[8 - countUsedBits]);
-
                 partialByte = ((codingBlock[countCodingBits / 8] << (8 - countUsedBits)) & left1[countUsedBits]);
 
                 writeChar(archive, byteForWrite);
+                archFileInfo.dataSize++;
             }
             else
             {
@@ -180,11 +184,17 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     }
 
     if (countUsedBits)
+    {
         writeChar(archive, partialByte);
+        archFileInfo.dataSize++;
+        archFileInfo.endUnusedBits = 8 - countUsedBits;
+    }
+
+    crcData = getWrCrc();
+    writeInt64(archive, crcData);
+
     dropWrBytes(archive);
 
-
-    archFileInfo.endUnusedBits = 8 - countUsedBits;
 
 #ifdef WRITE_HEADER
     fseek(archive, positionHeaderInFile, SEEK_SET);
@@ -199,11 +209,7 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 }
 
 
-void coding_(char* huffTree, char* bytesForCoding, int countBytesForCoding, char* codingBits, int* countCodingBits)
-{
-    memcpy(codingBits, bytesForCoding, countBytesForCoding);
-    *countCodingBits = countBytesForCoding * 8;
-}
+
 
 void recurseAddFiles2Arch(char * path, Context context)
 {

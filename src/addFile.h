@@ -20,10 +20,8 @@
 #define OPEN_ARCHIVE_ERROR (4321)
 
 /* если recurse == 1, то начинает рекурсивно обходить папки и добавлять файлы из них. иначе пнх! */
-int addFiles2Arch(Context context, int recurse);
+int addFiles2Arch(Context context);
 int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive);
-
-void coding_(char* huffTree, char* bytesForCoding, int countBytesForCoding, char* codingBits, int* countCodingBits);
 
 void recurseAddFiles2Arch(char * path, Context context);
 #endif // ADDFILE_H

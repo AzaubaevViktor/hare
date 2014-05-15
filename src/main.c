@@ -51,7 +51,7 @@ int main(int argc, char *argv[], char *env[])
 //        coding(codes, blockOrig, 5, blockCod, &lal);
 //    }
 
-//    addFiles2Arch(*cnt, 1);
+    addFiles2Arch(*cnt);
 
 
 //  {
@@ -69,7 +69,8 @@ int main(int argc, char *argv[], char *env[])
 //        fprintf(file, "%c", buffer[i]);
 //      fclose(file);
 //  }
-
+//    printList(createList(createTableFrequencies(fopen("test_file.txt", "rb"))));
+//  printTree(createTree(createList(createTableFrequencies(fopen("test_file.txt", "rb")))), 0);
   return 0;
 }
 
