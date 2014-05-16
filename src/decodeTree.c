@@ -41,14 +41,12 @@ Tree *decodeTree(char *str, int len) {
     (*freeTwig)->parent = elem;
     (*freeTwig)->codeLen = elem->codeLen;
     strcpy((*freeTwig)->code, elem->code);
-    _setbit((*freeTwig)->code, (*freeTwig)->codeLen , (elem->left) == (*freeTwig));
+    _setbit((*freeTwig)->code, (*freeTwig)->codeLen , (elem->left) != (*freeTwig));
     (*freeTwig)->codeLen += 1;
 
     if (_getbit(str,pos)) { // twig
-      (*freeTwig)->type = 1;
       elem = *freeTwig;
     } else {
-      (*freeTwig)->type = 0;
       (*freeTwig)->sym = _getchar(str,pos+1);
       pos+=8;
     }

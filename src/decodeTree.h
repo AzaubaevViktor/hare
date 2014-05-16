@@ -9,7 +9,6 @@ typedef struct _Tree {
   struct _Tree *parent;
   struct _Tree *left;
   struct _Tree *right;
-  bool type; // 0,1 -- leaf, twig
   char code[16];
   int codeLen;
   char sym; // leaf
