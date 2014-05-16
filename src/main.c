@@ -9,6 +9,8 @@
 #include <wctype.h>
 #include <locale.h>
 
+#include "decodeTree.h"
+
 GLOBAL_LOGGING
 
 int main(int argc, char *argv[], char *env[])
@@ -26,6 +28,12 @@ int main(int argc, char *argv[], char *env[])
   cnt->argc = argc;
   cnt->env  = env;
   _error = parseArgs(&cnt);
+
+  printf("%d\n",_getchar("123",8));
+  printf("%d\n",_getchar("123",9));
+  printf("%d\n",_getchar("123",10));
+  printf("%d\n",_getchar("123",11));
+  printf("%d\n",_getchar("123",12));
 
   if (0 != _error) {
     printHelp();
