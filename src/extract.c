@@ -17,7 +17,6 @@ char *decoding(char *bytes, size_t lenBits, size_t *returnBytes, int drop) {
 }
 
 
-//TODO: Добавить изменение времени создания
 int extract(FILE *f, ArchFileInfo *info, char *fileName) {
   LOGGING_FUNC_START;
   int _error = 0;
@@ -30,6 +29,7 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
   size_t returnBytes = 0;
   size_t readedBytes = 0;
   size_t howManyBytesRead = 0;
+  struct utimbuf times;
 
   if (NULL == (fOut = fopen(fileName, "wb"))) {
     IO(L"Couldnt open file `%s`", fileName);
@@ -51,14 +51,6 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
       return ARCHIVE_ERROR;
     }
 
-    if (_error) {
-      WARNING(L"Read bytes error `%d`", _error);
-      free(buf);
-      fclose(fOut);
-      LOGGING_FUNC_STOP;
-      return _error;
-    }
-
     lenBits = (howManyBytesRead < BUF_SIZE)
               ? ((dropBuf = 1), readBytes*8 - info->endUnusedBits)
               : ((dropBuf = 0), readBytes*8);
@@ -66,11 +58,20 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
     buf2Write = decoding(buf, lenBits, &returnBytes, dropBuf);
 
     writeNBytes(fOut, returnBytes, buf2Write);
+
+    if (_error) {
+      WARNING(L"Read bytes error `%d`", _error);
+      break;
+    }
   }
 
   dropWrBytes(fOut);
 
   fclose(fOut);
+
+  times.actime = info->fileInfo->timeLastAccess;
+  times.modtime = info->fileInfo->timeLastModification;
+  printf("%d", utime(fileName, &times));
 
   LOGGING_FUNC_STOP;
   return _error;
@@ -80,21 +81,21 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
 #define ERROR_CHECK\
   switch (_error) {\
   case 0:\
-    break;\
+  break;\
   case SIGNATURE_ERROR:\
-    WARNING(L"Signature error, find next");\
-    LOGGING_FUNC_STOP;\
-    return _error;\
-    break;\
+  WARNING(L"Signature error, find next");\
+  LOGGING_FUNC_STOP;\
+  return _error;\
+  break;\
   case IO_EOF:\
-    INFO(L"End of file");\
-    LOGGING_FUNC_STOP;\
-    return 0;\
+  INFO(L"End of file");\
+  LOGGING_FUNC_STOP;\
+  return 0;\
   default:\
-    WARNING(L"readHeader return `%d` error", _error);\
-    LOGGING_FUNC_STOP;\
-    return _error;\
-    break;\
+  WARNING(L"readHeader return `%d` error", _error);\
+  LOGGING_FUNC_STOP;\
+  return _error;\
+  break;\
   }
 
 
@@ -130,7 +131,7 @@ int extractFiles(FILE *f, Context *cnt) {
     for (i=0; i<len; i++) {
       if ((*(files + i)) &&
           (pathInDest(*(files + i), aFileInfo.fileInfo->name))) {
-        currentFile = getFileByPath(*(files + i), aFileInfo.fileInfo->name);
+        currentFile = getFileByPathWithFolder(*(files + i), aFileInfo.fileInfo->name);
         INFO(L"Current file: `%s`", currentFile);
         if (isFolder(currentFile)) {
           INFO(L"Folder");
@@ -146,7 +147,7 @@ int extractFiles(FILE *f, Context *cnt) {
           _error = extract(f, &aFileInfo, currentFile);
           ERROR_CHECK;
           INFO(L"Extract with error `%d`", _error)
-          shifted = 1;
+              shifted = 1;
           if (!isFolder(*(files + i))) {
             free(*(files+i));
             *(files + i) = NULL;

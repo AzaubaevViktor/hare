@@ -20,6 +20,7 @@
 #define LOWFILE_H
 
 #include "logging.h"
+#include "crc.h"
 #include <inttypes.h>
 #include <stdio.h>
 
@@ -31,11 +32,15 @@
 #define IO_READ_ERROR  (2452)
 #define IO_EOF         (2453)
 
+void initWrCrc();
+crc getWrCrc();
 int dropWrBytes(FILE *f);
 int writeNBytes(FILE *f, int64_t N, char *str);
 int writeInt64(FILE *f, int64_t num);
 int writeChar(FILE *f, char ch);
 
+void initRdCrc();
+crc getRdCrc();
 int dropRdBytes(FILE *f);
 uint64_t getRdPos(FILE *f);
 int readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes);

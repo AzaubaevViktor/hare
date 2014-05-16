@@ -23,4 +23,8 @@ char *getFileByPath(char *path, char *dest);
 /* Folder or not folder (using after getFileByPath) */
 int isFolder(char *pathCan);
 
+char *getLastName(char *path);
+
+char *getFileByPathWithFolder(char *path, char *dest);
+
 #endif // PATH_H
