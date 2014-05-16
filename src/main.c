@@ -9,6 +9,8 @@
 #include <wchar.h>
 #include <wctype.h>
 #include <locale.h>
+#include "listfiles.h"
+#include "findsign.h"
 
 GLOBAL_LOGGING
 
@@ -39,6 +41,20 @@ int main(int argc, char *argv[], char *env[])
       ;
       break;
     case 0x2:
+
+        f = fopen(argv[2], "r");
+        printf("Before run func: %ld\n", ftell(f));
+        printFilesOfFolder(f, "./");
+        fseek(f, 0, SEEK_SET);
+
+        printf("After run func: %ld\n", ftell(f));
+        printFilesOfFolder(f, "./");
+        printf("\n\n");
+        /*fseek(f, 0, SEEK_SET);
+        findSignature(f);
+        printf("%ld\n", ftell(f));
+        printFilesOfFolder(f, "./");*/
+
       ;
       break;
     case 0x4:
@@ -60,7 +76,7 @@ int main(int argc, char *argv[], char *env[])
   LOGGING_FUNC_STOP;
   DEINIT_LOGGING;
   printf("Programm exit!\n");
-  printf("%s\n", *(cnt->workFiles));
+  //printf("%s\n", *(cnt->workFiles));
   return 0;
 }
 

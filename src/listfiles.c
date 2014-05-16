@@ -15,6 +15,8 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
     int64_t max_len = 0;
     char *nameFolderCan = pathToCanon(nameFolder);
     LOGGING_FUNC_START;
+    fgetpos(arch, &archPos);
+    INFO(L"1Position: `%d` + `%d` ", (archPos.__pos - (BUF_LEN - getRdPos(arch))), info->dataSize);
     while ((err = readHeader(arch, info)) != IO_EOF){
         if (err != 0){
             ERROR(L"Some problem in readHeader with code %d", err);
@@ -56,9 +58,12 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
             }
         }
         fgetpos(arch, &archPos);
+        // Goto next file
         fseek(arch, archPos.__pos - (BUF_LEN - getRdPos(arch)) + info->dataSize, SEEK_SET);
         dropRdBytes(arch);
-        INFO(L"Position: `%d` + `%d` ", (archPos.__pos - (BUF_LEN - getRdPos(arch))), info->dataSize);
+        INFO(L"2Position: `%d` + `%d` ", (archPos.__pos - (BUF_LEN - getRdPos(arch))), info->dataSize);
+//        free(info->fileInfo);
+//        free(info);
         info = malloc(sizeof(ArchFileInfo));
         info->fileInfo = malloc(sizeof(FileInfo));
 
