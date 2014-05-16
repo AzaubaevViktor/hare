@@ -111,8 +111,8 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     fseek(archive, 0L, SEEK_END);
     positionHeaderInFile = ftell(archive);
 
-    archFileInfo.haffTreeSize = COUNT_SYMBOLS * 2;
-    archFileInfo.haffTree = (char*)calloc(archFileInfo.haffTreeSize + 1, sizeof(char));
+    archFileInfo.haffTreeSize = 0;
+    archFileInfo.haffTree = (char*)calloc(COUNT_SYMBOLS * 2, sizeof(char));
     writeHuffTreeInBuffer(headTree, archFileInfo.haffTree, &archFileInfo.haffTreeSize, &countUsedBits);
     archFileInfo.haffTreeSize = archFileInfo.haffTreeSize * 8 + countUsedBits;
     archFileInfo.dataSize = 0;

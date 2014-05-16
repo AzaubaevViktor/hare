@@ -57,20 +57,22 @@ int main(int argc, char *argv[], char *env[])
 //  {
 //      int i;
 //      int countBits = 0;
-//      char buffer[30000] = {0};
+//      char *buffer = (char*)calloc(30000, sizeof(char));
 //      int length = 0;
 //      FILE * file = fopen("test_tree.txt", "wb");
-//      struct Node* head = createTree(createList(createTableFrequencies(fopen("test_file.txt", "rb"))));
-//      printTree(head, 0);
+//      struct Node* headList = createList(createTableFrequencies(fopen("lal.txt", "rb")));
+//      printList(headList);
+//      struct Node* rootTree = createTree(headList);
+//      printTree(rootTree, 0);
 
-//      writeHuffTreeInBuffer(head, buffer, &length, &countBits);
+//      writeHuffTreeInBuffer(rootTree, buffer, &length, &countBits);
 
 //      for (i = 0; i < length + (countBits ? 1 : 0); i++)
 //        fprintf(file, "%c", buffer[i]);
 //      fclose(file);
 //  }
-//    printList(createList(createTableFrequencies(fopen("test_file.txt", "rb"))));
-//  printTree(createTree(createList(createTableFrequencies(fopen("test_file.txt", "rb")))), 0);
+//    printList(createList(createTableFrequencies(fopen("lal.txt", "rb"))));
+//  printTree(createTree(createList(createTableFrequencies(fopen("lal.txt", "rb")))), 0);
   return 0;
 }
 

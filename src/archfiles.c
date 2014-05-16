@@ -37,9 +37,6 @@ crc _calculateHeaderHash(ArchFileInfo *info) {
 }
 
 
-#define ceil8(num) (((num) / 8) + !!((num) % 8))
-
-
 int writeFileHeader(FILE *f, ArchFileInfo *info) {
   FileInfo *fInfo = NULL;
   int _error = 0;
