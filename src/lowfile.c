@@ -140,7 +140,7 @@ int _readBytes(FILE *f, char *buf, size_t k_bytes, size_t *rd_bytes) {
 }
 
 
-crc _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int _buf_drop, uint64_t *position, int _crc_comm) {
+crc _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int _buf_drop, uint64_t *position, int _crc_comm, int _eof_drop) {
   static char buf[BUF_LEN];
   static uint64_t pos = 0;
   static size_t rd_bytes = 0;
@@ -176,9 +176,16 @@ crc _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int _buf_dro
     return 0;
   }
 
+  if (_eof_drop) {
+    return (is_eof = 0);
+  }
+
   //IO(L"Read %"PRId64 L" bytes", N);
   while (ext_pos < N) {
     nBufBytes = (rd_bytes - pos) < (N - ext_pos) ? (rd_bytes - pos) : (N - ext_pos);
+    //CRC
+    remainder = crcFast((unsigned char const *) str+ext_pos, nBufBytes, crcTable, &remainder);
+    //Copy to buffer
     memcpy(str+ext_pos, buf+pos, nBufBytes);
     ext_pos += nBufBytes;
     *position = (pos += nBufBytes);
@@ -215,32 +222,36 @@ crc _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int _buf_dro
 int dropRdBytes(FILE *f) {
   uint64_t position = 0;
   size_t read_bytes = 0;
-  return _readNBytes(f, 0, NULL, &read_bytes, 1, &position, 0);
+  return _readNBytes(f, 0, NULL, &read_bytes, 1, &position, 0, 0);
 }
 
 
 int readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes) {
   uint64_t position = 0;
-  return _readNBytes(f, N, str, read_bytes, 0, &position, 0);
+  return _readNBytes(f, N, str, read_bytes, 0, &position, 0, 0);
 }
 
 uint64_t getRdPos(FILE *f) {
   uint64_t position = 0;
   size_t read_bytes = 0;
-  _readNBytes(f, 0, NULL, &read_bytes, 0, &position, 0);
+  _readNBytes(f, 0, NULL, &read_bytes, 0, &position, 0, 0);
   return position;
 }
 
 
 void initRdCrc() {
-  _readNBytes(NULL, 0, NULL, NULL, 0, NULL, 1);
+  _readNBytes(NULL, 0, NULL, NULL, 0, NULL, 1, 0);
 }
 
 
 crc getRdCrc() {
-  return _readNBytes(NULL, 0, NULL, NULL, 0, NULL, 2);
+  return _readNBytes(NULL, 0, NULL, NULL, 0, NULL, 2, 0);
 }
 
+
+void dropRdEOF() {
+  _readNBytes(NULL, 0, NULL, NULL, 0, NULL, 0, 1);
+}
 
 int readInt64(FILE *f, int64_t *num, size_t *read_bytes) {
   char tmp[INT64SIZE] = "";
