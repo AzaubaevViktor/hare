@@ -18,6 +18,8 @@ int main(int argc, char *argv[], char *env[])
   Context *cnt = (Context *)malloc(sizeof(Context));
   FILE *f = NULL;
   int _error = 0;
+  Tree *tr = NULL;
+
   INIT_LOGGING;
   LOGGING_FUNC_START;
   INFO(L"Programm started");
@@ -64,6 +66,8 @@ int main(int argc, char *argv[], char *env[])
       break;
     }
   }
+
+  tr = decodeTree("\x98\x73\x58\x28\xD8",39);
 
   LOGGING_FUNC_STOP;
   DEINIT_LOGGING;

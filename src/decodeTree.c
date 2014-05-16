@@ -26,7 +26,9 @@ Tree *decodeTree(char *str, int len) {
   Tree *root = calloc(1,sizeof(Tree));
   Tree *elem = NULL;
   Tree **freeTwig = NULL;
-  int pos = 0;
+  int pos = 1;
+
+  elem = root;
 
   while (pos < len) {
     while ((elem->left) && (elem->right)) {
@@ -39,15 +41,15 @@ Tree *decodeTree(char *str, int len) {
     (*freeTwig)->parent = elem;
     (*freeTwig)->codeLen = elem->codeLen;
     strcpy((*freeTwig)->code, elem->code);
+    _setbit((*freeTwig)->code, (*freeTwig)->codeLen , (elem->left) == (*freeTwig));
+    (*freeTwig)->codeLen += 1;
 
     if (_getbit(str,pos)) { // twig
       (*freeTwig)->type = 1;
-      _setbit((*freeTwig)->code, (*freeTwig)->codeLen , (elem->left) == (*freeTwig));
-      (*freeTwig)->codeLen += 1;
       elem = *freeTwig;
     } else {
       (*freeTwig)->type = 0;
-      (*freeTwig)->sym = _getchar(str,pos);
+      (*freeTwig)->sym = _getchar(str,pos+1);
       pos+=8;
     }
     pos++;

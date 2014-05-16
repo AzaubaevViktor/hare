@@ -13,7 +13,6 @@ typedef struct _Tree {
   char code[16];
   int codeLen;
   char sym; // leaf
-};
 } Tree;
 
 bool _getbit(char *str, int pos);
