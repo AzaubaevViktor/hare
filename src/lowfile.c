@@ -7,20 +7,7 @@
 
 /* ======================== WRITE ===================== */
 
-
-int _writeBytes(FILE *f, char *buf, size_t k_bytes) {
-  fwrite(buf, k_bytes, 1, f);
-  if (ferror(f)) {
-    WARNING(L"Writing error");
-    return IO_WRITE_ERROR;
-  }
-  LOGGING_FUNC_STOP;
-  return 0;
-}
-
-
 crc _writeNBytes(FILE *f, int64_t N, char *str, int _crc_comm) {
-  int _error = 0;
   static crc crcTable[256];
   static crc remainder = INITIAL_REMAINDER;
 
@@ -36,10 +23,14 @@ crc _writeNBytes(FILE *f, int64_t N, char *str, int _crc_comm) {
 
   //CRC
   remainder = crcFast((unsigned char const *) str, N, crcTable, &remainder);
-  //Copy to buffer
-  _error = _writeBytes(f, str, N);
+  //Write
+  fwrite(str, N, 1, f);
+  if (ferror(f)) {
+    WARNING(L"Writing error");
+    return IO_WRITE_ERROR;
+  }
 
-  return _error;
+  return 0;
 }
 
 
@@ -77,28 +68,7 @@ int writeChar(FILE *f, char ch) {
 
 /* ====================== READ ========================= */
 
-int _readBytes(FILE *f, char *buf, size_t k_bytes, size_t *rd_bytes) {
-  if (feof(f)) {
-    *rd_bytes = 0;
-  }
-
-  *rd_bytes = fread(buf, 1, k_bytes, f);
-  //IO(L"Read %zdx%d bytes, bs=%d", *rd_bytes, 1, BUF_LEN);
-
-  if (ferror(f)) {
-    WARNING(L"Read error!");
-    return IO_READ_ERROR;
-  }
-
-  LOGGING_FUNC_STOP;
-  return 0;
-}
-
-
 crc _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int _crc_comm) {
-  static char buf[BUF_LEN];
-  static size_t rd_bytes = 0;
-  size_t nBufBytes = 0;
   int _error = 0;
   static crc crcTable[256];
   static crc remainder = INITIAL_REMAINDER;
@@ -118,9 +88,18 @@ crc _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int _crc_com
   }
 
   //CRC
-  remainder = crcFast((unsigned char const *) str, nBufBytes, crcTable, &remainder);
-  //Write
-  _error = _readBytes(f, buf, N, &rd_bytes);
+  remainder = crcFast((unsigned char const *) str, N, crcTable, &remainder);
+  //Read
+  if (feof(f)) {
+    *read_bytes = 0;
+  }
+
+  *read_bytes = fread(str, 1, N, f);
+
+  if (ferror(f)) {
+    WARNING(L"Read error!");
+    return IO_READ_ERROR;
+  }
 
   return _error;
 }
