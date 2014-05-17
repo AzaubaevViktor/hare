@@ -34,7 +34,6 @@
 
 void initWrCrc();
 crc getWrCrc();
-int dropWrBytes(FILE *f);
 int writeNBytes(FILE *f, int64_t N, char *str);
 int writeInt64(FILE *f, int64_t num);
 int writeChar(FILE *f, char ch);

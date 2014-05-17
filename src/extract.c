@@ -37,8 +37,6 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
     return FILE_OPEN_ERROR;
   }
 
-  dropWrBytes(fOut);
-
   for (readedBytes=0; readedBytes < info->dataSize;) {
     howManyBytesRead = min(BUF_SIZE, (info->dataSize - readedBytes));
     _error = readNBytes(f, howManyBytesRead, buf, &readBytes);
@@ -64,8 +62,6 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
       break;
     }
   }
-
-  dropWrBytes(fOut);
 
   fclose(fOut);
 
@@ -160,9 +156,7 @@ int extractFiles(FILE *f, Context *cnt) {
 
     if (!shifted) {
       fgetpos(f, &archPos);
-      fseek(f, archPos.__pos - (BUF_LEN - getRdPos(f)) + aFileInfo.dataSize, SEEK_SET);
-      dropRdBytes(f);
-      INFO(L"Position: `%d` + `%d` ", (archPos.__pos - (BUF_LEN - getRdPos(f))), aFileInfo.dataSize);
+      fseek(f, aFileInfo.dataSize + sizeof(int64_t), SEEK_CUR);
     }
   }
 
