@@ -95,7 +95,7 @@ int main(int argc, char *argv[], char *env[])
   } else {
     ;
   }
-  char *str = pathToCanon("f/");
+  char *str = pathToCanon("./file/");
   printf("%s\n", str);
   DEINIT_LOGGING;
   printf("Programm exit!\n");

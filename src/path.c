@@ -113,6 +113,7 @@ int isFolder(char *pathCan) {
   else return 0;
 }
 
+
 char *getLastName(char *path) {
   int64_t i = 0;
   char *name = NULL;
