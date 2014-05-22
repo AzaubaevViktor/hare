@@ -10,10 +10,43 @@
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
+void _decoding(char *str, size_t lenBits, char *retStr, size_t *returnBytes, Tree *tree, int _drop) {
+  static Tree *root = NULL;
+  static Tree *twig = NULL;
+  static int64_t pos = 0;
+  int codeLen = 0;
 
-char *decoding(char *bytes, size_t lenBits, size_t *returnBytes, int drop) {
-  *returnBytes = lenBits / 8;
-  return bytes;
+  if (_drop) {
+    twig = root = tree;
+    pos = 0;
+    return;
+  }
+
+  *returnBytes = 0;
+
+  while (lenBits<=pos) {
+    codeLen = 0;
+    while ((twig->type) && (lenBits<=pos)) {
+      twig = _getbit(str, pos)
+             ? twig->right
+             : twig->left;
+      codeLen++;
+      pos++;
+    }
+
+    if (!(twig->type)) {
+      retStr[(*returnBytes)++] = twig->sym;
+    }
+  }
+
+}
+
+void initDecoding(Tree *tree) {
+  _decoding(NULL, 0, NULL, NULL, tree, 1);
+}
+
+void decode(char *str, size_t lenBits, char *retStr, size_t *returnBytes) {
+  _decoding(str, lenBits, retStr, returnBytes, NULL, 0);
 }
 
 
@@ -22,7 +55,7 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
   int _error = 0;
   FILE *fOut = NULL;
   char *buf = malloc(BUF_SIZE*sizeof(char));
-  char *buf2Write = NULL;
+  char *buf2Write = malloc(BUF_SIZE*sizeof(char)*8);
   int dropBuf = 0;
   size_t lenBits = 0;
   size_t readBytes = 0;

@@ -9,12 +9,13 @@ typedef struct _Tree {
   struct _Tree *parent;
   struct _Tree *left;
   struct _Tree *right;
-  char code[16];
-  int codeLen;
+  bool type;
   char sym; // leaf
 } Tree;
 
 bool _getbit(char *str, int pos);
+unsigned char _getchar(char *str, int pos);
+void _setbit(char *str, int pos, bool bit);
 Tree *decodeTree(char *str, int len);
 
 #endif // DECODETREE_H

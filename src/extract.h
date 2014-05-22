@@ -3,11 +3,12 @@
 
 #include "path.h"
 #include "hare.h"
+#include "decodeTree.h"
+#include "logging.h"
+#include "lowfile.h"
+#include "archfiles.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <logging.h>
-#include <lowfile.h>
-#include <archfiles.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -27,9 +28,5 @@
  */
 
 int extractFiles(FILE *f, Context *cnt);
-
-char *decoding(char *bytes, size_t lenBits, size_t *returnBytes, int drop);
-
-
 
 #endif // EXTRACT_H

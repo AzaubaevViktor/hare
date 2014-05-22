@@ -3,7 +3,7 @@
 unsigned char masks[8] = {128,64,32,16,8,4,2,1};
 
 
-bool _setbit(char *str, int pos, bool bit) {
+void _setbit(char *str, int pos, bool bit) {
   if (bit) {
     str[pos/8] = str[pos/8] | masks[pos%8];
   } else {
@@ -39,14 +39,12 @@ Tree *decodeTree(char *str, int len) {
 
     *freeTwig = calloc(1,sizeof(Tree));
     (*freeTwig)->parent = elem;
-    (*freeTwig)->codeLen = elem->codeLen;
-    strcpy((*freeTwig)->code, elem->code);
-    _setbit((*freeTwig)->code, (*freeTwig)->codeLen , (elem->left) != (*freeTwig));
-    (*freeTwig)->codeLen += 1;
 
     if (_getbit(str,pos)) { // twig
+      (*freeTwig)->type = 1;
       elem = *freeTwig;
     } else {
+      (*freeTwig)->type = 0;
       (*freeTwig)->sym = _getchar(str,pos+1);
       pos+=8;
     }
