@@ -14,6 +14,9 @@
 #define _crcInt64(num) _crcF((unsigned char *) &num, sizeof(int64_t))
 #define _crcChar(ch) _crcF(&ch, sizeof(char))
 
+#define ceil8(num) (((num) / 8) + !!((num) % 8))
+
+
 crc _calculateHeaderHash(ArchFileInfo *info) {
   crc crcTable[256];
   crc remainder = INITIAL_REMAINDER;
@@ -30,14 +33,10 @@ crc _calculateHeaderHash(ArchFileInfo *info) {
   _crcChar(info->endUnusedBits);
   _crcChar(info->flags);
   _crcInt64(info->haffTreeSize);
-  _crcF(info->haffTree, info->haffTreeSize / 8);
-  _crcInt64(info->HeaderCheckSum);
+  _crcF(info->haffTree, ceil8(info->haffTreeSize));
 
   return remainder;
 }
-
-
-#define ceil8(num) (((num) / 8) + !!((num) % 8))
 
 
 int writeFileHeader(FILE *f, ArchFileInfo *info) {
@@ -63,7 +62,7 @@ int writeFileHeader(FILE *f, ArchFileInfo *info) {
 }
 
 size_t getHeaderLen(ArchFileInfo *info) {
-  return SIGNATURE_LEN + info->fileInfo->sizeName + info->haffTreeSize / 8 + sizeof(char)*2 + INT64SIZE*(6);
+  return SIGNATURE_LEN + info->fileInfo->sizeName + ceil8(info->haffTreeSize) + sizeof(char)*2 + INT64SIZE*(6);
 }
 
 int writeData(FILE *f, int64_t size, void *data) {
