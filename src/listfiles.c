@@ -102,6 +102,8 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
         free(foldersArch[i]->fileInfo);
         free(foldersArch[i]);
     }
+    free(info->fileInfo);
+    free(info);
     LOGGING_FUNC_STOP;
     return 0;
 }
