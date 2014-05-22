@@ -35,7 +35,7 @@ static int writeFolderHeader(Context context, const char * folderName)
 {
     FILE * archive;
     ArchFileInfo archFileInfo;
-    archFileInfo.fileInfo = (FileInfo*)malloc(sizeof(FileInfo));
+    archFileInfo.fileInfo = (FileInfo*) malloc(sizeof(FileInfo));
 
     if (NULL == archFileInfo.fileInfo)
         return -1;
@@ -49,6 +49,9 @@ static int writeFolderHeader(Context context, const char * folderName)
     archFileInfo.haffTreeSize = 0;
 
 #ifdef DEBUG
+    printf("--------------------------------\n\n"
+           "INFO: Add folder '%s' to archive...\n", pathToCanon(concatenateStrings(folderName, "/")));
+
     printFileInfo(*(archFileInfo.fileInfo));
     getchar();
 #endif
@@ -63,7 +66,7 @@ static int writeFolderHeader(Context context, const char * folderName)
         fclose(archive);
         archive  = fopen(context.archName, "rb+");
     }
-
+    fseek(archive, 0, SEEK_END);
     writeFileHeader(archive, &archFileInfo);
 
     fclose(archive);
@@ -84,7 +87,6 @@ void addFiles2Arch(Context context)
     for (i = 0; i < context.argc - 3; i++)
     {
         struct stat fileInfo;
-
         stat(context.workFiles[i], &fileInfo);
 
         if (S_ISREG(fileInfo.st_mode))
@@ -105,20 +107,7 @@ void addFiles2Arch(Context context)
         }
         else if (S_ISDIR(fileInfo.st_mode))
         {
-#ifdef DEBUG
-            printf("--------------------------------\n\n"
-                   "INFO: Add folder '%s' to archive...\n", pathToCanon(concatenateStrings(context.workFiles[i], "/")));
-#endif
-
-//            if (writeFolderHeader(context, context.workFiles[i]))
-//                continue;
-
             recurseAddFiles2Arch(context.workFiles[i], context);
-
-#ifdef DEBUG
-            printf("INFO: Folder '%s' was added!\n", pathToCanon(concatenateStrings(context.workFiles[i], "/")));
-#endif
-
         }
     }
 
@@ -142,14 +131,14 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 
     crc crcData = 0;
     int countCodingBits = 0;
-    char byteForWrite;
+    unsigned char byteForWrite;
     char countUsedBits = 0;
-    char partialByte = 0;
+    unsigned char partialByte = 0;
     long positionHeaderInFile;
 
 
-    char left1[9] = {0x00, 0x80, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC, 0xFE, 0xFF};
-    char right1[9] = {0, 1, 3, 7, 15, 31, 63, 127, 255};
+    unsigned char left1[9] = {0x00, 0x80, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC, 0xFE, 0xFF};
+    unsigned char right1[9] = {0, 1, 3, 7, 15, 31, 63, 127, 255};
 
     file     = fopen(archFileInfo.fileInfo->name,  "rb");
     if (!file)
@@ -354,7 +343,7 @@ void recurseAddFiles2Arch(char * path, Context context)
 
     if (depth > 0)
     {
-        int i;
+        int64_t i;
         buffer[strlen(buffer) - 1] = '\0';
         for (i = strlen(buffer) - 1; buffer[i] != '/'; i--)
             buffer[i] = '\0';

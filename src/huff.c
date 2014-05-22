@@ -132,7 +132,7 @@ void createCodes(struct Code* codes, struct Node* node, char* buf)
     }
 }
 
-// delete this shit
+
 void printTree(struct Node* node, int n)
 {
     int i;
