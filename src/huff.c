@@ -1,6 +1,5 @@
 #include "huff.h"
 
-
 static char* concatenateStrings(const char * str1, const char * str2)
 {
     int lengthStr1 = strlen(str1);
@@ -179,9 +178,14 @@ void printTable(size_t* table)
 void printCodes(struct Code* codes)
 {
     int i;
+
+    printf("\n==== Symbol's codes ====\n");
+
     for (i = 0; i < COUNT_SYMBOLS; i++)
         if (codes[i].size)
             printf("'%c'\n\tnumber in ASCII: %d\n\tcode: %s\n\tsize: %d\n", i, i, codes[i].code, codes[i].size);
+
+    printf("\n========================\n");
 }
 
 void coding(struct Code* codes, char* bytesForCoding, int countBytesForCoding, unsigned char* codingBits, int* countCodingBits)

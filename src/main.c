@@ -61,7 +61,7 @@ int main(int argc, char *argv[], char *env[])
 //      char buffer[30000] = {0};
 //      int length = 0;
 //      FILE * file = fopen("test_tree.txt", "wb");
-//      struct Node* head = createTree(createList(createTableFrequencies(fopen("test_file.txt", "rb"))));
+//      struct Node* head = createTree(createList(createTableFrequencies(fopen("1.jpg", "rb"))));
 //      printTree(head, 0);
 
 //      writeHuffTreeInBuffer(head, buffer, &length, &countBits);
@@ -71,7 +71,7 @@ int main(int argc, char *argv[], char *env[])
 //      fclose(file);
 //  }
 //    printList(createList(createTableFrequencies(fopen("1.jpg", "rb"))));
-//  printTree(createTree(createList(createTableFrequencies(fopen("1.jpg", "rb")))), 0);
+//  printTree(createTree(createList(createTableFrequencies(fopen("test_file.txt", "rb")))), 0);
   return 0;
 }
 

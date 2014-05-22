@@ -4,6 +4,9 @@ int getFileInfo(const char *fileName, FileInfo *fileInfo)
 {
     struct stat bufferFileInfo;
 
+    if (!fileName || !fileInfo)
+        return -1;
+
     if(0 == stat(fileName, &bufferFileInfo))
     {
         fileInfo->sizeName = strlen(fileName);
@@ -29,15 +32,15 @@ int getFileInfo(const char *fileName, FileInfo *fileInfo)
 
 void printFileInfo(FileInfo fileInfo)
 {
-    printf("================ File Info ==================\n"
+    printf("\n================ File Info ==================\n"
            "Name:                   %s\n"
            "Size:                   %d\n"
-           "Time last access:       %s"
-           "Time last modification: %s"
-           "Time last change:       %s",
+           //"Time last access:       %s\n"
+           "Time last modification: %s\n",
+           //"Time last change:       %s\n",
            fileInfo.name,
            fileInfo.size,
-           ctime(&fileInfo.timeLastAccess),
-           ctime(&fileInfo.timeLastModification),
-           ctime(&fileInfo.timeLastChange));
+           //ctime(&fileInfo.timeLastAccess),
+           ctime(&fileInfo.timeLastModification));
+           //ctime(&fileInfo.timeLastChange));
 }

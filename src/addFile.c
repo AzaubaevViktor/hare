@@ -3,6 +3,8 @@
 #define WRITE_HEADER
 #define WRITE_CRC
 
+#define DEBUG
+
 static char* concatenateStrings(const char * str1, const char * str2)
 {
     int lengthStr1 = strlen(str1);
@@ -27,9 +29,13 @@ static char* concatenateStrings(const char * str1, const char * str2)
 }
 
 
-int addFiles2Arch(Context context)
+void addFiles2Arch(Context context)
 {
     int i;
+
+#ifdef DEBUG
+    printf("\n================ ADDING FILES TO ARCHIVE MOTHERFUCKER! =================\n\n\n");
+#endif
 
     for (i = 0; i < context.argc - 3; i++)
     {
@@ -42,20 +48,33 @@ int addFiles2Arch(Context context)
             archFileInfo.fileInfo = (FileInfo*)malloc(sizeof(FileInfo));
 
             if (NULL == archFileInfo.fileInfo)
-                return -1;
+                continue;
 
-            getFileInfo(pathToCanon(context.workFiles[i]), archFileInfo.fileInfo);
+            if (getFileInfo(pathToCanon(context.workFiles[i]), archFileInfo.fileInfo))
+                continue;
 
-            addFile2Arch(archFileInfo, context.archName);
-//            free(archFileInfo.fileInfo);
+            if (addFile2Arch(archFileInfo, context.archName))
+                continue;
+
+            free(archFileInfo.fileInfo);
         }
         else if (S_ISDIR(fileInfo.st_mode))
         {
-//            recurseAddFiles2Arch(context.workFiles[i], context);
+#ifdef DEBUG
+            printf("--------------------------------\n\n"
+                   "INFO: Add folder '%s' to archive...\n", pathToCanon(concatenateStrings(context.workFiles[i], "/")));
+#endif
+            recurseAddFiles2Arch(context.workFiles[i], context);
+
+#ifdef DEBUG
+            printf("INFO: Folder '%s' was added!\n", pathToCanon(concatenateStrings(context.workFiles[i], "/")));
+#endif
         }
     }
 
-    return 0;
+#ifdef DEBUG
+    printf("\n\n================ ADDING FILES TO ARCHIVE FINISHED! =================\n\n\n");
+#endif
 }
 
 int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
@@ -82,9 +101,6 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     char left1[9] = {0x00, 0x80, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC, 0xFE, 0xFF};
     char right1[9] = {0, 1, 3, 7, 15, 31, 63, 127, 255};
 
-    strcpy(block, "");
-
-
     file     = fopen(archFileInfo.fileInfo->name,  "rb");
     if (!file)
         return OPEN_FILE_ERROR;
@@ -101,6 +117,12 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
         archive  = fopen(nameArchive, "rb+");
 
     }
+
+#ifdef DEBUG
+            printf("--------------------------------\n\n"
+                   "INFO: Add file '%s' to archive...\n", pathToCanon(archFileInfo.fileInfo->name));
+            printFileInfo(*(archFileInfo.fileInfo));
+#endif
 
     if (headTree = createTree(createList(createTableFrequencies(file))))
     {
@@ -125,6 +147,7 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 #endif
 
     countUsedBits = 0;
+    memset(block, 0, sizeBlock);
 
     initWrCrc();
 
@@ -135,25 +158,26 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
         sizeReadBlock = fread(block, sizeof(char), sizeBlock, file);
 
         coding(codes, block, sizeReadBlock, codingBlock, &countCodingBits);
-//        {
-//            int count = 0, j;
-//            for (i = 0; i < sizeReadBlock; i++)
-//            {
-//                for (j = 0; j < codes[block[i]].size; j++)
-//                {
-//                    printf("%c", codes[block[i]].code[j]);
-//                    count++;
 
-//                    if (!(count % 8))
-//                        printf(" ");
+        /*{
+            int count = 0, j;
+            for (i = 0; i < sizeReadBlock; i++)
+            {
+                for (j = 0; j < codes[block[i]].size; j++)
+                {
+                    printf("%c", codes[block[i]].code[j]);
+                    count++;
 
-//                    if (!(count % 32))
-//                        printf("\n");
-//                }
-//            }
-//        }
-//        printf("\n----------------------------------------\n");
-//        getchar();
+                    if (!(count % 8))
+                        printf(" ");
+
+                    if (!(count % 32))
+                        printf("\n");
+                }
+            }
+        }
+        printf("\n----------------------------------------\n");
+        getchar();*/
 
         for(i = 0; i < countCodingBits / 8; i++)
         {
@@ -195,7 +219,9 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
         archFileInfo.endUnusedBits = 8 - countUsedBits;
     }
 
-    printf("%d\n", archFileInfo.dataSize);
+#ifdef DEBUG
+    printf("\nSize data: %d byte(s)\n", archFileInfo.dataSize);
+#endif
 
 #ifdef WRITE_CRC
     crcData = getWrCrc();
@@ -209,10 +235,15 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     writeFileHeader(archive, &archFileInfo);
 #endif
 
-//    free(archFileInfo.haffTree);
+    free(archFileInfo.haffTree);
 
     fclose(archive);
     fclose(file);
+
+#ifdef DEBUG
+    printf("INFO: File '%s' was added!\n", pathToCanon(archFileInfo.fileInfo->name));
+    getchar();
+#endif
 
     return 0;
 }
@@ -251,7 +282,7 @@ void recurseAddFiles2Arch(char * path, Context context)
             if (NULL == archFileInfo.fileInfo)
                 return;
 
-            getFileInfo(concatenateStrings(buffer, dir_entry->d_name), archFileInfo.fileInfo);
+            getFileInfo(concatenateStrings(concatenateStrings(buffer, "/"), dir_entry->d_name), archFileInfo.fileInfo);
             addFile2Arch(archFileInfo, context.archName);
         }
         else if (dir_entry->d_type == DT_DIR)
@@ -259,8 +290,8 @@ void recurseAddFiles2Arch(char * path, Context context)
             if (strcmp(dir_entry->d_name, ".") && strcmp(dir_entry->d_name, ".."))
             {
                 depth++;
-                strcat(buffer, dir_entry->d_name);
                 strcat(buffer, "/");
+                strcat(buffer, dir_entry->d_name);
                 recurseAddFiles2Arch(buffer, context);
             }
         }
