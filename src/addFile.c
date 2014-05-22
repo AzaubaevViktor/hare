@@ -17,7 +17,7 @@ int writeFolderHeader(Context context, const char * folderName)
     archFileInfo.fileInfo = (FileInfo*) malloc(sizeof(FileInfo));
 
     if (NULL == archFileInfo.fileInfo)
-        return -1;
+        return ERROR_NOT_ALLOCATED_MEMORY;
 
     if (getFileInfo(pathToCanon(concatenateStrings(folderName, "/")), archFileInfo.fileInfo))
         return -1;
@@ -40,7 +40,7 @@ int writeFolderHeader(Context context, const char * folderName)
     {
         archive  = fopen(context.archName, "wb");
         if (!archive)
-            return -1;
+            return ERROR_OPEN_ARCHIVE;
 
         fclose(archive);
         archive  = fopen(context.archName, "rb+");
@@ -129,7 +129,7 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 
     file     = fopen(archFileInfo.fileInfo->name,  "rb");
     if (!file)
-        return OPEN_FILE_ERROR;
+        return ERROR_OPEN_FILE;
 
 
     archive  = fopen(nameArchive, "rb+");
@@ -137,7 +137,7 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     {
         archive  = fopen(nameArchive, "wb");
         if (!archive)
-            return OPEN_ARCHIVE_ERROR;
+            return ERROR_OPEN_ARCHIVE;
 
         fclose(archive);
         archive  = fopen(nameArchive, "rb+");
@@ -313,7 +313,7 @@ void recurseAddFiles2Arch(char * path, Context context)
             if (NULL == archFileInfo.fileInfo)
                 return;
 
-            getFileInfo(concatenateStrings(concatenateStrings(buffer, "/"), dir_entry->d_name), archFileInfo.fileInfo);
+            getFileInfo(pathToCanon(concatenateStrings(concatenateStrings(buffer, "/"), dir_entry->d_name)), archFileInfo.fileInfo);
             addFile2Arch(archFileInfo, context.archName);
         }
         else if (dir_entry->d_type == DT_DIR)

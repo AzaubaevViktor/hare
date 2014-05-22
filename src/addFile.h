@@ -17,8 +17,9 @@
 
 #define SIZE_BLOCK (1000000)
 
-#define OPEN_FILE_ERROR (1234)
-#define OPEN_ARCHIVE_ERROR (4321)
+#define ERROR_OPEN_FILE (1234)
+#define ERROR_OPEN_ARCHIVE (4321)
+#define ERROR_NOT_ALLOCATED_MEMORY (1515)
 
 /* если recurse == 1, то начинает рекурсивно обходить папки и добавлять файлы из них. иначе пнх! */
 void addFiles2Arch(Context context);
