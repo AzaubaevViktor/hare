@@ -114,9 +114,6 @@ crc _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int _crc_com
     return IO_READ_ERROR;
   }
 
-  //CRC
-  crcFast((unsigned char const *) str, N, crcTable, &remainder);
-
   return _error;
 }
 
