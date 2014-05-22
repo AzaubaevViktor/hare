@@ -99,8 +99,6 @@ crc _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int _crc_com
     return remainder;
   }
 
-  //CRC
-  crcFast((unsigned char const *) str, N, crcTable, &remainder);
   //Read
   if (feof(f)) {
     *read_bytes = 0;
@@ -112,6 +110,9 @@ crc _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int _crc_com
     WARNING(L"Read error!");
     return IO_READ_ERROR;
   }
+
+  //CRC
+  crcFast((unsigned char const *) str, N, crcTable, &remainder);
 
   return _error;
 }
