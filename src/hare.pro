@@ -15,7 +15,8 @@ SOURCES += main.c \
     extract.c \
     crc.c \
     addFile.c \
-    huff.c
+    huff.c \
+    concat_string.c
 
 HEADERS += \
     hare.h \
@@ -28,5 +29,6 @@ HEADERS += \
     extract.h \
     crc.h \
     addFile.h \
-    huff.h
+    huff.h \
+    concat_string.h
 

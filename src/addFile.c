@@ -3,35 +3,12 @@
 #define WRITE_HEADER
 #define WRITE_CRC
 
-#define PRINT_DATA_
+#define PRINT_DATA
 
 #define DEBUG
 
-static char* concatenateStrings(const char * str1, const char * str2)
-{
-    int lengthStr1 = strlen(str1);
-    int i;
-    char * result = (char*)calloc((strlen(str1) + strlen(str2) + 1), sizeof(char));
 
-    if (NULL == result)
-    {
-        return NULL;
-    }
-
-    for (i = 0; i < lengthStr1; i++)
-    {
-        result[i] = str1[i];
-    }
-    for (i = 0; i < strlen(str2); i++)
-    {
-        result[i + lengthStr1] = str2[i];
-    }
-
-    return result;
-}
-
-
-static int writeFolderHeader(Context context, const char * folderName)
+int writeFolderHeader(Context context, const char * folderName)
 {
     FILE * archive;
     ArchFileInfo archFileInfo;
@@ -66,6 +43,7 @@ static int writeFolderHeader(Context context, const char * folderName)
         fclose(archive);
         archive  = fopen(context.archName, "rb+");
     }
+
     fseek(archive, 0, SEEK_END);
     writeFileHeader(archive, &archFileInfo);
 
@@ -107,6 +85,9 @@ void addFiles2Arch(Context context)
         }
         else if (S_ISDIR(fileInfo.st_mode))
         {
+            if ('/' == context.workFiles[i][strlen(context.workFiles[i]) - 1])
+                context.workFiles[i][strlen(context.workFiles[i]) - 1] = '\0';
+
             recurseAddFiles2Arch(context.workFiles[i], context);
         }
     }

@@ -1,6 +1,7 @@
 #ifndef HUFF_H
 #define HUFF_H
 
+#include "concat_string.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
