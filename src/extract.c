@@ -15,6 +15,8 @@ void _decoding(char *str, size_t lenBits, char *retStr, size_t *returnBytes, Tre
   static Tree *twig = NULL;
   static int64_t pos = 0;
 
+  printf("\nNEW DECODING\n");
+
   if (_drop) {
     twig = root = tree;
     pos = 0;

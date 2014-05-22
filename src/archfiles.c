@@ -56,7 +56,7 @@ int writeFileHeader(FILE *f, ArchFileInfo *info) {
   ERROR_TEST(writeChar(f, info->flags));
   ERROR_TEST(writeInt64(f, info->haffTreeSize));
   ERROR_TEST(writeNBytes(f, ceil8(info->haffTreeSize), info->haffTree));
-  ERROR_TEST(writeInt64(f, info->HeaderCheckSum));
+  ERROR_TEST(writeCrc(f, info->HeaderCheckSum));
 
   return 0;
 }
@@ -118,7 +118,7 @@ int readHeader(FILE *f, ArchFileInfo *info) {
 
   checkSumm = _calculateHeaderHash(info);
 
-  ERROR_TEST(readInt64(f, &(info->HeaderCheckSum), &read_bytes));
+  ERROR_TEST(readCrc(f, &(info->HeaderCheckSum), &read_bytes));
 
   LOGGING_FUNC_STOP;
   return (checkSumm == info->HeaderCheckSum) ? HASH_HEADER_CHECK_ERROR : 0;
