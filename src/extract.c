@@ -70,13 +70,15 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
     return FILE_OPEN_ERROR;
   }
 
+  initDecoding(info->haffTree);
+
   for (readedBytes=0; readedBytes < info->dataSize;) {
     howManyBytesRead = min(BUF_SIZE, (info->dataSize - readedBytes));
     _error = readNBytes(f, howManyBytesRead, buf, &readBytes);
 
     readedBytes += readBytes;
 
-    if ((howManyBytesRead == BUF_SIZE) & (_error)) {
+    if ((howManyBytesRead == BUF_SIZE) || (_error)) {
       IO(L"Error reading archive file");
       LOGGING_FUNC_STOP;
       return ARCHIVE_ERROR;
@@ -86,7 +88,7 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
               ? ((dropBuf = 1), readBytes*8 - info->endUnusedBits)
               : ((dropBuf = 0), readBytes*8);
 
-    buf2Write = decoding(buf, lenBits, &returnBytes, dropBuf);
+    decode(buf,lenBits,buf2Write,&returnBytes);
 
     writeNBytes(fOut, returnBytes, buf2Write);
 
