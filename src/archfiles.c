@@ -10,9 +10,10 @@
   return _error;\
   }}
 
-#define _crcF(mess, len) crcFast((unsigned char *) mess, len, crcTable, &remainder)
-#define _crcInt64(num) _crcF((unsigned char *) &num, sizeof(int64_t))
-#define _crcChar(ch) _crcF(&ch, sizeof(char))
+#define _crcF(mess, len) crcFast((unsigned char *) (mess), (len), (crcTable), &(remainder))
+#define _crcInt64(num) _crcF((unsigned char *) (&num), sizeof(int64_t))
+#define _crcTimeT(num) _crcF((unsigned char *) (&num), sizeof(time_t))
+#define _crcChar(ch) _crcF(&(ch), sizeof(char))
 
 #define ceil8(num) (((num) / 8) + !!((num) % 8))
 
@@ -27,7 +28,6 @@ crc _calculateHeaderHash(ArchFileInfo *info) {
   _crcF(SIGNATURE, SIGNATURE_LEN);
   _crcInt64(fInfo->sizeName);
   _crcF(fInfo->name, fInfo->sizeName);
-  _crcInt64(fInfo->timeLastModification);
   _crcInt64(fInfo->size);
   _crcInt64(info->dataSize);
   _crcChar(info->endUnusedBits);
