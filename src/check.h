@@ -8,4 +8,6 @@
 #include "archfiles.h"
 
 int checkIntegrity_my(FILE *arch);
+int checkingHeader(FILE *arch, ArchFileInfo *info, int64_t *real);
+int checkingData(FILE *arch, ArchFileInfo *info, int64_t *real);
 #endif // CHECK_H

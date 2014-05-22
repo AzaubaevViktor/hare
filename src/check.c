@@ -3,37 +3,52 @@
 int checkIntegrity_my(FILE *arch){
     ArchFileInfo *info = (ArchFileInfo *)malloc(sizeof(ArchFileInfo));
     info->fileInfo = (FileInfo *)malloc(sizeof(FileInfo));
-    int64_t realsum, shouldsum;
-    char *str = NULL;
-    size_t read_bytes;
+    int64_t realsum;
+
     initRdCrc();
     int err = 0;
 
-    while ((err = readHeader(arch, info)) != IO_EOF){
-        if (err == SIGNATURE_ERROR){
-            findSignature(arch);
-            continue;
-        }
-
-        realsum = getRdCrc();
-
-        if (realsum == info->HeaderCheckSum) printf("OK1\n"); else {
-            printf("BAD %ld %ld\n", realsum, info->HeaderCheckSum);
-            //return -1;
-        }
-        initRdCrc();
-        str = (char *)realloc(str, info->dataSize);
-        readNBytes(arch, info->dataSize, str, &read_bytes);
-        realsum = getRdCrc();
-        readInt64(arch, &shouldsum, &read_bytes);
-        if (realsum == shouldsum) printf("OK first file\n"); else{
-            printf("BAD %ld %ld\n", realsum, shouldsum);
-            return -1;
-        }
-        initRdCrc();
+    while ((err = checkingHeader(arch, info, &realsum) != IO_EOF)){
+        if (err == 0) printf("OK\n");
+        else if (err == 1) printf("BAD %ld %ld\n", realsum, info->HeaderCheckSum);
+        err = checkingData(arch, info, &realsum);
+        if (err == 0) printf("OK\n"); else
+            if (err == 1) printf("BAD %ld %ld\n", realsum, info->HeaderCheckSum);
     }
     free(info->fileInfo);
     free(info);
-    free(str);
     return 0;
+}
+int checkingHeader(FILE *arch, ArchFileInfo *info, int64_t *real){
+    initRdCrc();
+    if (feof(arch)) return IO_EOF;
+
+    int err = readHeader(arch, info);
+    if (err == SIGNATURE_ERROR){
+        findSignature(arch);
+        return checkingHeader(arch, info, real);
+    }
+
+    *real = getRdCrc();
+    if (*real == info->HeaderCheckSum) {
+        return 0;
+    } else {
+        return 1;
+    }
+
+}
+int checkingData(FILE *arch, ArchFileInfo *info, int64_t *real){
+    initRdCrc();
+    size_t read_bytes;
+    char *str = (char *)malloc(info->dataSize);
+    readNBytes(arch, info->dataSize, str, &read_bytes);
+    *real = getRdCrc();
+    int64_t should;
+    readInt64(arch, &should, &read_bytes);
+    if (*real == should){
+        return 0;
+    } else {
+        return 1;
+    }
+
 }
