@@ -29,9 +29,7 @@ size_t* createTableFrequencies(FILE *file)
     int symbol;
 
     while ((symbol = fgetc(file)) != EOF)
-    {
        table[symbol]++;
-    }
 
     return table;
 }
