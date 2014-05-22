@@ -53,5 +53,5 @@ Tree *decodeTree(char *str, int len) {
     pos++;
   }
 
-
+  return root;
 }
