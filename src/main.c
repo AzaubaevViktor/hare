@@ -80,9 +80,9 @@ int main(int argc, char *argv[], char *env[])
   printf("%s\n", getFileByPathWithFolder("./.", "./file"));
   printf("%s\n", getFileByPathWithFolder("./folder/.", "./folder/file"));
   printf("%s\n", getFileByPathWithFolder("./folder", "./folder/file"));
-  printf("%s\n", getFileByPathWithFolder("", ""));
-  printf("%s\n", getFileByPathWithFolder("", ""));
-  printf("%s\n", getFileByPathWithFolder("", ""));
+  printf("%s\n", getFileByPathWithFolder("./.", "./folder/."));
+  printf("%s\n", getFileByPathWithFolder("./.", "./folder/file"));
+  printf("%s\n", getFileByPathWithFolder("./.", "./floder/flo/file"));
   printf("%s\n", getFileByPathWithFolder("", ""));
   printf("%s\n", getFileByPathWithFolder("", ""));
   printf("%s\n", getFileByPathWithFolder("", ""));
