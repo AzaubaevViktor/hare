@@ -1,6 +1,7 @@
 #ifndef CONCAT_STRING_H
 #define CONCAT_STRING_H
 
+#include "errors.h"
 #include <stdio.h>
 #include <string.h>
 

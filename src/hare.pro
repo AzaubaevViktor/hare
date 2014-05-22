@@ -30,5 +30,6 @@ HEADERS += \
     crc.h \
     addFile.h \
     huff.h \
-    concat_string.h
+    concat_string.h \
+    errors.h
 

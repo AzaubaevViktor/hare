@@ -20,7 +20,7 @@ int writeFolderHeader(Context context, const char * folderName)
         return ERROR_NOT_ALLOCATED_MEMORY;
 
     if (getFileInfo(pathToCanon(concatenateStrings(folderName, "/")), archFileInfo.fileInfo))
-        return -1;
+        return ERROR_GET_FILE_INFO;
 
     archFileInfo.fileInfo->size = 0;
     archFileInfo.dataSize = 0;
@@ -35,15 +35,14 @@ int writeFolderHeader(Context context, const char * folderName)
     getchar();
 #endif
 
-    archive  = fopen(context.archName, "rb+");
-    if (!archive)
+    if (NULL == (archive  = fopen(context.archName, "rb+")))
     {
-        archive  = fopen(context.archName, "wb");
-        if (!archive)
+        if (NULL == (archive  = fopen(context.archName, "wb")))
             return ERROR_OPEN_ARCHIVE;
-
         fclose(archive);
-        archive  = fopen(context.archName, "rb+");
+
+        if (NULL == (archive  = fopen(context.archName, "rb+")))
+            return ERROR_OPEN_ARCHIVE;
     }
 
     fseek(archive, 0, SEEK_END);
@@ -64,7 +63,7 @@ int writeFolderHeader(Context context, const char * folderName)
 void addFiles2Arch(Context context)
 {
     int i;
-
+    int error = 0;
 #ifdef DEBUG
     printf("\n================ ADDING FILES TO ARCHIVE MOTHERFUCKER! =================\n\n\n");
 #endif
@@ -72,7 +71,11 @@ void addFiles2Arch(Context context)
     for (i = 0; i < context.argc - 3; i++)
     {
         struct stat fileInfo;
-        stat(context.workFiles[i], &fileInfo);
+        if (error = stat(context.workFiles[i], &fileInfo))
+        {
+            PRINT_ERROR(error, context.workFiles[i]);
+            continue;
+        }
 
         if (S_ISREG(fileInfo.st_mode))
         {
@@ -80,12 +83,18 @@ void addFiles2Arch(Context context)
             archFileInfo.fileInfo = (FileInfo*)malloc(sizeof(FileInfo));
 
             if (NULL == archFileInfo.fileInfo)
+            {
+                PRINT_ERROR(ERROR_NOT_ALLOCATED_MEMORY);
                 continue;
+            }
 
-            if (getFileInfo(pathToCanon(context.workFiles[i]), archFileInfo.fileInfo))
+            if (error = getFileInfo(pathToCanon(context.workFiles[i]), archFileInfo.fileInfo))
+            {
+                PRINT_ERROR(error, context.workFiles[i]);
                 continue;
+            }
 
-            if (addFile2Arch(archFileInfo, context.archName))
+            if (error = addFile2Arch(archFileInfo, context.archName))
                 continue;
 
             free(archFileInfo.fileInfo);
@@ -129,15 +138,20 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 
     file     = fopen(archFileInfo.fileInfo->name,  "rb");
     if (!file)
+    {
+        PRINT_ERROR(ERROR_OPEN_FILE, archFileInfo.fileInfo->name);
         return ERROR_OPEN_FILE;
-
+    }
 
     archive  = fopen(nameArchive, "rb+");
     if (!archive)
     {
         archive  = fopen(nameArchive, "wb");
         if (!archive)
+        {
+            PRINT_ERROR(ERROR_OPEN_ARCHIVE, nameArchive);
             return ERROR_OPEN_ARCHIVE;
+        }
 
         fclose(archive);
         archive  = fopen(nameArchive, "rb+");
