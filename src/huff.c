@@ -162,7 +162,7 @@ void printList(struct Node* head)
 
     while (tmpNode)
     {
-        printf("'%c' - %d\n", (char)tmpNode->symbol, tmpNode->data);
+        printf("'%c'(%d) - %d\n", (char)tmpNode->symbol,tmpNode->symbol, tmpNode->data);
         tmpNode = tmpNode->next;
     }
 }
@@ -181,7 +181,7 @@ void printCodes(struct Code* codes)
     int i;
     for (i = 0; i < COUNT_SYMBOLS; i++)
         if (codes[i].size)
-            printf("'%c' - '%s'\n", i, codes[i].code);
+            printf("'%c'\n\tnumber in ASCII: %d\n\tcode: %s\n\tsize: %d\n", i, i, codes[i].code, codes[i].size);
 }
 
 void coding(struct Code* codes, char* bytesForCoding, int countBytesForCoding, unsigned char* codingBits, int* countCodingBits)
@@ -190,17 +190,21 @@ void coding(struct Code* codes, char* bytesForCoding, int countBytesForCoding, u
     int tmpCountCodingBits = 0;
     char bits[] = {1, 2, 4, 8, 16, 32, 64, 128};
 
+//    printCodes(codes);
+
     for (i = 0; i < countBytesForCoding; i++)
         codingBits[i] = 0;
 
     for (i = 0; i < countBytesForCoding; i++)
-        for (j = 0; j < codes[bytesForCoding[i]].size; j++)
+    {
+        unsigned char byte = (unsigned char)bytesForCoding[i];
+        for (j = 0; j < codes[byte].size; j++)
         {
-            unsigned char tmp = (codes[bytesForCoding[i]].code[j] == '1' ? bits[7 - (tmpCountCodingBits % 8)] : 0);
+            unsigned char tmp = (codes[byte].code[j] == '1' ? bits[7 - (tmpCountCodingBits % 8)] : 0);
             codingBits[tmpCountCodingBits / 8] |= tmp;
             tmpCountCodingBits++;
         }
-
+    }
     *countCodingBits = tmpCountCodingBits;
 }
 

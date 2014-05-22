@@ -43,9 +43,10 @@ int addFiles2Arch(Context context)
             if (NULL == archFileInfo.fileInfo)
                 return -1;
 
-            getFileInfo(context.workFiles[i], archFileInfo.fileInfo);
+            getFileInfo(pathToCanon(context.workFiles[i]), archFileInfo.fileInfo);
 
             addFile2Arch(archFileInfo, context.archName);
+//            free(archFileInfo.fileInfo);
         }
         else if (S_ISDIR(fileInfo.st_mode))
         {
@@ -103,7 +104,7 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     if (headTree = createTree(createList(createTableFrequencies(file))))
     {
         createCodes(codes, headTree, "");
-//        printCodes(codes);
+        printCodes(codes);
     }
 
 
@@ -111,8 +112,8 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     fseek(archive, 0L, SEEK_END);
     positionHeaderInFile = ftell(archive);
 
-    archFileInfo.haffTreeSize = COUNT_SYMBOLS * 2;
-    archFileInfo.haffTree = (char*)calloc(archFileInfo.haffTreeSize + 1, sizeof(char));
+    archFileInfo.haffTreeSize = 0;
+    archFileInfo.haffTree = (char*)calloc(COUNT_SYMBOLS * 2 + 1, sizeof(char));
     writeHuffTreeInBuffer(headTree, archFileInfo.haffTree, &archFileInfo.haffTreeSize, &countUsedBits);
     archFileInfo.haffTreeSize = archFileInfo.haffTreeSize * 8 + countUsedBits;
     archFileInfo.dataSize = 0;
@@ -181,6 +182,7 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 
 
         strcpy(block, "");
+        memset(codingBlock, 0, sizeBlock);
     }
 
     if (countUsedBits)
@@ -201,6 +203,8 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     writeFileHeader(archive, &archFileInfo);
     dropWrBytes(archive);
 #endif
+
+//    free(archFileInfo.haffTree);
 
     fclose(archive);
     fclose(file);
