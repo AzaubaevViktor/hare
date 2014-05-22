@@ -13,7 +13,8 @@ SOURCES += main.c \
     archfiles.c \
     path.c \
     extract.c \
-    crc.c
+    crc.c \
+    check.c
 
 HEADERS += \
     hare.h \
@@ -24,5 +25,6 @@ HEADERS += \
     archfiles.h \
     path.h \
     extract.h \
-    crc.h
+    crc.h \
+    check.h
 
