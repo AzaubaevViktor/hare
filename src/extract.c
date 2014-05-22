@@ -29,7 +29,6 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
   size_t returnBytes = 0;
   size_t readedBytes = 0;
   size_t howManyBytesRead = 0;
-  struct utimbuf times;
 
   if (NULL == (fOut = fopen(fileName, "wb"))) {
     IO(L"Couldnt open file `%s`", fileName);
@@ -64,10 +63,6 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
   }
 
   fclose(fOut);
-
-  times.actime = info->fileInfo->timeLastAccess;
-  times.modtime = info->fileInfo->timeLastModification;
-  printf("%d", utime(fileName, &times));
 
   LOGGING_FUNC_STOP;
   return _error;

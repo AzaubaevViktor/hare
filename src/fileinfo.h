@@ -13,9 +13,7 @@ typedef struct {
     int64_t sizeName;
     char *name;
     int64_t size;
-    time_t timeLastAccess;
-    time_t timeLastModification;
-    time_t timeLastChange;
+    int64_t timeLastModification;
 } FileInfo;
 
 

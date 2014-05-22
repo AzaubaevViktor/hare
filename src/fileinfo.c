@@ -16,8 +16,6 @@ int getFileInfo(const char *fileName, FileInfo *fileInfo)
 
         fileInfo->size                  = (int64_t) bufferFileInfo.st_size;
 
-        fileInfo->timeLastAccess        = bufferFileInfo.st_atime;
-        fileInfo->timeLastChange        = bufferFileInfo.st_ctime;
         fileInfo->timeLastModification  = (int64_t)  bufferFileInfo.st_mtime;
     }
     else
@@ -32,12 +30,8 @@ void printFileInfo(FileInfo fileInfo)
     printf("================ File Info ==================\n"
            "Name:                   %s\n"
            "Size:                   %d\n"
-           //"Time last access:       %s"
            "Time last modification: %s",
-           //"Time last change:       %s",
            fileInfo.name,
            fileInfo.size,
-           //ctime(&fileInfo.timeLastAccess),
            ctime(&fileInfo.timeLastModification));
-           //ctime(&fileInfo.timeLastChange));
 }
