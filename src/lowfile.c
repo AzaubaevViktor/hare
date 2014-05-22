@@ -51,15 +51,12 @@ int writeNBytes(FILE *f, int64_t N, char *str) {
 
 int writeInt64(FILE *f, int64_t num) {
   int64_t _num = num;
-  //LOGGING_FUNC_START;
   char tmp[INT64SIZE] = "";
   size_t i = 0;
-  //IO(L"Write int64 num")
   for (i=0; i<INT64SIZE; i++) {
     tmp[i] = _num & 0xFF;
     _num = _num >> 8;
   }
-  //LOGGING_FUNC_STOP;
   return writeNBytes(f, INT64SIZE, tmp);
 }
 
@@ -77,8 +74,6 @@ crc _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int _crc_com
   static crc remainder = INITIAL_REMAINDER;
 
   //LOGGING_FUNC_START;
-
-  *position = pos;
 
   *read_bytes = 0;
 
@@ -106,16 +101,7 @@ crc _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int _crc_com
     return IO_READ_ERROR;
   }
 
-
-  //LOGGING_FUNC_STOP;
   return _error;
-}
-
-
-int dropRdBytes(FILE *f) {
-  uint64_t position = 0;
-  size_t read_bytes = 0;
-  return _readNBytes(f, 0, NULL, &read_bytes, 1, &position, 0);
 }
 
 

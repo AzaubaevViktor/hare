@@ -1,6 +1,7 @@
 #include  "addFile.h"
 
 #define WRITE_HEADER
+#define WRITE_CRC
 
 static char* concatenateStrings(const char * str1, const char * str2)
 {
@@ -121,7 +122,6 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 
 #ifdef WRITE_HEADER
     writeFileHeader(archive, &archFileInfo);
-    dropWrBytes(archive);
 #endif
 
     countUsedBits = 0;
@@ -137,7 +137,7 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
         coding(codes, block, sizeReadBlock, codingBlock, &countCodingBits);
 //        {
 //            int count = 0, j;
-//            for (i = 0; i < strlen(block); i++)
+//            for (i = 0; i < sizeReadBlock; i++)
 //            {
 //                for (j = 0; j < codes[block[i]].size; j++)
 //                {
@@ -146,6 +146,9 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 
 //                    if (!(count % 8))
 //                        printf(" ");
+
+//                    if (!(count % 32))
+//                        printf("\n");
 //                }
 //            }
 //        }
@@ -192,16 +195,18 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
         archFileInfo.endUnusedBits = 8 - countUsedBits;
     }
 
+    printf("%d\n", archFileInfo.dataSize);
+
+#ifdef WRITE_CRC
     crcData = getWrCrc();
     writeInt64(archive, crcData);
+#endif
 
-    dropWrBytes(archive);
 
 
 #ifdef WRITE_HEADER
     fseek(archive, positionHeaderInFile, SEEK_SET);
     writeFileHeader(archive, &archFileInfo);
-    dropWrBytes(archive);
 #endif
 
 //    free(archFileInfo.haffTree);
