@@ -59,11 +59,11 @@ int main(int argc, char *argv[], char *env[])
       break;
     }
   }
-  //printFilesOfFolder(fopen("./arch.hr", "rb"), "./.");
+  
   LOGGING_FUNC_STOP;
   DEINIT_LOGGING;
   printf("Programm exit!\n");
-  printf("%s\n", *(cnt->workFiles));
+  
   return 0;
 }
 

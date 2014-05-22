@@ -16,10 +16,10 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
     char *nameFolderCan = pathToCanon(nameFolder);
     LOGGING_FUNC_START;
     while ((err = readHeader(arch, info)) != IO_EOF){
-        printf("%lx\n", ftell(arch));
+        //printf("%lx\n", ftell(arch));
         if (err != 0){
             findSignature(arch);
-            printf("%lx\n", ftell(arch));
+            //printf("%lx\n", ftell(arch));
             if (feof(arch)) break;
             else continue;
         }

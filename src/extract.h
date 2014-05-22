@@ -11,6 +11,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <utime.h>
 
 #define FSEEK_ERROR (7145)
 #define FILE_OPEN_ERROR (8155)
