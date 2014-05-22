@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "findsign.h"
+#include "archfiles.h"
 
-int checkIntegrity(FILE *arch);
+int checkIntegrity_my(FILE *arch);
 #endif // CHECK_H

@@ -11,7 +11,7 @@
 #include <locale.h>
 #include "listfiles.h"
 #include "findsign.h"
-
+#include "check.h"
 GLOBAL_LOGGING
 
 int main(int argc, char *argv[], char *env[])
@@ -38,7 +38,8 @@ int main(int argc, char *argv[], char *env[])
       ;
       break;
     case 0x1:
-      ;
+      f = fopen(argv[2], "rb");
+      checkIntegrity_my(f);
       break;
     case 0x2:
 
