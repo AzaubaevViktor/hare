@@ -13,13 +13,10 @@
 void _decoding(char *str, size_t lenBits, char *retStr, size_t *returnBytes, Tree *tree, int _drop) {
   static Tree *root = NULL;
   static Tree *twig = NULL;
-  static int64_t pos = 0;
-
-  printf("\nNEW DECODING\n");
+  int64_t pos = 0;
 
   if (_drop) {
     twig = root = tree;
-    pos = 0;
     return;
   }
 
@@ -40,7 +37,6 @@ void _decoding(char *str, size_t lenBits, char *retStr, size_t *returnBytes, Tre
       twig = root;
     }
   }
-
 }
 
 void initDecoding(Tree *tree) {
@@ -103,8 +99,6 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
   }
 
   fclose(fOut);
-
-  readInt64(f, &fileCrc, &howManyBytesRead);
 
   times.actime = info->fileInfo->timeLastAccess;
   times.modtime = info->fileInfo->timeLastModification;
@@ -197,10 +191,9 @@ int extractFiles(FILE *f, Context *cnt) {
       }
     }
 
+
+    fseek(f, (shifted ? 0 : (aFileInfo.dataSize))  + sizeof(crc), SEEK_CUR);
     INFO("Position %d", (fgetpos(f, &archPos), archPos));
-    if (!shifted) {
-      fseek(f, aFileInfo.dataSize + sizeof(crc), SEEK_CUR);
-    }
   }
 
   LOGGING_FUNC_STOP;
