@@ -228,7 +228,7 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 
 #ifdef WRITE_CRC
     crcData = getWrCrc();
-    writeInt64(archive, crcData);
+    writeCrc(archive, crcData);
 #endif
 
 
