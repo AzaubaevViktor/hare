@@ -22,7 +22,7 @@ crc _writeNBytes(FILE *f, int64_t N, char *str, int _crc_comm) {
   }
 
   //CRC
-  remainder = crcFast((unsigned char const *) str, N, crcTable, &remainder);
+  crcFast((unsigned char const *) str, N, crcTable, &remainder);
   //Write
   fwrite(str, N, 1, f);
   if (ferror(f)) {
@@ -88,7 +88,7 @@ crc _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int _crc_com
   }
 
   //CRC
-  remainder = crcFast((unsigned char const *) str, N, crcTable, &remainder);
+  crcFast((unsigned char const *) str, N, crcTable, &remainder);
   //Read
   if (feof(f)) {
     *read_bytes = 0;
