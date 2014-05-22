@@ -2,12 +2,15 @@
 #include "hare.h"
 #include "init.h"
 #include "path.h"
+
 #include "extract.h"
 #include <stdio.h>
 #include <stdio.h>
 #include <wchar.h>
 #include <wctype.h>
 #include <locale.h>
+#include "listfiles.h"
+#include "findsign.h"
 
 GLOBAL_LOGGING
 
@@ -38,6 +41,15 @@ int main(int argc, char *argv[], char *env[])
       ;
       break;
     case 0x2:
+
+        f = fopen(argv[2], "r");
+
+
+
+
+
+        printFilesOfFolder(f, "./.");
+        printf("\n\n");
       ;
       break;
     case 0x4:
@@ -56,10 +68,10 @@ int main(int argc, char *argv[], char *env[])
       break;
     }
   }
-
   LOGGING_FUNC_STOP;
   DEINIT_LOGGING;
   printf("Programm exit!\n");
+  //printf("%s\n", *(cnt->workFiles));
   return 0;
 }
 

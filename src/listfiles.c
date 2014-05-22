@@ -1,4 +1,5 @@
 #include "listfiles.h"
+#include "findsign.h"
 
 int printFilesOfFolder(FILE *arch, char *nameFolder)
 {
@@ -15,9 +16,13 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
     int64_t max_len = 0;
     char *nameFolderCan = pathToCanon(nameFolder);
     LOGGING_FUNC_START;
+    fgetpos(arch, &archPos);
+
     while ((err = readHeader(arch, info)) != IO_EOF){
-        if (err != 0){
-            ERROR(L"Some problem in readHeader with code %d", err);
+        if (err == 6443){
+            findSignature(arch);
+            continue;
+        } else if (err != 0){
             break;
         }
         currentNameFile = info->fileInfo->name;
@@ -56,9 +61,10 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
             }
         }
         fgetpos(arch, &archPos);
-        fseek(arch, archPos.__pos - (BUF_LEN - getRdPos(arch)) + info->dataSize, SEEK_SET);
-        dropRdBytes(arch);
-        INFO(L"Position: `%d` + `%d` ", (archPos.__pos - (BUF_LEN - getRdPos(arch))), info->dataSize);
+        // Goto next file
+
+//        free(info->fileInfo);
+//        free(info);
         info = malloc(sizeof(ArchFileInfo));
         info->fileInfo = malloc(sizeof(FileInfo));
 
@@ -72,6 +78,9 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
             continue;
         }
         printf("%-*s|\n", (int)max_len, getFileByPath(nameFolderCan, foldersArch[i]->fileInfo->name) + 2);
+    }
+    for (i = 0; i < howFolders; i++){
+        printf("%s", foldersArch[i]->fileInfo->name);
     }
     for (i = 0;i < howFiles  ;i++)
     {
