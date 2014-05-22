@@ -9,8 +9,6 @@
 #include <wctype.h>
 #include <locale.h>
 
-#include "decodeTree.h"
-
 GLOBAL_LOGGING
 
 int main(int argc, char *argv[], char *env[])
@@ -18,21 +16,6 @@ int main(int argc, char *argv[], char *env[])
   Context *cnt = (Context *)malloc(sizeof(Context));
   FILE *f = NULL;
   int _error = 0;
-  Tree *tr = NULL;
-
-  crc one = INITIAL_REMAINDER;
-  crc two = INITIAL_REMAINDER;
-  crc crcTable[256];
-
-  crcInit(crcTable);
-  crcFast((unsigned char const *) "1", 1, crcTable, &one);
-  printf("%x\n",one);
-  one = crcFast((unsigned char const *) "2", 1, crcTable, &one);
-  printf("%x\n",one);
-
-  crcInit(crcTable);
-  two = crcFast((unsigned char const *) "12", 2, crcTable, &two);
-  printf("%x\n",two);
 
   INIT_LOGGING;
   LOGGING_FUNC_START;
@@ -80,8 +63,6 @@ int main(int argc, char *argv[], char *env[])
       break;
     }
   }
-
-  tr = decodeTree("\x98\x73\x58\x28\xD8",39);
 
   LOGGING_FUNC_STOP;
   DEINIT_LOGGING;
