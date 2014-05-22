@@ -59,7 +59,6 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
   size_t readedBytes = 0;
   size_t howManyBytesRead = 0;
   Tree *haffTree = NULL;
-  struct utimbuf times;
 
   if (NULL == (fOut = fopen(fileName, "wb"))) {
     IO(L"Couldnt open file `%s`", fileName);
@@ -97,9 +96,6 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
   }
 
   fclose(fOut);
-
-  times.actime = info->fileInfo->timeLastAccess;
-  times.modtime = info->fileInfo->timeLastModification;
 
   free(haffTree);
 
@@ -150,7 +146,7 @@ int extractFiles(FILE *f, Context *cnt) {
   INFO(L"Len:%d", len);
   aFileInfo.fileInfo = &fInfo;
 
-  while (IO_EOF != _error) {
+  while (!feof(f)) {
     _error = readHeader(f, &aFileInfo);
     ERROR_CHECK;
 
@@ -161,12 +157,13 @@ int extractFiles(FILE *f, Context *cnt) {
     for (i=0; i<len; i++) {
       if ((*(files + i)) &&
           (pathInDest(*(files + i), aFileInfo.fileInfo->name))) {
-        currentFile = getFileByPathWithFolder(*(files + i), aFileInfo.fileInfo->name);
+        currentFile = /*getFileByPathWithFolder*/getFileByPath(*(files + i), aFileInfo.fileInfo->name);
         INFO(L"Current file: `%s`", currentFile);
         if (isFolder(currentFile)) {
           INFO(L"Folder");
           if (-1 == stat(currentFile, &st)) {
-            currentFile[max(strlen(currentFile), 2)] = 0;
+            currentFile[max((int64_t) strlen(currentFile)-2, 0)] = 0;
+            INFO(L"Try to create folder `%s`", currentFile);
             _error = mkdir(currentFile, 0777);
             INFO(L"Folder create with error `%d`", _error);
             _error = 0;
@@ -191,6 +188,7 @@ int extractFiles(FILE *f, Context *cnt) {
 
     fseek(f, (shifted ? 0 : (aFileInfo.dataSize))  + sizeof(crc), SEEK_CUR);
     INFO("Position %d", (fgetpos(f, &archPos), archPos));
+    INFO("==========================");
   }
 
   LOGGING_FUNC_STOP;

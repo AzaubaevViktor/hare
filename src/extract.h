@@ -16,7 +16,7 @@
 
 #define FSEEK_ERROR (7145)
 #define FILE_OPEN_ERROR (8155)
-#define BUF_SIZE (1024)
+#define BUF_SIZE (1048576)
 #define ARCHIVE_ERROR (9462)
 
 #define max(a,b) (((a) < (b)) ? (b) : (a))
