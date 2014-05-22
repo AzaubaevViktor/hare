@@ -54,7 +54,7 @@ int writeInt64(FILE *f, int64_t num) {
   char tmp[INT64SIZE] = "";
   size_t i = 0;
   for (i=0; i<INT64SIZE; i++) {
-    tmp[i] = _num & 0xFF;
+    tmp[i] = (unsigned char) (_num & 0xFF);
     _num = _num >> 8;
   }
   return writeNBytes(f, INT64SIZE, tmp);
@@ -66,7 +66,7 @@ int writeCrc(FILE *f, crc num) {
   char tmp[sizeof(crc)] = "";
   size_t i = 0;
   for (i=0; i<sizeof(crc); i++) {
-    tmp[i] = _num & 0xFF;
+    tmp[i] = (unsigned char) (_num & 0xFF);
     _num = _num >> 8;
   }
   return writeNBytes(f, sizeof(crc), tmp);
@@ -162,7 +162,7 @@ int readCrc(FILE *f, crc *num, size_t *read_bytes) {
   }
   for (i=0; i<sizeof(crc); i++) {
     *num = *num << 8;
-    *num += tmp[sizeof(crc) - i - 1];
+    *num += (unsigned char) tmp[sizeof(crc) - i - 1];
   }
   return 0;
 }
