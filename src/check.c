@@ -26,11 +26,14 @@ int checkIntegrity_my(FILE *arch){
         readNBytes(arch, info->dataSize, str, &read_bytes);
         realsum = getRdCrc();
         readInt64(arch, &shouldsum, &read_bytes);
-        //fread(&shouldsum, sizeof(crc), 1, arch);
         if (realsum == shouldsum) printf("OK first file\n"); else{
             printf("BAD %ld %ld\n", realsum, shouldsum);
             return -1;
         }
+        initRdCrc();
     }
+    free(info->fileInfo);
+    free(info);
+    free(str);
     return 0;
 }
