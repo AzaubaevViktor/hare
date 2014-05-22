@@ -32,12 +32,12 @@ void printFileInfo(FileInfo fileInfo)
     printf("================ File Info ==================\n"
            "Name:                   %s\n"
            "Size:                   %d\n"
-           "Time last access:       %s"
-           "Time last modification: %s"
-           "Time last change:       %s",
+           //"Time last access:       %s"
+           "Time last modification: %s",
+           //"Time last change:       %s",
            fileInfo.name,
            fileInfo.size,
-           ctime(&fileInfo.timeLastAccess),
-           ctime(&fileInfo.timeLastModification),
-           ctime(&fileInfo.timeLastChange));
+           //ctime(&fileInfo.timeLastAccess),
+           ctime(&fileInfo.timeLastModification));
+           //ctime(&fileInfo.timeLastChange));
 }
