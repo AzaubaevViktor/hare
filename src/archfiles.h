@@ -22,7 +22,7 @@ typedef struct {
   char flags;
   int64_t haffTreeSize;
   char *haffTree;
-  int64_t HeaderCheckSum;
+  crc HeaderCheckSum;
 } ArchFileInfo;
 
 int writeFileHeader(FILE *f, ArchFileInfo *info);
