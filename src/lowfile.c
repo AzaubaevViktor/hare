@@ -145,7 +145,7 @@ int readInt64(FILE *f, int64_t *num, size_t *read_bytes) {
   }
   for (i=0; i<INT64SIZE; i++) {
     *num = *num << 8;
-    *num += tmp[INT64SIZE - i - 1];
+    *num += (unsigned char) tmp[INT64SIZE - i - 1];
   }
   return 0;
 }
