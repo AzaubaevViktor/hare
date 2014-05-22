@@ -16,9 +16,12 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
     char *nameFolderCan = pathToCanon(nameFolder);
     LOGGING_FUNC_START;
     while ((err = readHeader(arch, info)) != IO_EOF){
+        printf("%lx\n", ftell(arch));
         if (err != 0){
-            ERROR(L"Some problem in readHeader with code %d", err);
-            break;
+            findSignature(arch);
+            printf("%lx\n", ftell(arch));
+            if (feof(arch)) break;
+            else continue;
         }
         currentNameFile = info->fileInfo->name;
         if (isFolder(currentNameFile) && (levels(nameFolderCan) == levels(currentNameFile) - 1)
@@ -55,10 +58,7 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
                 max_len = strlen(currentNameFile);
             }
         }
-        fgetpos(arch, &archPos);
-        fseek(arch, archPos.__pos - (BUF_LEN - getRdPos(arch)) + info->dataSize, SEEK_SET);
-        dropRdBytes(arch);
-        INFO(L"Position: `%d` + `%d` ", (archPos.__pos - (BUF_LEN - getRdPos(arch))), info->dataSize);
+
         info = malloc(sizeof(ArchFileInfo));
         info->fileInfo = malloc(sizeof(FileInfo));
 

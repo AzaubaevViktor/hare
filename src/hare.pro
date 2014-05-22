@@ -13,7 +13,8 @@ SOURCES += main.c \
     archfiles.c \
     path.c \
     listfiles.c \
-	extract.c
+    extract.c \
+    findsign.c
 
 HEADERS += \
     hare.h \
@@ -24,5 +25,6 @@ HEADERS += \
     archfiles.h \
     path.h \
     extract.h \
-	listfiles.h
+    listfiles.h \
+    findsign.h
 

@@ -39,7 +39,9 @@ int main(int argc, char *argv[], char *env[])
       ;
       break;
     case 0x2:
-      ;
+      f = fopen("./almuh.hr", "rb");
+      printFilesOfFolder(f, "./.");
+      fclose(f);
       break;
     case 0x4:
       ;
@@ -57,7 +59,7 @@ int main(int argc, char *argv[], char *env[])
       break;
     }
   }
-  printFilesOfFolder(fopen("../archive.hr", "r"), "./");
+  //printFilesOfFolder(fopen("./arch.hr", "rb"), "./.");
   LOGGING_FUNC_STOP;
   DEINIT_LOGGING;
   printf("Programm exit!\n");
