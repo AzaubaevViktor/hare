@@ -22,7 +22,7 @@ crc _writeNBytes(FILE *f, int64_t N, char *str, int _crc_comm) {
   }
 
   //CRC
-  remainder = crcFast((unsigned char const *) str, N, crcTable, &remainder);
+  crcFast((unsigned char const *) str, N, crcTable, &remainder);
   //Write
   fwrite(str, N, 1, f);
   if (ferror(f)) {
@@ -61,6 +61,18 @@ int writeInt64(FILE *f, int64_t num) {
 }
 
 
+int writeCrc(FILE *f, crc num) {
+  crc _num = num;
+  char tmp[sizeof(crc)] = "";
+  size_t i = 0;
+  for (i=0; i<sizeof(crc); i++) {
+    tmp[i] = _num & 0xFF;
+    _num = _num >> 8;
+  }
+  return writeNBytes(f, sizeof(crc), tmp);
+}
+
+
 int writeChar(FILE *f, char ch) {
   return writeNBytes(f, 1, &ch);
 }
@@ -88,7 +100,7 @@ crc _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int _crc_com
   }
 
   //CRC
-  remainder = crcFast((unsigned char const *) str, N, crcTable, &remainder);
+  crcFast((unsigned char const *) str, N, crcTable, &remainder);
   //Read
   if (feof(f)) {
     *read_bytes = 0;
@@ -126,19 +138,32 @@ int readInt64(FILE *f, int64_t *num, size_t *read_bytes) {
   char tmp[INT64SIZE] = "";
   size_t i = 0;
   int _error = 0;
-  //LOGGING_FUNC_START;
   *read_bytes = 0;
   _error = readNBytes(f, INT64SIZE, tmp, read_bytes);
   if (_error) {
-    //WARNING(L"Read error `%d`", _error);
-    //LOGGING_FUNC_STOP;
     return _error;
   }
   for (i=0; i<INT64SIZE; i++) {
     *num = *num << 8;
     *num += tmp[INT64SIZE - i - 1];
   }
-  //LOGGING_FUNC_STOP;
+  return 0;
+}
+
+
+int readCrc(FILE *f, crc *num, size_t *read_bytes) {
+  char tmp[sizeof(crc)] = "";
+  size_t i = 0;
+  int _error = 0;
+  *read_bytes = 0;
+  _error = readNBytes(f, sizeof(crc), tmp, read_bytes);
+  if (_error) {
+    return _error;
+  }
+  for (i=0; i<sizeof(crc); i++) {
+    *num = *num << 8;
+    *num += tmp[sizeof(crc) - i - 1];
+  }
   return 0;
 }
 
