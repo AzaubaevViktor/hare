@@ -15,7 +15,7 @@
 #include <stdlib.h>
 
 
-
+#define SIZE_BLOCK (1000000)
 
 #define OPEN_FILE_ERROR (1234)
 #define OPEN_ARCHIVE_ERROR (4321)

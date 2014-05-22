@@ -3,9 +3,9 @@
 #define WRITE_HEADER
 #define WRITE_CRC
 
-#define PRINT_DATA_
+#define PRINT_DATA
 
-#define DEBUG_
+#define DEBUG
 
 
 int writeFolderHeader(Context context, const char * folderName)
@@ -112,10 +112,9 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     struct Code codes[COUNT_SYMBOLS] = {0, 0};
     struct Node* headTree = NULL;
 
-    const int sizeBlock = 30000;
     int sizeReadBlock;
-    unsigned char block[sizeBlock];
-    unsigned char codingBlock[sizeBlock];
+    unsigned char block[SIZE_BLOCK];
+    unsigned char codingBlock[SIZE_BLOCK];
 
     crc crcData = 0;
     int countCodingBits = 0;
@@ -176,15 +175,15 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 #endif
 
     countUsedBits = 0;
-    memset(block, 0, sizeBlock);
+    memset(block, 0, SIZE_BLOCK);
 
     initWrCrc();
 
     while (!feof(file))
     {
-        int i;
+        int64_t i;
 
-        sizeReadBlock = fread(block, sizeof(char), sizeBlock, file);
+        sizeReadBlock = fread(block, sizeof(char), SIZE_BLOCK, file);
 
         coding(codes, block, sizeReadBlock, codingBlock, &countCodingBits);
 
@@ -237,9 +236,8 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
             }
         }
 
-
-        strcpy(block, "");
-        memset(codingBlock, 0, sizeBlock);
+        memset(codingBlock, 0, SIZE_BLOCK);
+        memset(block, 0, SIZE_BLOCK);
     }
 
     if (countUsedBits)
