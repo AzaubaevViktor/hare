@@ -21,14 +21,15 @@ crc _writeNBytes(FILE *f, int64_t N, char *str, int _crc_comm) {
     return remainder;
   }
 
-  //CRC
-  crcFast((unsigned char const *) str, N, crcTable, &remainder);
   //Write
   fwrite(str, N, 1, f);
   if (ferror(f)) {
     WARNING(L"Writing error");
     return IO_WRITE_ERROR;
   }
+
+  //CRC
+  crcFast((unsigned char const *) str, N, crcTable, &remainder);
 
   return 0;
 }
@@ -99,12 +100,7 @@ crc _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int _crc_com
     return remainder;
   }
 
-  //CRC
-  remainder = crcFast((unsigned char const *) str, N, crcTable, &remainder);
   //Read
-  if (feof(f)) {
-    *read_bytes = 0;
-  }
 
   *read_bytes = fread(str, 1, N, f);
 
@@ -115,6 +111,10 @@ crc _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int _crc_com
 
   //CRC
   crcFast((unsigned char const *) str, N, crcTable, &remainder);
+
+  if (feof(f)) {
+    _error = IO_EOF;
+  }
 
   return _error;
 }
