@@ -42,6 +42,7 @@ void addFiles2Arch(Context context)
     for (i = 0; i < context.argc - 3; i++)
     {
         struct stat fileInfo;
+
         stat(context.workFiles[i], &fileInfo);
 
         if (S_ISREG(fileInfo.st_mode))
@@ -62,15 +63,34 @@ void addFiles2Arch(Context context)
         }
         else if (S_ISDIR(fileInfo.st_mode))
         {
+            ArchFileInfo archFileInfo;
+            archFileInfo.fileInfo = (FileInfo*)malloc(sizeof(FileInfo));
+
+            if (NULL == archFileInfo.fileInfo)
+                continue;
 #ifdef DEBUG
             printf("--------------------------------\n\n"
                    "INFO: Add folder '%s' to archive...\n", pathToCanon(concatenateStrings(context.workFiles[i], "/")));
 #endif
+
+            if (getFileInfo(pathToCanon(concatenateStrings(context.workFiles[i], "/")), archFileInfo.fileInfo))
+                continue;
+
+#ifdef DEBUG
+            archFileInfo.fileInfo->size = 0;
+            archFileInfo.dataSize = 0;
+            archFileInfo.endUnusedBits = 0;
+            archFileInfo.haffTreeSize = 0;
+            printFileInfo(*(archFileInfo.fileInfo));
+            getchar();
+#endif
+
             recurseAddFiles2Arch(context.workFiles[i], context);
 
 #ifdef DEBUG
             printf("INFO: Folder '%s' was added!\n", pathToCanon(concatenateStrings(context.workFiles[i], "/")));
 #endif
+            free(archFileInfo.fileInfo);
         }
     }
 
