@@ -3,6 +3,8 @@
 #define WRITE_HEADER
 #define WRITE_CRC
 
+#define PRINT_DATA_
+
 #define DEBUG
 
 static char* concatenateStrings(const char * str1, const char * str2)
@@ -159,7 +161,8 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 
         coding(codes, block, sizeReadBlock, codingBlock, &countCodingBits);
 
-        /*{
+#ifdef PRINT_DATA
+        {
             int count = 0, j;
             for (i = 0; i < sizeReadBlock; i++)
             {
@@ -177,7 +180,7 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
             }
         }
         printf("\n----------------------------------------\n");
-        getchar();*/
+#endif
 
         for(i = 0; i < countCodingBits / 8; i++)
         {
