@@ -3,15 +3,17 @@
 #define WRITE_HEADER
 #define WRITE_CRC
 
-#define PRINT_DATA
+#define PRINT_DATA_
 
-#define DEBUG
+#define DEBUG_
 
 
 int writeFolderHeader(Context context, const char * folderName)
 {
     FILE * archive;
     ArchFileInfo archFileInfo;
+    crc crcFolder;
+
     archFileInfo.fileInfo = (FileInfo*) malloc(sizeof(FileInfo));
 
     if (NULL == archFileInfo.fileInfo)
@@ -46,6 +48,11 @@ int writeFolderHeader(Context context, const char * folderName)
 
     fseek(archive, 0, SEEK_END);
     writeFileHeader(archive, &archFileInfo);
+
+    initWrCrc();
+    writeNBytes(archive, 0, NULL);
+    crcFolder = getWrCrc();
+    writeCrc(archive, crcFolder);
 
     fclose(archive);
     free(archFileInfo.fileInfo);
@@ -147,7 +154,9 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     if (headTree = createTree(createList(createTableFrequencies(file))))
     {
         createCodes(codes, headTree, "");
+#ifdef DEBUG
         printCodes(codes);
+#endif
     }
 
 
