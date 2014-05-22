@@ -18,7 +18,7 @@ bool _getbit(char *str, int pos) {
 
 unsigned char _getchar(char *str, int pos) {
   char ch = 0;
-  ch = (str[pos / 8] << (pos % 8)) | (str[pos / 8 + 1] >> (8 - (pos % 8)));
+  ch = ((unsigned char)str[pos / 8] << (pos % 8)) | ((unsigned char)(str[pos / 8 + 1]) >> (8 - (pos % 8)));
   return ch;
 }
 
@@ -29,6 +29,8 @@ Tree *decodeTree(char *str, int len) {
   int pos = 1;
 
   elem = root;
+
+  root->isTwig = true;
 
   while (pos < len) {
     while ((elem->left) && (elem->right)) {
@@ -41,10 +43,10 @@ Tree *decodeTree(char *str, int len) {
     (*freeTwig)->parent = elem;
 
     if (_getbit(str,pos)) { // twig
-      (*freeTwig)->type = 1;
+      (*freeTwig)->isTwig = 1;
       elem = *freeTwig;
     } else {
-      (*freeTwig)->type = 0;
+      (*freeTwig)->isTwig = 0;
       (*freeTwig)->sym = _getchar(str,pos+1);
       pos+=8;
     }

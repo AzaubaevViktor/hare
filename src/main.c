@@ -20,6 +20,20 @@ int main(int argc, char *argv[], char *env[])
   int _error = 0;
   Tree *tr = NULL;
 
+  crc one = INITIAL_REMAINDER;
+  crc two = INITIAL_REMAINDER;
+  crc crcTable[256];
+
+  crcInit(crcTable);
+  crcFast((unsigned char const *) "1", 1, crcTable, &one);
+  printf("%x\n",one);
+  one = crcFast((unsigned char const *) "2", 1, crcTable, &one);
+  printf("%x\n",one);
+
+  crcInit(crcTable);
+  two = crcFast((unsigned char const *) "12", 2, crcTable, &two);
+  printf("%x\n",two);
+
   INIT_LOGGING;
   LOGGING_FUNC_START;
   INFO(L"Programm started");

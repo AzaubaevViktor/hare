@@ -14,7 +14,6 @@ void _decoding(char *str, size_t lenBits, char *retStr, size_t *returnBytes, Tre
   static Tree *root = NULL;
   static Tree *twig = NULL;
   static int64_t pos = 0;
-  int codeLen = 0;
 
   if (_drop) {
     twig = root = tree;
@@ -24,18 +23,19 @@ void _decoding(char *str, size_t lenBits, char *retStr, size_t *returnBytes, Tre
 
   *returnBytes = 0;
 
-  while (lenBits<=pos) {
-    codeLen = 0;
-    while ((twig->type) && (lenBits<=pos)) {
+  while (pos < lenBits) {
+    while ((twig->isTwig) && (pos < lenBits)) {
       twig = _getbit(str, pos)
              ? twig->right
              : twig->left;
-      codeLen++;
+      printf("%d",_getbit(str,pos));
       pos++;
     }
 
-    if (!(twig->type)) {
+    if (!(twig->isTwig)) {
       retStr[(*returnBytes)++] = twig->sym;
+      printf(":`%c` %d\n",twig->sym,(unsigned char) twig->sym);
+      twig = root;
     }
   }
 
@@ -56,12 +56,13 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
   FILE *fOut = NULL;
   char *buf = malloc(BUF_SIZE*sizeof(char));
   char *buf2Write = malloc(BUF_SIZE*sizeof(char)*8);
-  int dropBuf = 0;
   size_t lenBits = 0;
   size_t readBytes = 0;
   size_t returnBytes = 0;
   size_t readedBytes = 0;
   size_t howManyBytesRead = 0;
+  int64_t fileCrc = 0;
+  Tree *haffTree = NULL;
   struct utimbuf times;
 
   if (NULL == (fOut = fopen(fileName, "wb"))) {
@@ -70,7 +71,8 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
     return FILE_OPEN_ERROR;
   }
 
-  initDecoding(info->haffTree);
+  haffTree = decodeTree(info->haffTree,info->haffTreeSize);
+  initDecoding(haffTree);
 
   for (readedBytes=0; readedBytes < info->dataSize;) {
     howManyBytesRead = min(BUF_SIZE, (info->dataSize - readedBytes));
@@ -78,15 +80,15 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
 
     readedBytes += readBytes;
 
-    if ((howManyBytesRead == BUF_SIZE) || (_error)) {
+    if (_error) {
       IO(L"Error reading archive file");
       LOGGING_FUNC_STOP;
       return ARCHIVE_ERROR;
     }
 
     lenBits = (howManyBytesRead < BUF_SIZE)
-              ? ((dropBuf = 1), readBytes*8 - info->endUnusedBits)
-              : ((dropBuf = 0), readBytes*8);
+              ? readBytes*8 - info->endUnusedBits
+              : readBytes*8;
 
     decode(buf,lenBits,buf2Write,&returnBytes);
 
@@ -100,9 +102,13 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
 
   fclose(fOut);
 
+  readInt64(f, &fileCrc, &howManyBytesRead);
+
   times.actime = info->fileInfo->timeLastAccess;
   times.modtime = info->fileInfo->timeLastModification;
   printf("%d", utime(fileName, &times));
+
+  free(haffTree);
 
   LOGGING_FUNC_STOP;
   return _error;
@@ -167,7 +173,7 @@ int extractFiles(FILE *f, Context *cnt) {
         if (isFolder(currentFile)) {
           INFO(L"Folder");
           if (-1 == stat(currentFile, &st)) {
-            currentFile[max(strlen(currentFile)-2, 0)] = 0;
+            currentFile[max(strlen(currentFile), 2)] = 0;
             _error = mkdir(currentFile, 0777);
             INFO(L"Folder create with error `%d`", _error);
             _error = 0;

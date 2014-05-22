@@ -151,4 +151,4 @@ crc crcFast(unsigned char const *message, int64_t nBytes, crc *crcTable, crc *re
   /* The final remainder is the CRC. */
   return (REFLECT_REMAINDER(*remainder) ^ FINAL_XOR_VALUE);
 
-} /* crcFast() */
+}

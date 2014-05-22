@@ -9,7 +9,7 @@ typedef struct _Tree {
   struct _Tree *parent;
   struct _Tree *left;
   struct _Tree *right;
-  bool type;
+  bool isTwig;
   char sym; // leaf
 } Tree;
 
