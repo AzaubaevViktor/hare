@@ -31,6 +31,48 @@ static char* concatenateStrings(const char * str1, const char * str2)
 }
 
 
+static int writeFolderHeader(Context context, const char * folderName)
+{
+    FILE * archive;
+    ArchFileInfo archFileInfo;
+    archFileInfo.fileInfo = (FileInfo*)malloc(sizeof(FileInfo));
+
+    if (NULL == archFileInfo.fileInfo)
+        return -1;
+
+    if (getFileInfo(pathToCanon(concatenateStrings(folderName, "/")), archFileInfo.fileInfo))
+        return -1;
+
+    archFileInfo.fileInfo->size = 0;
+    archFileInfo.dataSize = 0;
+    archFileInfo.endUnusedBits = 0;
+    archFileInfo.haffTreeSize = 0;
+
+#ifdef DEBUG
+    printFileInfo(*(archFileInfo.fileInfo));
+    getchar();
+#endif
+
+    archive  = fopen(context.archName, "rb+");
+    if (!archive)
+    {
+        archive  = fopen(context.archName, "wb");
+        if (!archive)
+            return -1;
+
+        fclose(archive);
+        archive  = fopen(context.archName, "rb+");
+    }
+
+    writeFileHeader(archive, &archFileInfo);
+
+    fclose(archive);
+    free(archFileInfo.fileInfo);
+
+    return 0;
+}
+
+
 void addFiles2Arch(Context context)
 {
     int i;
@@ -63,34 +105,20 @@ void addFiles2Arch(Context context)
         }
         else if (S_ISDIR(fileInfo.st_mode))
         {
-            ArchFileInfo archFileInfo;
-            archFileInfo.fileInfo = (FileInfo*)malloc(sizeof(FileInfo));
-
-            if (NULL == archFileInfo.fileInfo)
-                continue;
 #ifdef DEBUG
             printf("--------------------------------\n\n"
                    "INFO: Add folder '%s' to archive...\n", pathToCanon(concatenateStrings(context.workFiles[i], "/")));
 #endif
 
-            if (getFileInfo(pathToCanon(concatenateStrings(context.workFiles[i], "/")), archFileInfo.fileInfo))
-                continue;
-
-#ifdef DEBUG
-            archFileInfo.fileInfo->size = 0;
-            archFileInfo.dataSize = 0;
-            archFileInfo.endUnusedBits = 0;
-            archFileInfo.haffTreeSize = 0;
-            printFileInfo(*(archFileInfo.fileInfo));
-            getchar();
-#endif
+//            if (writeFolderHeader(context, context.workFiles[i]))
+//                continue;
 
             recurseAddFiles2Arch(context.workFiles[i], context);
 
 #ifdef DEBUG
             printf("INFO: Folder '%s' was added!\n", pathToCanon(concatenateStrings(context.workFiles[i], "/")));
 #endif
-            free(archFileInfo.fileInfo);
+
         }
     }
 
@@ -294,6 +322,9 @@ void recurseAddFiles2Arch(char * path, Context context)
     }
 
     strcpy(buffer, path);
+
+    if (writeFolderHeader(context, buffer))
+        return;
 
     while ((dir_entry = readdir(dir)) != NULL)
     {

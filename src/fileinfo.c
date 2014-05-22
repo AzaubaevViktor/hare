@@ -8,7 +8,7 @@ int getFileInfo(const char *fileName, FileInfo *fileInfo)
     {
         fileInfo->sizeName = strlen(fileName);
 
-        fileInfo->name = (char *) realloc(fileInfo->name, fileInfo->sizeName + 1);
+        fileInfo->name = (char *)calloc(fileInfo->sizeName + 1, sizeof(char));
         if(NULL == fileInfo->name)
             return -1;
         else
