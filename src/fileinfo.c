@@ -18,7 +18,7 @@ int getFileInfo(const char *fileName, FileInfo *fileInfo)
 
         fileInfo->timeLastAccess        = bufferFileInfo.st_atime;
         fileInfo->timeLastChange        = bufferFileInfo.st_ctime;
-        fileInfo->timeLastModification  = bufferFileInfo.st_mtime;
+        fileInfo->timeLastModification  = (int64_t)  bufferFileInfo.st_mtime;
     }
     else
         return -1;

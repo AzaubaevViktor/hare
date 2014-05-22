@@ -197,9 +197,9 @@ int extractFiles(FILE *f, Context *cnt) {
       }
     }
 
+    INFO("Position %d", (fgetpos(f, &archPos), archPos));
     if (!shifted) {
-      fgetpos(f, &archPos);
-      fseek(f, aFileInfo.dataSize + sizeof(int64_t), SEEK_CUR);
+      fseek(f, aFileInfo.dataSize + sizeof(crc), SEEK_CUR);
     }
   }
 
