@@ -85,8 +85,6 @@ crc _readNBytes(FILE *f, uint64_t N, char *str, size_t *read_bytes, int _crc_com
   static crc crcTable[256];
   static crc remainder = INITIAL_REMAINDER;
 
-  //LOGGING_FUNC_START;
-
   *read_bytes = 0;
 
   if (1 == _crc_comm) {
@@ -169,6 +167,5 @@ int readCrc(FILE *f, crc *num, size_t *read_bytes) {
 
 
 int readChar(FILE *f, char *ch, size_t *read_bytes) {
-  //IO(L"Read char");
   return readNBytes(f, 1, ch, read_bytes);
 }

@@ -10,6 +10,7 @@
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
+
 void _decoding(char *str, size_t lenBits, char *retStr, size_t *returnBytes, Tree *tree, int _drop) {
   static Tree *root = NULL;
   static Tree *twig = NULL;
@@ -27,13 +28,11 @@ void _decoding(char *str, size_t lenBits, char *retStr, size_t *returnBytes, Tre
       twig = _getbit(str, pos)
              ? twig->right
              : twig->left;
-      printf("%d",_getbit(str,pos));
       pos++;
     }
 
     if (!(twig->isTwig)) {
       retStr[(*returnBytes)++] = twig->sym;
-      printf(":`%c` %d\n",twig->sym,(unsigned char) twig->sym);
       twig = root;
     }
   }
@@ -59,7 +58,6 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
   size_t returnBytes = 0;
   size_t readedBytes = 0;
   size_t howManyBytesRead = 0;
-  int64_t fileCrc = 0;
   Tree *haffTree = NULL;
   struct utimbuf times;
 
@@ -102,7 +100,6 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
 
   times.actime = info->fileInfo->timeLastAccess;
   times.modtime = info->fileInfo->timeLastModification;
-  printf("%d", utime(fileName, &times));
 
   free(haffTree);
 
@@ -178,9 +175,9 @@ int extractFiles(FILE *f, Context *cnt) {
         } else {
           IO(L"Extract `%s` to `%s`", aFileInfo.fileInfo->name, currentFile);
           _error = extract(f, &aFileInfo, currentFile);
+          INFO(L"Extract with error `%d`", _error);
           ERROR_CHECK;
-          INFO(L"Extract with error `%d`", _error)
-              shifted = 1;
+          shifted = 1;
           if (!isFolder(*(files + i))) {
             free(*(files+i));
             *(files + i) = NULL;
