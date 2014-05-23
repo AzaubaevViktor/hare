@@ -10,8 +10,9 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
     int64_t howFolders = 0, howFiles = 0;
     int64_t blocksFolder = 0, blocksFile = 0;
     int64_t i;
-    fpos_t archPos;
+
     int err = 0;
+    char *canCurrentNameFile = NULL;
     int64_t max_len = 0;
     char *nameFolderCan = pathToCanon(nameFolder);
     LOGGING_FUNC_START;
@@ -24,8 +25,9 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
             else continue;
         }
         currentNameFile = info->fileInfo->name;
-        if (isFolder(currentNameFile) && (levels(nameFolderCan) == levels(currentNameFile) - 1)
-                && ( strncmp(currentNameFile, nameFolderCan, strlen(nameFolderCan) - 1) == 0)) {
+        canCurrentNameFile = pathToCanon(currentNameFile);
+        if (isFolder(canCurrentNameFile) && (levels(nameFolderCan) == levels(canCurrentNameFile) - 1)
+                && ( strncmp(canCurrentNameFile, nameFolderCan, strlen(nameFolderCan) - 1) == 0)) {
             howFolders++;
             if (howFolders > blocksFolder * SIZE_BLOCK){
                 blocksFolder++;
@@ -40,8 +42,8 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
             if ((int64_t)strlen(currentNameFile) > max_len) {
                 max_len = strlen(currentNameFile);
             }
-        } else if (!isFolder(currentNameFile) && (levels(nameFolderCan) == levels(currentNameFile))
-                   && (strncmp(currentNameFile, nameFolderCan, strlen(nameFolderCan) -1) == 0)) {
+        } else if (!isFolder(canCurrentNameFile) && (levels(nameFolderCan) == levels(canCurrentNameFile))
+                   && (strncmp(canCurrentNameFile, nameFolderCan, strlen(nameFolderCan) -1) == 0)) {
             howFiles++;
             //printf("DEBUG: %s | %s \n", currentNameFile, )
             if (howFiles > blocksFile * SIZE_BLOCK){
@@ -61,23 +63,26 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
 
         info = malloc(sizeof(ArchFileInfo));
         info->fileInfo = malloc(sizeof(FileInfo));
-
+        free(canCurrentNameFile);
     }
 
     double size_can; char char_size;
     for (i = 0;i < howFolders;i++)
     {
-        if (strchr(foldersArch[i]->fileInfo->name + 2, '/') - foldersArch[i]->fileInfo->name + 1
-                != strlen(foldersArch[i]->fileInfo->name) - 1){
+        canCurrentNameFile = pathToCanon(foldersArch[i]->fileInfo->name);
+        /*if (strchr(canCurrentNameFile, '/') - canCurrentNameFile + 1
+                != strlen(canCurrentNameFile) - 1){
             continue;
-        }
+        }*/
         printf("%-*s|\n", (int)max_len, getFileByPath(nameFolderCan, foldersArch[i]->fileInfo->name) + 2);
+        free(canCurrentNameFile);
     }
     for (i = 0;i < howFiles  ;i++)
     {
-        if ( strchr(filesArch[i]->fileInfo->name + 2,'/' ) != NULL){
+        canCurrentNameFile = pathToCanon(filesArch[i]->fileInfo->name);
+        /*if ( strchr(canCurrentNameFile + 2,'/' ) != NULL){
             continue;
-        }
+        }*/
         size_can = (double)filesArch[i]->fileInfo->size;
         char_size = 'b';
         if (size_can > 1024){
@@ -89,9 +94,12 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
             }
         }
 
-        printf("%-*s|%7.2f%c %3d%%\n", (int)max_len, getFileByPath(nameFolderCan, filesArch[i]->fileInfo->name) + 2,
-               size_can, char_size,
-               (int)(filesArch[i]->dataSize * 100 / filesArch[i]->fileInfo->size));
+        printf("%-*s|%7.2f%c \n",
+               (int)max_len,
+               getFileByPath(nameFolderCan, canCurrentNameFile) + 2,
+               size_can, char_size
+               );
+        free(canCurrentNameFile);
     }
 
     for(i = 0;i < howFiles;i++){
@@ -104,6 +112,7 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
     }
     free(info->fileInfo);
     free(info);
+    free(nameFolderCan);
     LOGGING_FUNC_STOP;
     return 0;
 }

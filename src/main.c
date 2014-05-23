@@ -40,7 +40,7 @@ int main(int argc, char *argv[], char *env[])
       break;
     case 0x2:
       f = fopen("./almuh.hr", "rb");
-      printFilesOfFolder(f, "./.");
+      printFilesOfFolder(f, "./folder1/");
       fclose(f);
       break;
     case 0x4:
