@@ -18,7 +18,9 @@ SOURCES += main.c \
 	findsign.c \
     decodeTree.c \
     check.c \
-    addFile.c
+    addFile.c \
+    huff.c \
+    concat_string.c
 
 HEADERS += \
     hare.h \
@@ -34,5 +36,8 @@ HEADERS += \
 	listfiles.h \
     decodeTree.h \
     addFile.h \
+    huff.h \
+    concat_string.h \
+    errors.h \
 	findsign.h
 

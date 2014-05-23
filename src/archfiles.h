@@ -16,6 +16,8 @@
 #define MKDIR_ERROR (8172)
 #define INT64SIZE (sizeof(int64_t))
 
+#define ceil8(num) (((num) / 8) + !!((num) % 8))
+
 typedef struct {
   FileInfo *fileInfo;
   int64_t dataSize;

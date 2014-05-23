@@ -55,7 +55,7 @@ int main(int argc, char *argv[], char *env[])
       fclose(f);
       break;
     case 0x10:
-        addFiles2Arch(*cnt, 0);
+        addFiles2Arch(*cnt);
       break;
     default:
       printHelp();

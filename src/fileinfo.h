@@ -1,6 +1,7 @@
 #ifndef FILEINFO_H
 #define FILEINFO_H
 
+#include "errors.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <string.h>

@@ -8,9 +8,9 @@ int getFileInfo(const char *fileName, FileInfo *fileInfo)
     {
         fileInfo->sizeName = strlen(fileName);
 
-        fileInfo->name = (char *) calloc(fileInfo->sizeName + 1, sizeof(char));
+        fileInfo->name = (char *)calloc(fileInfo->sizeName + 1, sizeof(char));
         if(NULL == fileInfo->name)
-            return -1;
+            return ERROR_NOT_ALLOCATED_MEMORY;
         else
             strcpy(fileInfo->name, fileName);
 
@@ -19,8 +19,7 @@ int getFileInfo(const char *fileName, FileInfo *fileInfo)
         fileInfo->timeLastModification  = (int64_t)  bufferFileInfo.st_mtime;
     }
     else
-        return -1;
-
+        return ERROR_GET_FILE_INFO;
     return 0;
 }
 
