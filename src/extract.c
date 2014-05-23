@@ -41,9 +41,9 @@ int msg(int code) {
       break;
 
     case HASH_HEADER_CHECK_ERROR:
-      printf("Check summ file in archive does not match, search next file... (NOT REALIZED)\n");
+      //printf("Check summ file in archive does not match, search next file... (NOT REALIZED)\n");
       WARNING("Hash header check error");
-      return 1; // POKA
+      return 0; // POKA
       break;
 
     case MKDIR_ERROR:
