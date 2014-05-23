@@ -19,6 +19,7 @@
 #define BUF_SIZE (1048576)
 #define ARCHIVE_ERROR (9462)
 #define OPEN_ARCHIVE_FILE_ERROR (6733)
+#define INCORRECT_FILE_NAME (1765)
 
 #define max(a,b) (((a) < (b)) ? (b) : (a))
 

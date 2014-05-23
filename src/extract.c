@@ -82,6 +82,12 @@ int msg(int code) {
       return 1;
       break;
 
+    case INCORRECT_FILE_NAME:
+      printf("`%s` not found in archive", __forErrorFileName);
+      __forErrorFileName = NULL;
+      return 0;
+      break;
+
     default:
       printf("Unknown error `%d`\n",code);
       return 1;
@@ -132,8 +138,8 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
   LOGGING_FUNC_START;
   int _error = 0;
   FILE *fOut = NULL;
-  char *buf = malloc(BUF_SIZE*sizeof(char));
-  char *buf2Write = malloc(BUF_SIZE*sizeof(char)*8);
+  char *buf = calloc(BUF_SIZE*sizeof(char));
+  char *buf2Write = calloc(BUF_SIZE*sizeof(char)*8);
   size_t lenBits = 0;
   size_t readBytes = 0;
   size_t returnBytes = 0;
@@ -181,7 +187,6 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
   fclose(fOut);
 
   free(haffTree);
-
   LOGGING_FUNC_STOP;
   return 0;
 }
@@ -200,6 +205,7 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
 
 int extractFiles(FILE *f, Context *cnt) {
   char **files = cnt->workFiles;
+  int64_t *count = NULL;
   char *res = NULL;
   char *currentFile = NULL;
   int64_t len = 0;
@@ -220,6 +226,8 @@ int extractFiles(FILE *f, Context *cnt) {
     res = *(files + len);
     *(files + len) = pathToCanon(res);
   }
+
+  count = calloc(len,sizeof(int64_t));
 
   INFO(L"NFiles:%d", len);
   aFileInfo.fileInfo = &fInfo;
@@ -255,10 +263,7 @@ int extractFiles(FILE *f, Context *cnt) {
           INFO(L"Extract with error `%d`", _error);
           ERROR_CHECK;
           shifted = 1;
-          if (!isFolder(*(files + i))) {
-            free(*(files+i));
-            *(files + i) = NULL;
-          }
+          count[i]++;
         }
         free(currentFile);
         currentFile = NULL;
@@ -272,6 +277,15 @@ int extractFiles(FILE *f, Context *cnt) {
     INFO("Position %d", (fgetpos(f, &archPos), archPos));
     INFO("==========================");
   }
+
+  for (i=0; i<len; i++) {
+    if (!count[i]) {
+      __forErrorFileName = files[i];
+      msg(INCORRECT_FILE_NAME);
+    }
+  }
+
+  free(count);
 
   LOGGING_FUNC_STOP;
   return 0;

@@ -41,7 +41,7 @@ int pathInDest(char *pathCan, char *destCan) {
   for (pos = 0; pos <= minLen; pos++) {
 
     if (0 == pathCan[pos]) {
-      return 1;
+     break;
     }
 
     if (('.' == pathCan[pos]) && (0 == pathCan[pos+1])) {
@@ -52,6 +52,9 @@ int pathInDest(char *pathCan, char *destCan) {
       return 0;
     }
   }
+
+  if ('/' != destCan[pos])
+    return 0;
 
   return 1;
 }
