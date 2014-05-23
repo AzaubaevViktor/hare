@@ -39,9 +39,6 @@ int main(int argc, char *argv[], char *env[])
       ;
       break;
     case 0x2:
-      f = fopen(cnt->argv[2], "rb");
-      if (NULL == f || feof(f)) printf("XYZ\n");
-
       printArchFiles(cnt);
       fclose(f);
       break;
