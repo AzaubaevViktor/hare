@@ -45,7 +45,7 @@ int main(int argc, char *argv[], char *env[])
       ;
       break;
     case 0x8:
-      f = fopen(argv[2], "rb");
+        f = fopen(argv[2], "rb");
       extractFiles(f, cnt);
       fclose(f);
       break;

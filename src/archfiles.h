@@ -13,6 +13,7 @@
 #define SIGNATURE_ERROR (6443)
 #define MEMORY_ALLOCATE_ERROR (9165)
 #define HASH_HEADER_CHECK_ERROR (3270)
+#define MKDIR_ERROR (8172)
 #define INT64SIZE (sizeof(int64_t))
 
 typedef struct {

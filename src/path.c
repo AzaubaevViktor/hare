@@ -141,7 +141,9 @@ char *getFileByPathWithFolder(char *path, char *dest) {
     lastName = getLastName(path);
     name = calloc(strlen(lastName) + 1 + strlen(buf), sizeof(char));
     strcpy(name, "./");
-    strcpy(name + strlen(name), lastName);
+    if (lastName[strlen(lastName) - 1] != '.') {
+      strcpy(name + strlen(name), lastName);
+    }
     strcpy(name + strlen(name), buf + 1);
     free(lastName);
   } else {
