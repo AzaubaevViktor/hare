@@ -36,31 +36,32 @@ int parseArgs(Context **context){
       break;
     }
     cnt->keys = 0x10;
-    cnt->workFiles = (char **)malloc((cnt->argc - 3)*sizeof(char*) );
+    cnt->workFiles = (char **)calloc((cnt->argc - 2), sizeof(char*) );
     for (i = 3; i < cnt->argc; i++){
       if (head == NULL){
-        head       = (FileNode*)malloc(sizeof(FileNode));
+        head       = (FileNode*)calloc(1, sizeof(FileNode));
         iter       = head;
       } else {
-        iter->next = (FileNode*)malloc(sizeof(FileNode));
+        iter->next = (FileNode*)calloc(1, sizeof(FileNode));
         iter       = iter->next;
       }
       *(cnt->workFiles + i - 3) = cnt->argv[i];
       iter->next     = NULL;
-      iter->fileInfo     = (FileInfo *)malloc(sizeof(FileInfo));
+      iter->fileInfo     = (FileInfo *)calloc(1, sizeof(FileInfo));
     }
+
     cnt->filesTree = head;
     break;
   case 'x':
     cnt->keys = 0x8;
-    cnt->workFiles = (char **)malloc((cnt->argc - 3)*sizeof(char*) );
+    cnt->workFiles = (char **)calloc((cnt->argc - 2), sizeof(char*) );
     for (i = 3; i < cnt->argc; i++){
       *(cnt->workFiles + i - 3) = cnt->argv[i];
     }
     break;
   case 'd':
     cnt->keys = 0x4;
-    cnt->workFiles = (char **)malloc((cnt->argc - 3)*sizeof(char*) );
+    cnt->workFiles = (char **)calloc((cnt->argc - 2), sizeof(char*) );
     for (i = 3; i < cnt->argc; i++){
       *(cnt->workFiles + i - 3) = cnt->argv[i];
     }
