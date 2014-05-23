@@ -12,9 +12,11 @@ SOURCES += main.c \
     lowfile.c \
     archfiles.c \
     path.c \
+    listfiles.c \
     extract.c \
-    crc.c \
-    decodeTree.c
+    findsign.c \
+    decodeTree.c \
+    crc.c
 
 HEADERS += \
     hare.h \
@@ -25,6 +27,8 @@ HEADERS += \
     archfiles.h \
     path.h \
     extract.h \
-    crc.h \
-    decodeTree.h
+    listfiles.h \
+    findsign.h \
+    decodeTree.h \
+	crc.h
 

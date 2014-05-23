@@ -3,7 +3,7 @@
 #include "logging.h"
 #include "archfiles.h"
 #include "path.h"
-
+#include "findsign.h"
 #define READ_ARCH_ERROR (3321)
 #define SIZE_BLOCK (16)
 

@@ -61,11 +61,9 @@ int writeFileHeader(FILE *f, ArchFileInfo *info) {
   return 0;
 }
 
-
 size_t getHeaderLen(ArchFileInfo *info) {
   return SIGNATURE_LEN + info->fileInfo->sizeName + ceil8(info->haffTreeSize) + sizeof(char)*2 + INT64SIZE*(5) + sizeof(crc);
 }
-
 
 int writeData(FILE *f, int64_t size, void *data) {
   return writeNBytes(f, size, data);
@@ -88,6 +86,7 @@ int readHeader(FILE *f, ArchFileInfo *info) {
   ERROR_TEST(readNBytes(f, SIGNATURE_LEN, signature, &read_bytes));
 
   if (memcmp(signature, SIGNATURE, SIGNATURE_LEN)) {
+    //printf(":archfiles.c:44: %d\n", memcmp(signature, SIGNATURE, SIGNATURE_LEN));
     WARNING(L"Signature does not match");
     LOGGING_FUNC_STOP;
     return SIGNATURE_ERROR;
@@ -104,8 +103,7 @@ int readHeader(FILE *f, ArchFileInfo *info) {
   fInfo->name[fileNameLen] = 0;
   fInfo->sizeName = fileNameLen;
 
-  ERROR_TEST(readInt64(f, &fInfo->timeLastModification, &read_bytes));
-
+  ERROR_TEST(readInt64(f, &(fInfo->timeLastModification), &read_bytes));
   ERROR_TEST(readInt64(f, &(fInfo->size), &read_bytes));
   ERROR_TEST(readInt64(f, &(info->dataSize), &read_bytes));
   ERROR_TEST(readChar(f, &(info->endUnusedBits), &read_bytes));

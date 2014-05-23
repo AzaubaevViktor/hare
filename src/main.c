@@ -2,6 +2,7 @@
 #include "hare.h"
 #include "init.h"
 #include "path.h"
+#include "listfiles.h"
 #include "extract.h"
 #include <stdio.h>
 #include <stdio.h>
@@ -39,7 +40,9 @@ int main(int argc, char *argv[], char *env[])
       ;
       break;
     case 0x2:
-      ;
+      f = fopen("./almuh.hr", "rb");
+      printFilesOfFolder(f, "./folder1/");
+      fclose(f);
       break;
     case 0x4:
       ;
@@ -57,10 +60,11 @@ int main(int argc, char *argv[], char *env[])
       break;
     }
   }
-
+  
   LOGGING_FUNC_STOP;
   DEINIT_LOGGING;
   printf("Programm exit!\n");
+  
   return 0;
 }
 
