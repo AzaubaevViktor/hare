@@ -83,7 +83,7 @@ int msg(int code) {
       break;
 
     case INCORRECT_FILE_NAME:
-      printf("`%s` not found in archive", __forErrorFileName);
+      printf("`%s` not found in archive\n", __forErrorFileName);
       __forErrorFileName = NULL;
       return 0;
       break;
@@ -138,8 +138,8 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
   LOGGING_FUNC_START;
   int _error = 0;
   FILE *fOut = NULL;
-  char *buf = calloc(BUF_SIZE*sizeof(char));
-  char *buf2Write = calloc(BUF_SIZE*sizeof(char)*8);
+  char *buf = malloc(BUF_SIZE*sizeof(char));
+  char *buf2Write = malloc(BUF_SIZE*sizeof(char)*8);
   size_t lenBits = 0;
   size_t readBytes = 0;
   size_t returnBytes = 0;
