@@ -41,9 +41,9 @@ int msg(int code) {
       break;
 
     case HASH_HEADER_CHECK_ERROR:
-      //printf("Check summ file in archive does not match, search next file... (NOT REALIZED)\n");
+      printf("Check summ file in archive does not match, search next file... (NOT REALIZED)\n");
       WARNING("Hash header check error");
-      return 0; // POKA
+      return 1; // POKA
       break;
 
     case MKDIR_ERROR:
@@ -250,6 +250,7 @@ int extractFiles(FILE *f, Context *cnt) {
           if (-1 == stat(currentFile, &st)) {
             currentFile[max((int64_t) strlen(currentFile)-2, 0)] = 0;
             INFO(L"Try to create folder `%s`", currentFile);
+            printf("Create folder `%s`\n", currentFile);
             _error = mkdir(currentFile, 0777);
             INFO(L"Folder create with error `%d`", _error);
             _error = _error ? (__forErrorFileName = currentFile, MKDIR_ERROR) : 0 ;
@@ -259,6 +260,7 @@ int extractFiles(FILE *f, Context *cnt) {
           shifted = 1;
         } else {
           IO(L"Extract `%s` to `%s`", aFileInfo.fileInfo->name, currentFile);
+          printf("Extract `%s` to `%s`\n", aFileInfo.fileInfo->name, currentFile);
           _error = extract(f, &aFileInfo, currentFile);
           INFO(L"Extract with error `%d`", _error);
           ERROR_CHECK;

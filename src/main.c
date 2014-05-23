@@ -44,8 +44,8 @@ int main(int argc, char *argv[], char *env[])
       break;
     case 0x2:
         f = fopen(argv[2], "r");
-        printFilesOfFolder(f, "./.");
-        printf("\n\n");
+        printf("In file `%s`, folder", argv[2]);
+        printFilesOfFolder(f, argv[3]);
       break;
     case 0x4:
       ;
@@ -55,9 +55,9 @@ int main(int argc, char *argv[], char *env[])
       extractFiles(f, cnt);
       fclose(f);
       break;
-    case 0x10:
+      case 0x10:
         addFiles2Arch(*cnt);
-      break;
+        break;
     default:
       printHelp();
       break;
