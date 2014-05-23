@@ -28,7 +28,7 @@ typedef struct {
 int getFilesInfo(Context *cnt);
 int getArchFileInfo(Context *cnt, int64_t offset, FileInfo *info);
 
-int addFiles2Arch(Context *cnt, FileInfo *files);
+//int addFiles2Arch(Context *cnt, FileInfo *files);
 
 int findArchFile(Context *cnt, char *fileName);
 

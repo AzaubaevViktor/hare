@@ -11,6 +11,7 @@
 #include "listfiles.h"
 #include "findsign.h"
 #include "check.h"
+#include "addFile.h"
 GLOBAL_LOGGING
 
 int main(int argc, char *argv[], char *env[])
@@ -54,7 +55,7 @@ int main(int argc, char *argv[], char *env[])
       fclose(f);
       break;
     case 0x10:
-      ;
+
       break;
     default:
       printHelp();

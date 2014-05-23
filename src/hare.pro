@@ -18,7 +18,7 @@ SOURCES += main.c \
 	findsign.c \
     decodeTree.c \
     check.c \
-    addFile.h
+    addFile.c
 
 HEADERS += \
     hare.h \

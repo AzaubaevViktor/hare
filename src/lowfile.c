@@ -27,9 +27,10 @@ crc _writeNBytes(FILE *f, int64_t N, char *str, int _crc_comm) {
   fwrite(str, N, 1, f);
   if (ferror(f)) {
     WARNING(L"Writing error");
+    LOGGING_FUNC_STOP;
     return IO_WRITE_ERROR;
   }
-
+  LOGGING_FUNC_STOP;
   return 0;
 }
 
@@ -39,8 +40,8 @@ void initWrCrc() {
 }
 
 
-crc getWrCrc() {
-  return _writeNBytes(NULL, 0, NULL, 2);
+int dropWrBytes(FILE *f) {
+  return _writeNBytes(f, 0, NULL, 1);
 }
 
 
