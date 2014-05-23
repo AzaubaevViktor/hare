@@ -19,10 +19,7 @@ int getFileInfo(const char *fileName, FileInfo *fileInfo)
         fileInfo->timeLastModification  = (int64_t)  bufferFileInfo.st_mtime;
     }
     else
-    {
-        PRINT_ERROR(ERROR_GET_FILE_INFO, "%s", fileName);
         return ERROR_GET_FILE_INFO;
-    }
     return 0;
 }
 

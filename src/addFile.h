@@ -21,7 +21,7 @@
 
 
 /* если recurse == 1, то начинает рекурсивно обходить папки и добавлять файлы из них. иначе пнх! */
-void addFiles2Arch(Context context);
+int addFiles2Arch(Context context);
 int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive);
 int writeFolderHeader(Context context, const char * folderName);
 int recurseAddFiles2Arch(char * path, Context context);

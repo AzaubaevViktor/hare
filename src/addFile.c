@@ -3,9 +3,11 @@
 #define WRITE_HEADER
 #define WRITE_CRC
 
-#define PRINT_DATA
+#define PRINT_DATA_
 
-#define DEBUG
+#define DEBUG_
+
+#define PRINT_NAME_ADDING_FILE_OR_FOLDER
 
 
 int writeFolderHeader(Context context, const char * folderName)
@@ -27,12 +29,15 @@ int writeFolderHeader(Context context, const char * folderName)
     archFileInfo.endUnusedBits = 0;
     archFileInfo.haffTreeSize = 0;
 
-#ifdef DEBUG
-    printf("--------------------------------\n\n"
-           "INFO: Add folder '%s' to archive...\n", pathToCanon(concatenateStrings(folderName, "/")));
-
-    printFileInfo(*(archFileInfo.fileInfo));
-    getchar();
+#ifdef PRINT_NAME_ADDING_FILE_OR_FOLDER
+    #ifdef DEBUG
+        printf("--------------------------------\n\n");
+    #endif
+    printf("INFO: Adding folder '%s' to archive...\n", pathToCanon(concatenateStrings(folderName, "/")));
+    #ifdef DEBUG
+        printFileInfo(*(archFileInfo.fileInfo));
+        getchar();
+    #endif
 #endif
 
     if (NULL == (archive  = fopen(context.archName, "rb+")))
@@ -60,7 +65,7 @@ int writeFolderHeader(Context context, const char * folderName)
 }
 
 
-void addFiles2Arch(Context context)
+int addFiles2Arch(Context context)
 {
     int i;
     int error = 0;
@@ -76,42 +81,46 @@ void addFiles2Arch(Context context)
             PRINT_ERROR(ERROR_GET_FILE_INFO, context.workFiles[i]);
             continue;
         }
-
-        if (S_ISREG(fileInfo.st_mode))
+        else
         {
-            ArchFileInfo archFileInfo;
-            archFileInfo.fileInfo = (FileInfo*)malloc(sizeof(FileInfo));
-
-            if (NULL == archFileInfo.fileInfo)
+            if (S_ISREG(fileInfo.st_mode))
             {
-                PRINT_ERROR(ERROR_NOT_ALLOCATED_MEMORY);
-                continue;
-            }
+                ArchFileInfo archFileInfo;
+                archFileInfo.fileInfo = (FileInfo*)malloc(sizeof(FileInfo));
 
-            if (error = getFileInfo(pathToCanon(context.workFiles[i]), archFileInfo.fileInfo))
+                if (NULL == archFileInfo.fileInfo)
+                {
+                    PRINT_ERROR(ERROR_NOT_ALLOCATED_MEMORY);
+                    continue;
+                }
+
+                if (error = getFileInfo(pathToCanon(context.workFiles[i]), archFileInfo.fileInfo))
+                {
+                    PRINT_ERROR(error, context.workFiles[i]);
+                    continue;
+                }
+
+                if (addFile2Arch(archFileInfo, context.archName))
+                    continue;
+
+                free(archFileInfo.fileInfo);
+            }
+            else if (S_ISDIR(fileInfo.st_mode))
             {
-                PRINT_ERROR(error, context.workFiles[i]);
-                continue;
+                if ('/' == context.workFiles[i][strlen(context.workFiles[i]) - 1])
+                    context.workFiles[i][strlen(context.workFiles[i]) - 1] = '\0';
+
+                if (error = recurseAddFiles2Arch(context.workFiles[i], context))
+                    PRINT_ERROR(ERROR_NOT_ADD_FOLDER, context.workFiles[i]);
             }
-
-            if (addFile2Arch(archFileInfo, context.archName))
-                continue;
-
-            free(archFileInfo.fileInfo);
-        }
-        else if (S_ISDIR(fileInfo.st_mode))
-        {
-            if ('/' == context.workFiles[i][strlen(context.workFiles[i]) - 1])
-                context.workFiles[i][strlen(context.workFiles[i]) - 1] = '\0';
-
-            if (error = recurseAddFiles2Arch(context.workFiles[i], context))
-                PRINT_ERROR(ERROR_NOT_ADD_FOLDER, context.workFiles[i]);
         }
     }
 
 #ifdef DEBUG
     printf("\n\n================ ADDING FILES TO ARCHIVE FINISHED! =================\n\n\n");
 #endif
+
+    return error;
 }
 
 int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
@@ -159,10 +168,14 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 
     }
 
-#ifdef DEBUG
-            printf("--------------------------------\n\n"
-                   "INFO: Add file '%s' to archive...\n", pathToCanon(archFileInfo.fileInfo->name));
-            printFileInfo(*(archFileInfo.fileInfo));
+#ifdef PRINT_NAME_ADDING_FILE_OR_FOLDER
+    #ifdef DEBUG
+        printf("--------------------------------\n\n");
+    #endif
+    printf("INFO: Adding file '%s' to archive...\n", pathToCanon(archFileInfo.fileInfo->name));
+    #ifdef DEBUG
+                printFileInfo(*(archFileInfo.fileInfo));
+    #endif
 #endif
 
     if (headTree = createTree(createList(createTableFrequencies(file))))

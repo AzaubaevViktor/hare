@@ -44,6 +44,7 @@
             char answer = 0; \
             printf("Continue ? (y / n) \n"); \
             answer = getchar(); \
+            getchar(); \
             if (('y' == answer) || ('Y' == answer)) \
                 break; \
             if (('n' == answer) || ('N' == answer)) \
