@@ -10,7 +10,7 @@ int findSignature(FILE *f){
         fread(buffer + num_moved, sizeof(char), SIZE_BUF - num_moved, f);
         for (i = 0; i < SIZE_BUF;i++) {
             if (memcmp(buffer + i, str, 4) == 0){
-                //printf("%li\n", num + i + pos);
+                printf("%lx\n", num + i + pos);
                 fseek(f, num + i + pos, SEEK_SET);
 
                 return 0;
