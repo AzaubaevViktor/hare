@@ -10,9 +10,9 @@
   return _error;\
   }}
 
-#define _crcF(mess, len) crcFast((unsigned char *) mess, len, crcTable, &remainder)
-#define _crcInt64(num) _crcF((unsigned char *) &num, sizeof(int64_t))
-#define _crcChar(ch) _crcF(&ch, sizeof(char))
+#define _crcF(mess, len) crcFast((unsigned char *) (mess), (len), (crcTable), &(remainder))
+#define _crcInt64(num) _crcF((unsigned char *) (&num), sizeof(int64_t))
+#define _crcChar(ch) _crcF(&(ch), sizeof(char))
 
 #define ceil8(num) (((num) / 8) + !!((num) % 8))
 
