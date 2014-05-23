@@ -1,17 +1,42 @@
 #include "listfiles.h"
 
+int printArchFiles(Context *cnt){
+    FILE *f = fopen(cnt->argv[2], "rb");
+    if (NULL == f) {
+        printf("Не удалось открыть файл архива, проверьте правильность пути к файлу\n");
+        exit(1);
+    }
+    if (cnt->argc < 4) {
+        printf("Мало аргументов\n");
+        exit(1);
+    }
+    int err = _printFilesOfFolder(f, cnt->argv[3]);
+    if (MEMORY_ALLOCATE_ERROR == err) {
+        printf("Проблема с выделением памяти\n");
+        exit (1);
+    }
+}
 
-int printFilesOfFolder(FILE *arch, char *nameFolder)
+int _printFilesOfFolder(FILE *arch, char *nameFolder)
 {
     char *currentNameFile;
     ArchFileInfo **foldersArch = NULL,
                  **filesArch   = NULL;
-    ArchFileInfo *info = (ArchFileInfo *)malloc(sizeof(ArchFileInfo));
-    info->fileInfo = (FileInfo *)malloc(sizeof(FileInfo));
+    ArchFileInfo *info;
+    if ((info = (ArchFileInfo *)malloc(sizeof(ArchFileInfo))) == NULL){
+        MEMORY(L"Memory allocate error!");
+        LOGGING_FUNC_STOP;
+        return MEMORY_ALLOCATE_ERROR;
+    }
+    if ((info->fileInfo = (FileInfo *)malloc(sizeof(FileInfo))) == NULL){
+        MEMORY(L"Memory allocate error!");
+        LOGGING_FUNC_STOP;
+        return MEMORY_ALLOCATE_ERROR;
+    }
     int64_t howFolders = 0, howFiles = 0;
     int64_t blocksFolder = 0, blocksFile = 0;
     int64_t i;
-
+    int percentage = 0;
     int err = 0;
     char *canCurrentNameFile = NULL;
     int64_t max_len = 0;
@@ -23,8 +48,8 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
 
         if (err == HASH_HEADER_CHECK_ERROR){
             printf("Warning: Error checking header on %lx\n", ftell(arch) - 4);
-            err = continue_func();
-            if (err == STOP) return ABORT_LISTING;
+            //err = continue_func();
+            //if (err == STOP) return ABORT_LISTING;
         }
         currentNameFile = info->fileInfo->name;
         canCurrentNameFile = pathToCanon(currentNameFile);
@@ -87,6 +112,8 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
             continue;
         }*/
         size_can = (double)filesArch[i]->fileInfo->size;
+        if (size_can == 0) percentage = 0; else
+            percentage = (int)(filesArch[i]->dataSize * 100 / filesArch[i]->fileInfo->size);
         char_size = 'b';
         if (size_can > 1024){
             size_can /= 1024;
@@ -101,7 +128,7 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
                (int)max_len,
                getFileByPath(nameFolderCan, canCurrentNameFile) + 2,
                size_can, char_size,
-               (int)(filesArch[i]->dataSize * 100 / filesArch[i]->fileInfo->size));
+               percentage);
         free(canCurrentNameFile);
     }
 

@@ -42,7 +42,7 @@ int main(int argc, char *argv[], char *env[])
       f = fopen(cnt->argv[2], "rb");
       if (NULL == f || feof(f)) printf("XYZ\n");
 
-      printFilesOfFolder(f, "./folder1/.");
+      printArchFiles(cnt);
       fclose(f);
       break;
     case 0x4:
