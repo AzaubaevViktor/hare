@@ -41,7 +41,7 @@ int pathInDest(char *pathCan, char *destCan) {
   for (pos = 0; pos <= minLen; pos++) {
 
     if (0 == pathCan[pos]) {
-      return 1;
+     break;
     }
 
     if (('.' == pathCan[pos]) && (0 == pathCan[pos+1])) {
@@ -52,6 +52,9 @@ int pathInDest(char *pathCan, char *destCan) {
       return 0;
     }
   }
+
+  if ('/' != destCan[pos+1])
+    return 0;
 
   return 1;
 }
@@ -141,7 +144,9 @@ char *getFileByPathWithFolder(char *path, char *dest) {
     lastName = getLastName(path);
     name = calloc(strlen(lastName) + 1 + strlen(buf), sizeof(char));
     strcpy(name, "./");
-    strcpy(name + strlen(name), lastName);
+    if (lastName[strlen(lastName) - 1] != '.') {
+      strcpy(name + strlen(name), lastName);
+    }
     strcpy(name + strlen(name), buf + 1);
     free(lastName);
   } else {
