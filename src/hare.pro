@@ -15,7 +15,8 @@ SOURCES += main.c \
     listfiles.c \
     extract.c \
     findsign.c \
-	crc.c
+    crc.c \
+    continue_func.c
 
 HEADERS += \
     hare.h \
@@ -28,5 +29,6 @@ HEADERS += \
     extract.h \
     listfiles.h \
     findsign.h \
-	crc.h
+    crc.h \
+    continue_func.h
 

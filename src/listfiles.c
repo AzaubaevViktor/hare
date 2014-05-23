@@ -1,5 +1,6 @@
 #include "listfiles.h"
 
+
 int printFilesOfFolder(FILE *arch, char *nameFolder)
 {
     char *currentNameFile;
@@ -16,13 +17,14 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
     int64_t max_len = 0;
     char *nameFolderCan = pathToCanon(nameFolder);
     LOGGING_FUNC_START;
-    while ((err = readHeader(arch, info)) != IO_EOF){
+    while (!feof(arch)){
         //printf("%lx\n", ftell(arch));
-        if (err != 0){
-            findSignature(arch);
-            //printf("%lx\n", ftell(arch));
-            if (feof(arch)) break;
-            else continue;
+        err = readHeader(arch, info);
+
+        if (err == HASH_HEADER_CHECK_ERROR){
+            printf("Warning: Error checking header on %lx\n", ftell(arch) - 4);
+            err = continue_func();
+            if (err == STOP) return ABORT_LISTING;
         }
         currentNameFile = info->fileInfo->name;
         canCurrentNameFile = pathToCanon(currentNameFile);
@@ -64,6 +66,7 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
         info = malloc(sizeof(ArchFileInfo));
         info->fileInfo = malloc(sizeof(FileInfo));
         free(canCurrentNameFile);
+        findSignature(arch);
     }
 
     double size_can; char char_size;
@@ -94,11 +97,11 @@ int printFilesOfFolder(FILE *arch, char *nameFolder)
             }
         }
 
-        printf("%-*s|%7.2f%c \n",
+        printf("%-*s|%7.2f%c %3d%%\n",
                (int)max_len,
                getFileByPath(nameFolderCan, canCurrentNameFile) + 2,
-               size_can, char_size
-               );
+               size_can, char_size,
+               (int)(filesArch[i]->dataSize * 100 / filesArch[i]->fileInfo->size));
         free(canCurrentNameFile);
     }
 

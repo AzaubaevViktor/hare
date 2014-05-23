@@ -39,8 +39,10 @@ int main(int argc, char *argv[], char *env[])
       ;
       break;
     case 0x2:
-      f = fopen("./almuh.hr", "rb");
-      printFilesOfFolder(f, "./folder1/");
+      f = fopen(cnt->argv[2], "rb");
+      if (NULL == f || feof(f)) printf("XYZ\n");
+
+      printFilesOfFolder(f, "./folder1/.");
       fclose(f);
       break;
     case 0x4:
