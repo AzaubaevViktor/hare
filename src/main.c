@@ -19,6 +19,7 @@ int main(int argc, char *argv[], char *env[])
   Context *cnt = (Context *)malloc(sizeof(Context));
   FILE *f = NULL;
   int _error = 0;
+
   INIT_LOGGING;
   LOGGING_FUNC_START;
   INFO(L"Programm started");
