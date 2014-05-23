@@ -3,6 +3,7 @@
 #include "init.h"
 #include "path.h"
 #include "extract.h"
+#include "addFile.h"
 #include <stdio.h>
 #include <stdio.h>
 #include <wchar.h>
@@ -16,7 +17,6 @@ int main(int argc, char *argv[], char *env[])
   Context *cnt = (Context *)malloc(sizeof(Context));
   FILE *f = NULL;
   int _error = 0;
-
   INIT_LOGGING;
   LOGGING_FUNC_START;
   INFO(L"Programm started");
@@ -45,12 +45,12 @@ int main(int argc, char *argv[], char *env[])
       ;
       break;
     case 0x8:
-        f = fopen(argv[2], "rb");
+      f = fopen(argv[2], "rb");
       extractFiles(f, cnt);
       fclose(f);
       break;
     case 0x10:
-      ;
+      addFiles2Arch(*cnt);
       break;
     default:
       printHelp();

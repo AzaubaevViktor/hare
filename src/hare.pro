@@ -14,7 +14,10 @@ SOURCES += main.c \
     path.c \
     extract.c \
     crc.c \
-    decodeTree.c
+    decodeTree.c \
+    addFile.c \
+    concat_string.c \
+    huff.c
 
 HEADERS += \
     hare.h \
@@ -26,5 +29,9 @@ HEADERS += \
     path.h \
     extract.h \
     crc.h \
-    decodeTree.h
+    decodeTree.h \
+    addFile.h \
+    huff.h \
+    concat_string.h \
+    errors.h
 
