@@ -71,9 +71,9 @@ void addFiles2Arch(Context context)
     for (i = 0; i < context.argc - 3; i++)
     {
         struct stat fileInfo;
-        if (error = stat(context.workFiles[i], &fileInfo))
+        if (stat(context.workFiles[i], &fileInfo))
         {
-            PRINT_ERROR(error, context.workFiles[i]);
+            PRINT_ERROR(ERROR_GET_FILE_INFO, context.workFiles[i]);
             continue;
         }
 
@@ -94,7 +94,7 @@ void addFiles2Arch(Context context)
                 continue;
             }
 
-            if (error = addFile2Arch(archFileInfo, context.archName))
+            if (addFile2Arch(archFileInfo, context.archName))
                 continue;
 
             free(archFileInfo.fileInfo);
@@ -104,7 +104,8 @@ void addFiles2Arch(Context context)
             if ('/' == context.workFiles[i][strlen(context.workFiles[i]) - 1])
                 context.workFiles[i][strlen(context.workFiles[i]) - 1] = '\0';
 
-            recurseAddFiles2Arch(context.workFiles[i], context);
+            if (error = recurseAddFiles2Arch(context.workFiles[i], context))
+                PRINT_ERROR(ERROR_NOT_ADD_FOLDER, context.workFiles[i]);
         }
     }
 
@@ -293,8 +294,10 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
 
 
 
-void recurseAddFiles2Arch(char * path, Context context)
+int recurseAddFiles2Arch(char * path, Context context)
 {
+    int error = 0;
+
     DIR * dir = NULL;
     struct dirent * dir_entry;
     ArchFileInfo archFileInfo;
@@ -302,20 +305,20 @@ void recurseAddFiles2Arch(char * path, Context context)
     static char buffer[1000000] = "";
 
     if (NULL == path)
-        return;
+        return ERROR_OPEN_FOLDER;
 
     dir = opendir(path);
 
     if (NULL == dir)
     {
         depth--;
-        return;
+        return ERROR_OPEN_FOLDER;
     }
 
     strcpy(buffer, path);
 
-    if (writeFolderHeader(context, buffer))
-        return;
+    if (error = writeFolderHeader(context, buffer))
+        return error;
 
     while ((dir_entry = readdir(dir)) != NULL)
     {
@@ -325,10 +328,12 @@ void recurseAddFiles2Arch(char * path, Context context)
             archFileInfo.fileInfo = (FileInfo*)malloc(sizeof(FileInfo));
 
             if (NULL == archFileInfo.fileInfo)
-                return;
+                return ERROR_NOT_ALLOCATED_MEMORY;
 
-            getFileInfo(pathToCanon(concatenateStrings(concatenateStrings(buffer, "/"), dir_entry->d_name)), archFileInfo.fileInfo);
-            addFile2Arch(archFileInfo, context.archName);
+            if (error = getFileInfo(pathToCanon(concatenateStrings(concatenateStrings(buffer, "/"), dir_entry->d_name)), archFileInfo.fileInfo))
+                return error;
+            if (error = addFile2Arch(archFileInfo, context.archName))
+                return error;
         }
         else if (dir_entry->d_type == DT_DIR)
         {
@@ -337,10 +342,10 @@ void recurseAddFiles2Arch(char * path, Context context)
                 depth++;
                 strcat(buffer, "/");
                 strcat(buffer, dir_entry->d_name);
-                recurseAddFiles2Arch(buffer, context);
+                if (error = recurseAddFiles2Arch(buffer, context))
+                    return error;
             }
         }
-
     }
 
     if (depth > 0)
@@ -351,6 +356,7 @@ void recurseAddFiles2Arch(char * path, Context context)
             buffer[i] = '\0';
     }
     depth--;
+    return 0;
 }
 
 

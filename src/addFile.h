@@ -24,6 +24,6 @@
 void addFiles2Arch(Context context);
 int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive);
 int writeFolderHeader(Context context, const char * folderName);
-void recurseAddFiles2Arch(char * path, Context context);
+int recurseAddFiles2Arch(char * path, Context context);
 
 #endif // ADDFILE_H
