@@ -7,7 +7,7 @@ int checkIntegrity_my(FILE *arch){
     initRdCrc();
     int err = 0;
 
-    while ((err = checkingHeader(arch, info) != IO_EOF)){
+    while (IO_EOF != (err = checkingHeader(arch, info))){
         if (isFolder(info->fileInfo->name)) continue;
         printf("%s\n", info->fileInfo->name);
         printf("Header: ");
@@ -34,7 +34,7 @@ int checkingHeader(FILE *arch, ArchFileInfo *info){
         printf("Find on %lx\n", ftell(arch));
         return checkingHeader(arch, info);
     }
-    if (err == HASH_HEADER_CHECK_ERROR) return 1; else return 0;
+    return (err == HASH_HEADER_CHECK_ERROR);
 }
 int checkingData(FILE *arch, ArchFileInfo *info, crc *real, crc *should){
     initRdCrc();
