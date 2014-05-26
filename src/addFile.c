@@ -42,8 +42,31 @@ int writeFolderHeader(Context context, const char * folderName)
 
     if (NULL == (archive  = fopen(context.archName, "rb+")))
     {
+        ArchFileInfo afInfoRoot;
+        time_t curTime;
+
+        time(&curTime);
+
         if (NULL == (archive  = fopen(context.archName, "wb")))
             return ERROR_OPEN_ARCHIVE;
+
+        if (NULL == (afInfoRoot.fileInfo = (FileInfo*) malloc(sizeof(FileInfo))))
+            return ERROR_NOT_ALLOCATED_MEMORY;
+
+        if (NULL == (afInfoRoot.fileInfo->name = (char*) calloc(4, sizeof(char))))
+            return ERROR_NOT_ALLOCATED_MEMORY;
+
+        afInfoRoot.dataSize = 0;
+        afInfoRoot.endUnusedBits = 0;
+        afInfoRoot.flags = 0;
+        afInfoRoot.haffTreeSize = 0;
+        strcpy(afInfoRoot.fileInfo->name, "./.");
+        afInfoRoot.fileInfo->size = 0;
+        afInfoRoot.fileInfo->sizeName = strlen(afInfoRoot.fileInfo->name);
+        afInfoRoot.fileInfo->timeLastModification = (int64_t) curTime;
+
+        writeFileHeader(archive, &afInfoRoot);
+
         fclose(archive);
 
         if (NULL == (archive  = fopen(context.archName, "rb+")))
@@ -86,9 +109,7 @@ int addFiles2Arch(Context context)
             if (S_ISREG(fileInfo.st_mode))
             {
                 ArchFileInfo archFileInfo;
-                archFileInfo.fileInfo = (FileInfo*)malloc(sizeof(FileInfo));
-
-                if (NULL == archFileInfo.fileInfo)
+                if (NULL == (archFileInfo.fileInfo = (FileInfo*)malloc(sizeof(FileInfo))))
                 {
                     PRINT_ERROR(ERROR_NOT_ALLOCATED_MEMORY);
                     continue;
@@ -156,12 +177,34 @@ int addFile2Arch(ArchFileInfo archFileInfo, const char* nameArchive)
     archive  = fopen(nameArchive, "rb+");
     if (!archive)
     {
+        ArchFileInfo afInfoRoot;
+        time_t curTime;
+
+        time(&curTime);
+
         archive  = fopen(nameArchive, "wb");
         if (!archive)
         {
             PRINT_ERROR(ERROR_OPEN_ARCHIVE, nameArchive);
             return ERROR_OPEN_ARCHIVE;
         }
+
+        if (NULL == (afInfoRoot.fileInfo = (FileInfo*) malloc(sizeof(FileInfo))))
+            return ERROR_NOT_ALLOCATED_MEMORY;
+
+        if (NULL == (afInfoRoot.fileInfo->name = (char*) calloc(4, sizeof(char))))
+            return ERROR_NOT_ALLOCATED_MEMORY;
+
+        afInfoRoot.dataSize = 0;
+        afInfoRoot.endUnusedBits = 0;
+        afInfoRoot.flags = 0;
+        afInfoRoot.haffTreeSize = 0;
+        strcpy(afInfoRoot.fileInfo->name, "./.");
+        afInfoRoot.fileInfo->size = 0;
+        afInfoRoot.fileInfo->sizeName = strlen(afInfoRoot.fileInfo->name);
+        afInfoRoot.fileInfo->timeLastModification = (int64_t) curTime;
+
+        writeFileHeader(archive, &afInfoRoot);
 
         fclose(archive);
         archive  = fopen(nameArchive, "rb+");

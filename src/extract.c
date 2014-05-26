@@ -26,7 +26,7 @@ int msg(int code) {
              "  hare -t filename\n"
              "Find next file... (NOT REALIZED)\n");
       WARNING(L"Signature error, find next (NOT REALIZED)");
-      return 1; // POKA
+      return 2;
       break;
 
     case IO_EOF:
@@ -34,7 +34,7 @@ int msg(int code) {
       return 0;
       break;
 
-     case MEMORY_ALLOCATE_ERROR:
+    case MEMORY_ALLOCATE_ERROR:
       printf("Can not allocate memory. Close one or more programm to release memory.\n");
       MEMORY("Can'not allocate");
       return 1;
@@ -43,7 +43,7 @@ int msg(int code) {
     case HASH_HEADER_CHECK_ERROR:
       printf("Check summ file in archive does not match, search next file... (NOT REALIZED)\n");
       WARNING("Hash header check error");
-      return 1; // POKA
+      return 2;
       break;
 
     case MKDIR_ERROR:
@@ -194,9 +194,16 @@ int extract(FILE *f, ArchFileInfo *info, char *fileName) {
 
 #define ERROR_CHECK_NOT_LOOP\
   isEof += (IO_EOF == _error);\
-  if (msg(_error)) {\
+  switch (msg(_error)) {\
+  case 1:\
   LOGGING_FUNC_STOP;\
   return _error;\
+  break;\
+  case 2:\
+  IO("Signature find at `%d`",findSignature(f));\
+  break;\
+  default:\
+  break;\
   }
 
 #define ERROR_CHECK\

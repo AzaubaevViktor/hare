@@ -12,8 +12,7 @@ int findSignature(FILE *f){
             if (memcmp(buffer + i, str, 4) == 0){
                 //printf("%lx\n", num + i + pos);
                 fseek(f, num + i + pos, SEEK_SET);
-
-                return 0;
+                return num + i + pos;
             }
         }
         if (num_moved == 0) num_moved = 3;

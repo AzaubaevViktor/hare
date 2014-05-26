@@ -7,6 +7,7 @@
 #include "logging.h"
 #include "lowfile.h"
 #include "archfiles.h"
+#include "findsign.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
