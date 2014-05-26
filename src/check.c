@@ -8,15 +8,19 @@ int checkIntegrity_my(FILE *arch){
     int err = 0;
 
     while (IO_EOF != (err = checkingHeader(arch, info))){
-        if (isFolder(info->fileInfo->name)) continue;
-        printf("%s\n", info->fileInfo->name);
+        printf("===========================\n`%s`\n", info->fileInfo->name);
         printf("Header: ");
-        if (err == 0) printf("OK\n");
-        else if (err == 1) printf("BAD %lx\n",  info->HeaderCheckSum);
-        err = checkingData(arch, info, &realsum, &shouldsum);
-        printf("Data  : ");
-        if (err == 0) printf("OK\n"); else
-            if (err == 1) printf("BAD %lx %lx\n", realsum, shouldsum);
+        if (!err) {
+            printf("OK\n");
+            err = checkingData(arch, info, &realsum, &shouldsum);
+            printf("Data  : ");
+            if (!err)
+                printf("OK\n");
+            else
+                printf("BAD `%lX` `%lX`\n", realsum, shouldsum);
+        }
+        else
+            printf("BAD `%lX`\n",  info->HeaderCheckSum);
 
     }
     free(info->fileInfo);
@@ -25,16 +29,18 @@ int checkIntegrity_my(FILE *arch){
 }
 int checkingHeader(FILE *arch, ArchFileInfo *info){
     initRdCrc();
+    long pos = ftell(arch);
     int err = readHeader(arch, info);
-    if (feof(arch)) return IO_EOF;
-    if (err == SIGNATURE_ERROR){
-        printf("Check Error on %lx\n", ftell(arch));
+    if (err){
+        fseek(arch, pos+1, SEEK_SET);
+        printf("Signature error, find from `%lX`\n", ftell(arch));
         findSignature(arch);
         if (feof(arch)) return IO_EOF;
-        printf("Find on %lx\n", ftell(arch));
+        printf("Find on `%lX`\n", ftell(arch));
         return checkingHeader(arch, info);
     }
-    return (err == HASH_HEADER_CHECK_ERROR);
+    if (feof(arch)) return IO_EOF;
+    return 0;
 }
 int checkingData(FILE *arch, ArchFileInfo *info, crc *real, crc *should){
     initRdCrc();
